@@ -66,7 +66,7 @@ Environment variables for fine-tuning rendering (see original README notes).
 
 ## Building and Renaming Note
 
-This fork renames binaries/docs from "MyMan" to "Glomph Maze". Update `Makefile` if needed (e.g., change MYMAN to GLOMPHMAZE).
+This fork renames binaries/docs from \"MyMan\" to \"Glomph Maze\". Update `Makefile` if needed (e.g., change MYMAN to GLOMPHMAZE).
 
 ## Future Plans
 
@@ -82,5 +82,12 @@ Modified from original BSD license. See [LICENSE](LICENSE) for details.
 Original author: Benjamin C. Wiley Sittler <bsittler@gmail.com>. Fork maintainer: Michael Borck.
 
 ## Acknowledgements
+
+This project is a fork of the original MyMan game, originally developed by Benjamin C. Wiley Sittler.
+
+Original Sources:
+- Original author's homepage: [https://xent.com/~bsittler/geocities/#myman](https://xent.com/~bsittler/geocities/#myman)
+- SourceForge project: [https://sourceforge.net/projects/myman/](https://sourceforge.net/projects/myman/)
+- GitHub mirror (CVS to Git conversion): [https://github.com/kragen/myman](https://github.com/kragen/myman)
 
 Based on MyMan (public domain/BSD). Inspired by Pac-Man (Namco). Thanks to contributors for ports and variants.
