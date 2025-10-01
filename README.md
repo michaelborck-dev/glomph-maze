@@ -8,6 +8,13 @@ Glomph Maze is a fast-paced, curses-based game where you navigate mazes, collect
 
 Original project last updated in 2009; this fork adds modern maintenance while preserving the text-based ethos.
 
+### History
+- **1998**: Original MyMan by Benjamin Sittler—public domain, basic ncurses Pac-Man clone (742 lines, large tiles, maze/color support).
+- **1998-2003**: Expanded portability (cygwin/DOS/VMS), small tiles, variants (e.g., pacmanic). Data files public domain.
+- **Nov 2003 (v0.4/0.5)**: Switched to BSD 2-Clause license for attribution.
+- **2003-2009**: Added backends (PDCurses/SDL/GTK/Allegro/libcaca/EFI/Mac Carbon), sizes/variants (quackman/small/square), UX (pager/help/snapshots/MIDI). Last update: 2009 (DOS fixes). v0.7.0 final.
+- **2025 Fork (Glomph Maze)**: Renamed/revived; Makefile/UX tweaks (license in help, no startup prompt); focus on text portability. Data/original code under BSD; mazes/tiles public domain.
+
 ## Features
 
 - Text-mode rendering using ncurses or alternatives (PDCurses, SDL, etc.).

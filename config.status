@@ -1,0 +1,15 @@
+#!/bin/sh --
+# This file was generated automatically using `configure'.
+# You may later run this file (or a copy) in a working Bourne
+# shell to restore this configuration; see INSTALL for more
+# information.
+
+# special characters
+char_tab='	'
+char_newline='
+'
+export char_tab
+export char_newline
+
+exec /bin/sh ./configure "$@"
+exit $?

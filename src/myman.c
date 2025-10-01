@@ -7864,7 +7864,7 @@ main(int argc, char *argv[]
     }
 #endif
     progname = (argc > 0) ? argv[0] : "";
-    pager_notice = MYMANLEGALNOTICE;
+    // pager_notice = MYMANLEGALNOTICE;  // skipped for better UX, see help (? or Ctrl-H) for license
 #ifdef MACCURSES
 #ifdef __CARBON__
     /* when launched as a CFM application under Mac OS X, there is no
