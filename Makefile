@@ -494,7 +494,7 @@ endif
 # [_] followed by zero or more of: ascii letter, ascii digit or ascii
 # low line)
 ifeq ($(subst default,undefined,$(origin MYMAN)),undefined)
-MYMAN = myman
+MYMAN = glomph-maze
 endif
 
 # CREATOR: four-character Macintosh cretor code
@@ -3280,7 +3280,7 @@ ChangeLog \
 AUTHORS \
 INSTALL \
 LICENSE \
-README \
+README.md \
 THANKS \
 TODO \
 NEWS \
