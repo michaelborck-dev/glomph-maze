@@ -1,5 +1,7 @@
 # Glomph Maze
 
+![Glomph Mascot](images/glomph-mascot.png)
+
 A revived and renamed fork of [MyMan](http://myman.sourceforge.net/), an unofficial text-based clone of the classic Pac-Man game. Designed for terminal and console environments, with no GUI support. Integrated into a collection of minimal text-based projects.
 
 ## Description
