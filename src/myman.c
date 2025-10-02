@@ -1898,15 +1898,22 @@ static chtype
 altcharset_cp437[256];
 
 /* mapping from CP437 to ASCII */
+#ifdef USE_NEW_CONFIG
+chtype  /* Non-static so config.c can access it */
+#else
 static chtype
+#endif
 ascii_cp437[256];
 
 #ifdef NEED_CP437_TO_ASCII
+#ifndef USE_NEW_CONFIG
+/* Original implementation - will be replaced by src/core/config.c */
 static chtype cp437_to_ascii(unsigned char ch)
 {
     return ascii_cp437[(ch & 0xff)];
 }
-#endif
+#endif /* USE_NEW_CONFIG */
+#endif /* NEED_CP437_TO_ASCII */
 
 
 #ifndef USE_WCWIDTH

@@ -41,6 +41,9 @@
 /* myman_getenv is in utils.c - we need to declare it here */
 extern char *myman_getenv(const char *name);
 
+/* ascii_cp437 array is in myman.c - we need to declare it here */
+extern chtype ascii_cp437[256];
+
 /* Extracted from myman.c line 829 */
 int locale_is_utf8(void)
 {
@@ -123,4 +126,10 @@ int locale_is_utf8(void)
         }
     }
     return is_utf8;
+}
+
+/* Extracted from myman.c line 1905 */
+chtype cp437_to_ascii(unsigned char ch)
+{
+    return ascii_cp437[(ch & 0xff)];
 }

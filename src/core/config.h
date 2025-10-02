@@ -30,7 +30,12 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <curses.h>
+
 /* Function to detect if locale is UTF-8 */
 int locale_is_utf8(void);
+
+/* Function to convert CP437 to ASCII */
+chtype cp437_to_ascii(unsigned char ch);
 
 #endif
