@@ -63,3 +63,4 @@ This fork relies on the following open source projects and tools:
 * **OpenCode** - AI-powered code assistant (https://github.com/sst/opencode)
 * **OpenRouter** - Unified API for AI models (https://openrouter.ai)
 * **Claude** - AI assistant by Anthropic for code development and refactoring
+* **Grok** - Fast AI model by xAI for development assistance
