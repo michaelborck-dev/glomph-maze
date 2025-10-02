@@ -23,7 +23,7 @@ cmake -B build -DCMAKE_BUILD_TYPE=Debug
 cmake --build build
 
 # Run the game
-./build/bigman
+./build/glomph-big
 ```
 
 See [docs/CMAKE_SETUP.md](docs/CMAKE_SETUP.md) for detailed build instructions and [docs/QUICKSTART.md](docs/QUICKSTART.md) for a quick reference.
@@ -55,7 +55,7 @@ clang-tidy --fix --quiet src/*.c inc/*.h
 
 # Build and test
 cmake --build build
-./build/bigman --help
+./build/glomph-big --help
 ```
 
 ### 3. Commit Messages
@@ -97,10 +97,11 @@ Examples:
 glomph-maze/
 ├── src/           # Source code
 ├── inc/           # Header files
-├── chr/           # Character/tile data
-├── lvl/           # Maze layouts
-├── spr/           # Sprite graphics
-├── sfx/           # Sound effects
+├── assets/        # Game assets
+│   ├── tiles/     # Character/tile data
+│   ├── mazes/     # Maze layouts
+│   ├── sprites/   # Sprite graphics
+│   └── sounds/    # Sound effects
 ├── scripts/       # Utility scripts (Python & shell)
 ├── build/         # Build output (generated)
 └── docs/          # Documentation
@@ -155,7 +156,7 @@ Key principles:
 
 Currently, testing is manual:
 - Run the game with different maze variants
-- Test with different tile sizes (bigman, hugeman, smallman, squareman)
+- Test with different tile sizes (glomph-big, glomph-huge, glomph-small, glomph-narrow)
 - Verify controls work correctly
 - Check for memory leaks with valgrind (if available)
 
@@ -165,11 +166,11 @@ Automated testing is planned for the future (see docs/ROADMAP.md).
 
 Want to create custom content?
 
-**Maze files (lvl/):**
+**Maze files (assets/mazes/):**
 - ASCII art format
 - Use Python utility: `scripts/asc2txt.py --help`
 
-**Tile/sprite files (chr/, spr/):**
+**Tile/sprite files (assets/tiles/, assets/sprites/):**
 - ASCII art format
 - Use Python utilities: `scripts/bitmap2.py`, `scripts/bitmap4.py`
 

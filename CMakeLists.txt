@@ -67,17 +67,17 @@ macro(add_size_variant name size tiles sprites)
     install(TARGETS ${name} DESTINATION bin)
 endmacro()
 
-# Create the four size variants (matches simple.mk)
-add_size_variant(hugeman "huge" ${SIZE_HUGE_TILES} ${SIZE_HUGE_SPRITES})
-add_size_variant(bigman "big" ${SIZE_BIG_TILES} ${SIZE_BIG_SPRITES})
-add_size_variant(smallman "small" ${SIZE_SMALL_TILES} ${SIZE_SMALL_SPRITES})
-add_size_variant(squareman "square" ${SIZE_SQUARE_TILES} ${SIZE_SQUARE_SPRITES})
+# Create the four size variants
+add_size_variant(glomph-huge "huge" ${SIZE_HUGE_TILES} ${SIZE_HUGE_SPRITES})
+add_size_variant(glomph-big "big" ${SIZE_BIG_TILES} ${SIZE_BIG_SPRITES})
+add_size_variant(glomph-small "small" ${SIZE_SMALL_TILES} ${SIZE_SMALL_SPRITES})
+add_size_variant(glomph-narrow "narrow" ${SIZE_SQUARE_TILES} ${SIZE_SQUARE_SPRITES})
 
-# Default target is bigman (symlink as glomph-maze)
+# Default target is glomph-big (symlink as glomph-maze)
 add_custom_target(glomph-maze ALL
-    COMMAND ${CMAKE_COMMAND} -E create_symlink bigman glomph-maze
-    DEPENDS bigman
-    COMMENT "Creating glomph-maze symlink to bigman"
+    COMMAND ${CMAKE_COMMAND} -E create_symlink glomph-big glomph-maze
+    DEPENDS glomph-big
+    COMMENT "Creating glomph-maze symlink to glomph-big"
 )
 
 # Install data files
@@ -123,17 +123,17 @@ endif()
 enable_testing()
 
 # Basic smoke test
-add_test(NAME smoke_test_bigman
-    COMMAND bigman --help
+add_test(NAME smoke_test_glomph_big
+    COMMAND glomph-big --help
 )
-set_tests_properties(smoke_test_bigman PROPERTIES
+set_tests_properties(smoke_test_glomph_big PROPERTIES
     PASS_REGULAR_EXPRESSION "Usage:"
 )
 
 # Test all variants
-add_test(NAME smoke_test_hugeman COMMAND hugeman --help)
-add_test(NAME smoke_test_smallman COMMAND smallman --help)
-add_test(NAME smoke_test_squareman COMMAND squareman --help)
+add_test(NAME smoke_test_glomph_huge COMMAND glomph-huge --help)
+add_test(NAME smoke_test_glomph_small COMMAND glomph-small --help)
+add_test(NAME smoke_test_glomph_narrow COMMAND glomph-narrow --help)
 
 # Sanitizer build option
 option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
