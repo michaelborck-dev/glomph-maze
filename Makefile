@@ -3276,7 +3276,7 @@ ${obj}myman.ico: $(foreach dep,${myman_ico_deps},$(call mw,${dep}))
             )
 
 doc_files = \
-ChangeLog \
+CHANGELOG.md \
 AUTHORS \
 INSTALL \
 LICENSE \
@@ -4538,6 +4538,9 @@ info check installcheck:
 
 TAGS:: $(addprefix $(call mw,${src}),${dist_files})
 	etags -o $@ $(addprefix $(call q,${src}),${dist_files})
+
+tags:: $(addprefix $(call mw,${src}),${dist_files})
+	ctags $(addprefix $(call q,${src}),${dist_files})
 
 all:: $(call mw,${MAKEFILE}) ${MYMAN}$x $(call mw,${MYMANCOMMAND})
 

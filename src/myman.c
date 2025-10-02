@@ -4903,6 +4903,9 @@ pager(void)
     int c = ERR;
     int k = ERR;
 
+#if HAVE_CURS_SET
+    curs_set(0); /* Hide cursor during help display */
+#endif
 #if USE_ATTR || USE_COLOR
     my_attrset(0);
 #endif
@@ -5159,12 +5162,17 @@ pager(void)
                     my_refresh();
                     do
                     {
-                        while ((k = my_getch()) == ERR)
-                        {
-                            my_refresh();
-                            if (got_sigwinch) break;
-                            my_usleep(100000UL);
-                        }
+#if HAVE_NODELAY
+                        /* Temporarily disable nodelay for modal help input */
+                        nodelay(stdscr, FALSE);
+#endif
+                        /* Move cursor out of sight during blocking input */
+                        move(LINES - 1, COLS - 1);
+                        k = my_getch();
+#if HAVE_NODELAY
+                        /* Restore nodelay mode */
+                        nodelay(stdscr, TRUE);
+#endif
                         if (IS_LEFT_ARROW(k) || (k == '<') || (k == ','))
                         {
                             pager_arrow_magic = 1;
@@ -5411,12 +5419,17 @@ pager(void)
                 }
             }
             my_refresh();
-            while ((k = my_getch()) == ERR)
-            {
-                my_refresh();
-                if (got_sigwinch) break;
-                my_usleep(100000UL);
-            }
+#if HAVE_NODELAY
+            /* Temporarily disable nodelay for modal help input */
+            nodelay(stdscr, FALSE);
+#endif
+            /* Move cursor out of sight during blocking input */
+            move(LINES - 1, COLS - 1);
+            k = my_getch();
+#if HAVE_NODELAY
+            /* Restore nodelay mode */
+            nodelay(stdscr, TRUE);
+#endif
             if (IS_LEFT_ARROW(k) || (k == '<') || (k == ','))
             {
                 pager_arrow_magic = 1;
