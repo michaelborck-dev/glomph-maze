@@ -627,10 +627,15 @@ vmscurses_getch(void)
 #endif
 #endif
 
+#ifndef USE_NEW_CONFIG
+/* Original iconv state - will be in src/core/config.c */
 static iconv_t cd_to_wchar = (iconv_t) -1;
 
 static iconv_t cd_to_uni = (iconv_t) -1;
+#endif /* USE_NEW_CONFIG */
 
+#ifndef USE_NEW_CONFIG
+/* Original implementation - will be replaced by src/core/config.c */
 static wchar_t ucs_to_wchar(unsigned long ucs)
 {
     wchar_t wcbuf[2];
@@ -709,12 +714,13 @@ static wchar_t ucs_to_wchar(unsigned long ucs)
 #endif /* ! defined(LC_CTYPE) */
     return wcbuf[0] ? wcbuf[0] : (((ucs >= 0x20) && (ucs <= 0x7e)) ? ((wchar_t) ucs) : 0);
 }
+#endif /* USE_NEW_CONFIG */
 
 #else
 
 #define ucs_to_wchar(ucs) ((((unsigned long) (wchar_t) (unsigned long) (ucs)) == ((unsigned long) (ucs))) ? ((wchar_t) (unsigned long) (ucs)) : ((wchar_t) 0))
 
-#endif
+#endif /* HAVE_ICONV_H */
 
 /* resize handler */
 static volatile int got_sigwinch = 0;

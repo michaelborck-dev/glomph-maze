@@ -33,9 +33,22 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <locale.h>
+#include <wchar.h>
 
 #ifdef CODESET
 #include <langinfo.h>
+#endif
+
+#if HAVE_ICONV_H
+#include <iconv.h>
+#endif
+
+#ifdef LC_CTYPE
+#ifndef uint32_t
+#if HAVE_STDINT_H
+#include <stdint.h>
+#endif
+#endif
 #endif
 
 /* myman_getenv is in utils.c - we need to declare it here */
@@ -43,6 +56,12 @@ extern char *myman_getenv(const char *name);
 
 /* ascii_cp437 array is in myman.c - we need to declare it here */
 extern chtype ascii_cp437[256];
+
+/* iconv descriptors for ucs_to_wchar - static state */
+#if HAVE_ICONV_H
+static iconv_t cd_to_wchar = (iconv_t) -1;
+static iconv_t cd_to_uni = (iconv_t) -1;
+#endif
 
 /* Extracted from myman.c line 829 */
 int locale_is_utf8(void)
@@ -133,3 +152,88 @@ chtype cp437_to_ascii(unsigned char ch)
 {
     return ascii_cp437[(ch & 0xff)];
 }
+
+/* Extracted from myman.c line 629 */
+#if HAVE_ICONV_H
+wchar_t ucs_to_wchar(unsigned long ucs)
+{
+    wchar_t wcbuf[2];
+#ifdef LC_CTYPE
+    uint32_t ucsbuf[2];
+    const char *ibuf;
+    char *obuf;
+    size_t ibl;
+    size_t obl;
+    const char *my_locale;
+
+    do
+    {
+        if ((! (my_locale = setlocale(LC_CTYPE, "")))
+            ||
+            (! *my_locale)
+            ||
+            (! strcmp(my_locale, "C"))
+            ||
+            (! strcmp(my_locale, "POSIX")))
+        {
+            wcbuf[0] = 0;
+            break;
+        }
+        if ((cd_to_wchar == (iconv_t) -1)
+            &&
+            ((cd_to_wchar = iconv_open("wchar_t//IGNORE", "UCS-4-INTERNAL")) == (iconv_t) -1))
+        {
+            wcbuf[0] = 0;
+            break;
+        }
+        ucsbuf[0] = ucs;
+        ucsbuf[1] = 0;
+        wcbuf[0] = 0;
+        wcbuf[1] = 0;
+        ibuf = (char *) (void *) ucsbuf;
+        obuf = (char *) (void *) wcbuf;
+        ibl = sizeof(ucsbuf);
+        obl = sizeof(wcbuf);
+        if ((! iconv(cd_to_wchar, &ibuf, &ibl, &obuf, &obl))
+            ||
+            wcbuf[1]
+            ||
+            (! wcbuf[0]))
+        {
+            wcbuf[0] = 0;
+            break;
+        }
+        if (cd_to_uni == (iconv_t) -1)
+        {
+            cd_to_uni = iconv_open("UCS-4-INTERNAL//IGNORE", "wchar_t");
+        }
+        ucsbuf[0] = 0;
+        ibuf = (char *) (void *) wcbuf;
+        obuf = (char *) (void *) ucsbuf;
+        ibl = sizeof(wcbuf);
+        obl = sizeof(ucsbuf);
+        if ((cd_to_uni != (iconv_t) -1)
+            &&
+            (iconv(cd_to_uni, &ibuf, &ibl, &obuf, &obl))
+            &&
+            (ucsbuf[0] != ucs))
+        {
+            /* does not round-trip, probably a broken character */
+            wcbuf[0] = 0;
+            break;
+        }
+    }
+    while (0);
+    if (my_locale)
+    {
+        setlocale(LC_CTYPE, my_locale);
+    }
+#else /* ! defined(LC_CTYPE) */
+    wcbuf[0] = 0;
+#endif /* ! defined(LC_CTYPE) */
+    return wcbuf[0] ? wcbuf[0] : (((ucs >= 0x20) && (ucs <= 0x7e)) ? ((wchar_t) ucs) : 0);
+}
+#else
+/* No iconv support - use simple macro */
+#define ucs_to_wchar(ucs) ((((unsigned long) (wchar_t) (unsigned long) (ucs)) == ((unsigned long) (ucs))) ? ((wchar_t) (unsigned long) (ucs)) : ((wchar_t) 0))
+#endif

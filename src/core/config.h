@@ -38,4 +38,8 @@ int locale_is_utf8(void);
 /* Function to convert CP437 to ASCII */
 chtype cp437_to_ascii(unsigned char ch);
 
+/* Function to convert UCS to wide char */
+#include <wchar.h>
+wchar_t ucs_to_wchar(unsigned long ucs);
+
 #endif
