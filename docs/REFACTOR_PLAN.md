@@ -2,21 +2,96 @@
 
 ## Executive Summary
 
-Transform Glomph Maze from a monolithic 12,000-line file with 20-minute builds into a modern, modular C project with 30-second incremental builds, comprehensive quality checks, and maintainable architecture.
+Transform Glomph Maze from a monolithic 12,000-line file with 20-minute builds into a modern, modular C project with fast incremental builds, comprehensive quality checks, and maintainable architecture.
 
-**Timeline:** 3-4 weeks  
+**Current Status:** ✅ Phase 0-1 Complete (Preparation & Modern Build System)  
+**Next Phase:** Phase 2 - Modularization  
 **Risk Level:** LOW (parallel build strategy)  
-**Expected Outcome:** Professional-grade codebase, help system fixed, 40x faster builds
 
 ---
 
-## Phase 0: Preparation & Documentation (This Session)
+## ✅ COMPLETED: Phase 0 - Preparation & Cleanup
 
-### 0.1 Save This Plan ✓
-- [x] Create `REFACTOR_PLAN.md`
-- [x] Review and approve with user
+**Duration:** 2 sessions  
+**Result:** Clean, modern project structure ready for refactoring
 
-### 0.2 Disable Help System (30 minutes)
+### What We Did
+
+#### 0.1 Repository Cleanup ✅
+- [x] Removed ~20,000 lines of legacy code
+- [x] Deleted debian/, patches/, website/, efilibc/
+- [x] Removed obsolete Makefile (5,437 lines), configure, simple.mk
+- [x] Cleaned up .gitignore for modern workflow
+- [x] Version bumped to 0.8.0
+
+#### 0.2 Modern Project Structure ✅
+- [x] Reorganized into `assets/`, `scripts/`, `docs/`, `images/`
+- [x] Created comprehensive documentation (CONTRIBUTING.md, ACKNOWLEDGMENTS.md)
+- [x] Added project mascot and branding
+- [x] Established dual licensing (source: BSD, assets: CC0/CC-BY)
+
+#### 0.3 Help System ✅
+- [x] Re-enabled in-game help (was temporarily disabled)
+- [x] Help system working correctly
+- [x] Updated AGENTS.md with current status
+
+#### 0.4 Binary Naming ✅
+- [x] Renamed: bigman → glomph-big (default)
+- [x] Renamed: hugeman → glomph-huge  
+- [x] Renamed: smallman → glomph-small
+- [x] Renamed: squareman → glomph-narrow
+- [x] Updated all documentation
+
+**Lines of Code:** 14,461 (down from ~20,000)  
+**Build Files Removed:** Makefile, configure, simple.mk, patches/, debian/
+
+---
+
+## ✅ COMPLETED: Phase 1 - Modern Build System
+
+**Duration:** 2 sessions  
+**Result:** CMake-only build system, 1-2 second incremental builds
+
+### What We Did
+
+#### 1.1 CMake Build System ✅
+- [x] Complete CMakeLists.txt with all features
+- [x] Four size variants building correctly
+- [x] Asset directory symlinks in build/
+- [x] Test framework integrated (ctest)
+- [x] Format and lint targets working
+- [x] compile_commands.json for IDE support
+
+#### 1.2 Build Performance ✅
+- [x] First build: ~30 seconds (was 20 minutes)
+- [x] Incremental build: 1-2 seconds  
+- [x] All 4 variants compile in parallel
+- [x] Clean rebuilds fast and reliable
+
+#### 1.3 Legacy Removal ✅
+- [x] Removed 5,437-line Makefile
+- [x] Removed configure script
+- [x] Removed simple.mk
+- [x] CMake-only workflow
+
+#### 1.4 Compiler Warnings ⚠️
+- [ ] 3 warnings remaining in src/myman.c:
+  - logical-not-parentheses (line 3134)
+  - unused variables (lines 5787, 5865)
+- [ ] Will fix during Phase 2 modularization
+
+**Build Time:** 30s first / 1-2s incremental (was 20 minutes)  
+**Test Suite:** 4/4 passing
+
+---
+
+## 🔄 NEXT: Phase 2 - Code Modularization
+
+**Goal:** Break src/myman.c (~12,000 lines) into logical modules
+
+### Strategy: Safe Parallel Extraction
+
+We'll use a **copy-don't-move** approach:
 **Goal:** Remove infinite loop bug, provide CLI workaround
 
 **Changes:**
@@ -72,11 +147,98 @@ git push origin master
 
 ## Phase 1: Modern Build System (Week 1)
 
-### 1.1 Add CMake Configuration (Day 1)
+### 2.0 Before You Start: Safety Checklist
 
-**Create: `CMakeLists.txt`**
+- [ ] Current code is working (all tests pass)
+- [ ] Git is clean (no uncommitted changes)  
+- [ ] Backup tag created: `git tag pre-refactor-$(date +%Y%m%d)`
+- [ ] Ready to proceed slowly and carefully
+
+### 2.1 Understand the Monolith First
+
+**Current Structure (src/myman.c - ~12,000 lines):**
+```
+Lines 1-1000:    Includes, defines, global state
+Lines 1000-3000: Curses/rendering wrapper functions  
+Lines 3000-5000: Pager and help system
+Lines 5000-7000: Game state and logic
+Lines 7000-9000: Input handling
+Lines 9000-12000: Main game loop and initialization
+```
+
+**Goal:** Extract into these modules:
+```
+src/
+├── render/
+│   ├── screen.c      # Curses wrapper (~1000 lines)
+│   ├── pager.c       # Text pager (~500 lines) 
+│   └── sprites.c     # Sprite rendering (~500 lines)
+├── core/
+│   ├── game_state.c  # State, scoring (~1000 lines)
+│   └── collision.c   # Hit detection (~500 lines)
+├── input/
+│   └── keyboard.c    # Input handling (~500 lines)
+└── myman.c           # Main loop (~2000 lines remaining)
+```
+
+### 2.2 Extraction Process Template
+
+**For Each Module:**
+
+1. **Identify** functions to extract (read code, make notes)
+2. **Document** function signatures and dependencies
+3. **Create** new .c/.h files with copied functions
+4. **Add** to CMakeLists.txt (compile alongside myman.c)
+5. **Guard** original functions with `#ifndef USE_NEW_MODULE`
+6. **Test** both old and new builds work identically
+7. **Switch** to new module as default
+8. **Commit** with clear message
+
+### 2.3 Start Small: Extract utils.c First ✅
+
+Good news! `utils.c` already exists as a separate file. This is our template.
+
+### 2.4 First Real Extraction: screen.c (Curses Wrapper)
+
+**Step 1: Identify Functions (30 min research)**
+
+Read src/myman.c and find all curses-related wrapper functions:
+- `my_init()`, `my_endwin()`
+- `my_move()`, `my_addch()`, `my_addstr()`  
+- `my_getch()`, `my_refresh()`
+- Color functions: `my_init_pair()`, `my_color_pair()`
+
+**Step 2: Create Module (1 hour coding)**
+
+```c
+// src/render/screen.h
+#ifndef SCREEN_H
+#define SCREEN_H
+
+#include <curses.h>
+
+void my_init(void);
+void my_endwin(void);
+void my_move(int y, int x);
+// ... etc
+
+#endif
+```
+
+```c
+// src/render/screen.c  
+#include "screen.h"
+
+void my_init(void) {
+    // Copy implementation from myman.c
+}
+
+// ... rest of functions
+```
+
+**Step 3: Update Build (10 minutes)**
+
 ```cmake
-cmake_minimum_required(VERSION 3.15)
 project(glomph-maze VERSION 0.7.0 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 11)
@@ -908,6 +1070,66 @@ sudo apt-get install cmake clang-format clang-tidy libncurses-dev valgrind lcov
 ```bash
 sudo pacman -S cmake clang ncurses criterion valgrind lcov
 ```
+
+---
+
+---
+
+## Current Project Health
+
+### ✅ Completed
+- Modern CMake build system
+- Clean project structure  
+- Working help system
+- Fast incremental builds (1-2s)
+- 4 size variants building
+- Basic test suite
+- Documentation reorganized
+- Consistent binary naming
+
+### ⚠️ Needs Work
+- Monolithic src/myman.c (~12,000 lines)
+- 3 compiler warnings
+- No unit tests yet
+- No modular structure
+- Manual testing only
+
+### 📊 Metrics
+- **Build time:** 30s first / 1-2s incremental ✅
+- **Code size:** 14,461 lines (4 files)
+- **Test coverage:** Smoke tests only
+- **Warnings:** 3 (non-critical)
+
+---
+
+## Next Steps: Beginning Phase 2
+
+**Ready to refactor?** Start with the safety checklist:
+
+```bash
+# 1. Verify current state
+cd /Users/michael/Projects/glomph-maze
+git status  # Should be clean
+cmake --build build && cd build && ctest  # Should pass
+
+# 2. Create safety backup
+git tag pre-refactor-$(date +%Y%m%d)
+git push origin --tags
+
+# 3. Create feature branch (optional but recommended)
+git checkout -b refactor/phase2-modularization
+
+# 4. Start with research
+# Read src/myman.c and understand structure
+# Make notes on what to extract first
+# Don't rush - understanding comes first!
+```
+
+**Recommended First Module:** `render/screen.c` (curses wrapper)
+- Clear boundaries
+- Well-defined interface  
+- Low risk
+- Sets pattern for other extractions
 
 ---
 
