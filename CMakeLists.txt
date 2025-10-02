@@ -32,13 +32,63 @@ include_directories(
     ${CURSES_INCLUDE_DIR}
 )
 
-# Common source files
+# Refactoring options - Use new modular code (OFF = use legacy myman.c)
+option(USE_NEW_SCREEN "Use refactored screen module" OFF)
+option(USE_NEW_PAGER "Use refactored pager module" OFF)
+option(USE_NEW_SPRITES "Use refactored sprites module" OFF)
+option(USE_NEW_GAME_STATE "Use refactored game_state module" OFF)
+option(USE_NEW_COLLISION "Use refactored collision module" OFF)
+option(USE_NEW_KEYBOARD "Use refactored keyboard module" OFF)
+option(USE_NEW_MAZE_LOADER "Use refactored maze_loader module" OFF)
+
+# Common source files (legacy monolith)
 set(COMMON_SOURCES
     src/myman.c
     src/utils.c
     src/logic.c
     mygetopt/mygetopt.c
 )
+
+# New modular source files (added as options enable them)
+set(NEW_MODULE_SOURCES "")
+
+if(USE_NEW_SCREEN)
+    list(APPEND NEW_MODULE_SOURCES src/render/screen.c)
+    add_compile_definitions(USE_NEW_SCREEN=1)
+endif()
+
+if(USE_NEW_PAGER)
+    list(APPEND NEW_MODULE_SOURCES src/render/pager.c)
+    add_compile_definitions(USE_NEW_PAGER=1)
+endif()
+
+if(USE_NEW_SPRITES)
+    list(APPEND NEW_MODULE_SOURCES src/render/sprites.c)
+    add_compile_definitions(USE_NEW_SPRITES=1)
+endif()
+
+if(USE_NEW_GAME_STATE)
+    list(APPEND NEW_MODULE_SOURCES src/core/game_state.c)
+    add_compile_definitions(USE_NEW_GAME_STATE=1)
+endif()
+
+if(USE_NEW_COLLISION)
+    list(APPEND NEW_MODULE_SOURCES src/core/collision.c)
+    add_compile_definitions(USE_NEW_COLLISION=1)
+endif()
+
+if(USE_NEW_KEYBOARD)
+    list(APPEND NEW_MODULE_SOURCES src/input/keyboard.c src/input/controls.c)
+    add_compile_definitions(USE_NEW_KEYBOARD=1)
+endif()
+
+if(USE_NEW_MAZE_LOADER)
+    list(APPEND NEW_MODULE_SOURCES src/data/maze_loader.c src/data/variants.c)
+    add_compile_definitions(USE_NEW_MAZE_LOADER=1)
+endif()
+
+# Combine all sources
+set(ALL_SOURCES ${COMMON_SOURCES} ${NEW_MODULE_SOURCES})
 
 # Define size variants with their tile/sprite files
 set(SIZE_HUGE_TILES "chr5x3.txt")
@@ -52,7 +102,7 @@ set(SIZE_SQUARE_SPRITES "spr1.txt")
 
 # Helper macro to create size variant
 macro(add_size_variant name size tiles sprites)
-    add_executable(${name} ${COMMON_SOURCES})
+    add_executable(${name} ${ALL_SOURCES})
     
     target_compile_definitions(${name} PRIVATE
         MYGETOPT=1
