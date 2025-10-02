@@ -34,15 +34,15 @@ Build instructions:
    $ cmake --build build
 
 4. Run:
-   $ ./build/bigman
+   $ ./build/glomph-big
 
 The build produces multiple game variants:
-  - bigman (large tiles)
-  - hugeman (extra large tiles)
-  - smallman (small tiles)
-  - squareman (square tiles)
+  - glomph-big (large tiles) - default
+  - glomph-huge (extra large tiles)
+  - glomph-small (small tiles)
+  - glomph-narrow (narrow tiles)
 
-For detailed build instructions, see CMAKE_SETUP.md.
+For detailed build instructions, see docs/CMAKE_SETUP.md.
 
 
 Dependencies
