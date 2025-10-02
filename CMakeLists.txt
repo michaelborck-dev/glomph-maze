@@ -33,6 +33,7 @@ include_directories(
 )
 
 # Refactoring options - Use new modular code (OFF = use legacy myman.c)
+option(USE_NEW_CONFIG "Use refactored config module" OFF)
 option(USE_NEW_SCREEN "Use refactored screen module" OFF)
 option(USE_NEW_PAGER "Use refactored pager module" OFF)
 option(USE_NEW_SPRITES "Use refactored sprites module" OFF)
@@ -51,6 +52,11 @@ set(COMMON_SOURCES
 
 # New modular source files (added as options enable them)
 set(NEW_MODULE_SOURCES "")
+
+if(USE_NEW_CONFIG)
+    list(APPEND NEW_MODULE_SOURCES src/core/config.c)
+    add_compile_definitions(USE_NEW_CONFIG=1)
+endif()
 
 if(USE_NEW_SCREEN)
     list(APPEND NEW_MODULE_SOURCES src/render/screen.c)

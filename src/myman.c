@@ -129,6 +129,11 @@
 #include "utils.h"
 #endif
 
+/* New modular code */
+#ifdef USE_NEW_CONFIG
+#include "core/config.h"
+#endif
+
 #if HAVE_LANGINFO_H
 #include <langinfo.h>
 #endif
@@ -826,6 +831,8 @@ static void sigwinch_handler(int signum)
 #endif
 
 #ifdef NEED_LOCALE_IS_UTF8
+#ifndef USE_NEW_CONFIG
+/* Original implementation - will be replaced by src/core/config.c */
 static int locale_is_utf8(void)
 {
     const char *my_locale;
@@ -908,7 +915,8 @@ static int locale_is_utf8(void)
     }
     return is_utf8;
 }
-#endif
+#endif /* USE_NEW_CONFIG */
+#endif /* NEED_LOCALE_IS_UTF8 */
 
 #ifndef MY_A_BOLD
 #ifdef A_BOLD
