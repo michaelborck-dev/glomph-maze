@@ -1,206 +1,59 @@
-INSTALL - installation instructions for the MyMan video game
+INSTALL - installation instructions for Glomph Maze
 Copyright 2003, 2006-2009, Benjamin C. Wiley Sittler <bsittler@gmail.com>
+Copyright 2025, Michael Borck (fork)
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.
 
-Website: http://myman.sourceforge.net/
-
-NOTE: If you have a broken Bourne shell (Slowaris /bin/sh, for example)
-      you will need to substitute the path to a better shell (GNU
-      bash, ash, ksh, etc.) in the instructions below wherever we
-      refer to /bin/sh. See the end of this file for URLs for
-      recommended infrastructure software.
-
-
-Installation from a Binary Distribution
----------------------------------------
-
-To install MyMan from a binary distribution, first unpack the archive
-(replacing VERSION with the actual myman version, and HOST with the
-actual HOST type):
-
-For compressed tarball (.tar.gz) binary distributions:
-
-  $  gunzip myman-VERSION-HOST.tar.gz &&
-     tar -xf myman-VERSION-HOST.tar &&
-     cd myman-VERSION-HOST
-
-For ZIP archive (.zip) binary distributions:
-
-  $  unzip myman-VERSION-HOST.zip &&
-     cd myman-VERSION-HOST
-
-For Mac OS X disk image (.dmg) binary distribtuions:
-
-  $  open myman-VERSION-HOST.dmg
-     (wait for disk image to be attached)
-  $  cd /Volumes/myman-VERSION-HOST
-
-Then run the following command as `root':
-
-  #  /bin/sh ./install.sh
-
-If you would like to remove the installation files but leave behind
-the uninstallation script, run the following command:
-
-  $  /bin/sh ./clean.sh
-
-To uninstall later, run the following command as `root' from the same
-myman-VERSION-HOST directory:
-
-  #  /bin/sh ./uninstall.sh
-
-Note that the binaries you install may depend on dynamically linked
-libraries which will also need to be installed before myman will work.
-On Linux systems you can generally determine which libraries are needed
-by running 'ldd myman'; on Mac OS X systems use 'otool -L myman' instead.
+Website: https://github.com/michaelborck-dev/glomph-maze
 
 
 Installation from Source
 ------------------------
 
-While there is a `configure' script included, using it is not
-mandatory -- most configuration is possible through edits to
-`Makefile'.
+Glomph Maze uses CMake for building. The legacy Makefile and configure
+script have been removed.
 
-Hopefully, a simple `make' will build you a working executable
-containing all the included game variants and sizes, called simply
-`myman'. If make fails, edit the makefile after reading this file, and
-try again.
+Prerequisites:
+  - CMake 3.10 or higher
+  - ANSI C compiler (e.g., GCC or Clang)
+  - Curses library (e.g., ncurses on Unix, PDCurses on Windows)
+  - Optional: SDL2 for enhanced backends
 
-0. Prerequisites -- see the end of this for URLs:
-  (a) a working POSIX-style Bourne-compatible shell, e.g. bash, ash, or pdksh
-    ---- substitute the full path to this shell for /bin/sh in each step below
-  (b) a working ANSI C compiler, e.g. gcc in the GNU Compiler Collection (GCC),
-      TinyCC (tcc), or Open Watcom (owcc)
-    ---- configure this by changing the CC variable in Makefile; you can also
-         run myman.c directly using the Linux kernel's binfmt_c module and TinyCC;
-         a simple TinyCC build-and-run may be achieved on Win32 with:
-             tcc -DRAWCURSES -Iinc -Imygetopt \
-                 src/utils.c src/logic.c mygetopt/mygetopt.c \
-                 -luser32 -ladvapi32 \
-                 -run src/myman.c
-  (c) a curses library, e.g. ncurses, old BSD curses, old VMS curses,
-      slang, PDCurses or XCurses; or libcaca, AA-lib, Twin,
-      LibGGI/LibGII, Allegro, newt, Carbon/Toolbox, FLTK, GTK,
-      Borland-style CONIO, Open Watcom-style graph.h <disp.h>, or the
-      Win32 Console/CONIO/TOS/AROS/VMS/*nix TTY APIs
-  (d) GNU Make
-    ---- version 3.80 works; version 3.79.1 *will not work*!
-  (e) GNU coreutils (used: install and rmdir)
-    ---- old fileutils, textutils and shellutils may work too but
-         aren't tested; set INSTALL and RMDIR if these are not the
-         first versions in your PATH
-  (f) GNU sed
-    ---- version 4.1.5 works, and older ones probably do too; set SED
-         if GNU sed is not the first version in your PATH
-  (g) filesystem with support for long names, e.g. Linux kernel with ext2
-    ---- old 8.3 char or 14 char name length limits *will not work*!
-  (h) optional: X Window System, e.g. XFree86 or X.Org
-    ---- use the configure options --with-xterm, --with-rxvt, and/or --with-kterm
-         to install wrapper shell scripts
-  (i) optional: ctheme (useful for palette setup on Linux console)
-    ---- use the configure option --with-ctheme to install myman.ct
-  (j) optional: netpbm (used for optional icon conversion)
+Build instructions:
 
-1. Configure:
-    $  /bin/sh ./configure SHELL=/bin/sh <-- add any options here; see `--help'
+1. Clone the repository:
+   $ git clone git@github.com:michaelborck-dev/glomph-maze.git
+   $ cd glomph-maze
 
-   NOTE: To save a copy of the current configuration:
-    $  cp config.status config.saved
-   and then if you later wish to restore that configuration:
-    $  /bin/sh config.saved
+2. Configure with CMake:
+   $ cmake -B build -DCMAKE_BUILD_TYPE=Release
 
-2. Build: 
-    $  make
-
-3. Install:
-    #  make install  <-- must be "root" for this part
+3. Build:
+   $ cmake --build build
 
 4. Run:
-    $  myman
-  or (if enabled by --with-xterm)
-    $  xmyman  <-- for X Window System
+   $ ./build/bigman
 
-See README for detailed notes.
+The build produces multiple game variants:
+  - bigman (large tiles)
+  - hugeman (extra large tiles)
+  - smallman (small tiles)
+  - squareman (square tiles)
+
+For detailed build instructions, see CMAKE_SETUP.md.
 
 
-URLs for Recommended Infrastructure Software
---------------------------------------------
-
-The MyMan video game is developed primarily on GNU/Linux, but other
-platforms may work too provided the necessary infrastructure is in
-place. The following URLs give pointers to the recommended
-infrastructure software; keep in mind that other similar software may
-work too, but is unlikely to have undergone much testing in
-conjunction with the MyMan video game:
-
-GNU bash       http://ftp.gnu.org/pub/gnu/bash
-GCC            ftp://gcc.gnu.org/pub/gcc
-GNU Make       http://ftp.gnu.org/pub/gnu/make
-GNU coreutils  http://ftp.gnu.org/pub/gnu/coreutils
-GNU sed        http://ftp.gnu.org/pub/gnu/sed
-netpbm         http://netpbm.sourceforge.net/
-Info-ZIP       http://www.info-zip.org/pub/infozip/Zip.html
+Dependencies
+------------
 
 For ncurses output:
+  ncurses        http://ftp.gnu.org/pub/gnu/ncurses
 
-ncurses        http://ftp.gnu.org/pub/gnu/ncurses
-
-For other output drivers:
-
-S-Lang         http://www.s-lang.org/
-PDCurses       http://pdcurses.sourceforge.net/
-libcaca        http://sam.zoy.org/libcaca/
-AA-lib         http://aa-project.sourceforge.net/
-Twin           http://twin.sourceforce.net/
-LibGGI/LibGII  http://www.ggi-project.org/
-Allegro        http://www.talula.demon.co.uk/allegro/
-GTK/GTK+       http://www.gtk.org/
-CONIO          http://conio.sourceforge.net/
-FLTK           http://www.fltk.org/
-"TurboC CONIO" http://www.sandroid.org/TurboC/
-graph.h        http://www.openwatcom.org/
-newt           https://fedorahosted.org/newt/
-
-For optional extras:
-
-libiconv       http://ftp.gnu.org/pub/gnu/libiconv
-XFree86        ftp://ftp.xfree86.org/pub/XFree86/
-ctheme         http://sourceforge.net/project/?group_id=2640
-TinyCC         http://www.landley.net/code/tinycc/
-
-For GNU/Linux hosting:
-
-Debian         http://www.debian.org/
-Gentoo         http://www.gentoo.org/
-Mandriva       http://www.mandriva.com/
-Ubuntu         http://www.ubuntu.com/
-Linux kernel   ftp://ftp.kernel.org/pub/linux/kernel/
-
-For Win32 hosting:
-
-MinGW          http://www.mingw.org/
-Wine           http://www.winehq.org/
-HX             http://www.japheth.de/HX.html
-
-For DOS hosting:
-
-DJGPP          http://www.delorie.com/djgpp/
-FreeDOS        http://www.freedos.org/
-DOSBox         http://dosbox.sourceforge.net/
-
-For TOS hosting:
-
-SpareMiNT      http://sparemint.atariforge.net/sparemint/
-AFROS          http://aranym.org/afros.html
-EmuTOS         http://emutos.sourceforge.net/
-ARAnyM         http://aranym.org/
-Hatari         http://hatari.sourceforge.net/
-
-For AROS hosting:
-
-AROS           http://aros.sourceforge.net/
-QEMU           http://bellard.org/qemu/
+For other output drivers (optional):
+  S-Lang         http://www.s-lang.org/
+  PDCurses       http://pdcurses.sourceforge.net/
+  libcaca        http://sam.zoy.org/libcaca/
+  AA-lib         http://aa-project.sourceforge.net/
+  SDL2           https://www.libsdl.org/

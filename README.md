@@ -27,31 +27,34 @@ Original project last updated in 2009; this fork adds modern maintenance while p
 ## Installation
 
 ### Prerequisites
-- ANSI C compiler (e.g., GCC).
-- Curses library (e.g., ncurses on Unix, PDCurses on Windows).
-- GNU Make (version 3.80+).
-- Optional: SDL2 for enhanced backends.
+- ANSI C compiler (e.g., GCC or Clang)
+- CMake 3.10 or higher
+- Curses library (e.g., ncurses on Unix, PDCurses on Windows)
+- Optional: SDL2 for enhanced backends
 
 ### Build from Source
 1. Clone the repo:
-   ```
+   ```bash
    git clone git@github.com:michaelborck-dev/glomph-maze.git
    cd glomph-maze
    ```
-2. Configure (optional):
-   ```
-   ./configure --help  # See options, e.g., --with-ncurses
-   ```
-3. Build:
-   ```
-   make
-   ```
-4. Install (as root, optional):
-   ```
-   make install  # Defaults to /usr/local
+
+2. Configure with CMake:
+   ```bash
+   cmake -B build -DCMAKE_BUILD_TYPE=Release
    ```
 
-For binary distributions or other platforms, see the [INSTALL](INSTALL) file.
+3. Build:
+   ```bash
+   cmake --build build
+   ```
+
+4. Run:
+   ```bash
+   ./build/bigman
+   ```
+
+See [CMAKE_SETUP.md](CMAKE_SETUP.md) for detailed build instructions and options.
 
 ## Usage
 
@@ -73,7 +76,7 @@ Environment variables for fine-tuning rendering (see original README notes).
 
 ## Building and Renaming Note
 
-This fork renames binaries/docs from \"MyMan\" to \"Glomph Maze\". Update `Makefile` if needed (e.g., change MYMAN to GLOMPHMAZE).
+This fork renames binaries/docs from \"MyMan\" to \"Glomph Maze\". The CMake build produces multiple variants: `bigman`, `hugeman`, `smallman`, and `squareman`.
 
 ## Future Plans
 

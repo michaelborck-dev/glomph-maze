@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #  asc2txt.py - maze converter for the MyMan video game
 #  Copyright 2006 - 2007, Benjamin C. Wiley Sittler <bsittler@gmail.com>
@@ -384,25 +384,25 @@ def main(argv, envp, stdin, stdout, stderr):
         elif k in ('-m', '--modern'):
             traditional = False
         elif k in ('-h', '--help'):
-            print >> stdout, 'Usage: %(progname)s [ options ... ] [ -- ] [ INFILE ]' % {
+            print('Usage: %(progname)s [ options ... ] [ -- ] [ INFILE ]' % {
                 'progname': argv[0]
-                }
-            print >> stdout, 'Options:'
-            print >> stdout, '-3, --both      Use both single- and double-thickness lines (default)'
-            print >> stdout, '-d, --debug     Write the tritmap to stderr'
-            print >> stdout, '-2, --double    Use double-thickness lines exclusively'
-            print >> stdout, '-f, --fast      Skip the expensive filling heuristic'
-            print >> stdout, '-h, --help      Show this message and exit'
-            print >> stdout, '-oFILE,'
-            print >> stdout, '--output=FILE   Send output to FILE (default: stdout)'
-            print >> stdout, '-1, --single    Use single-thickness lines exclusively'
-            print >> stdout, '-s, --slow      Use the expensive filling heuristic (default)'
-            print >> stdout, '-t, --traditional Use double outer maze walls'
-            print >> stdout, '-m, --modern    Use single outer maze walls'
-            print >> stdout, '-v, --verbose   Write the dotmap to stderr'
-            print >> stdout
-            print >> stdout, 'Read a plain-ASCII MyMan maze from stdin or a specified INFILE,'
-            print >> stdout, 'convert ASCII-art to Unicode, and write the result to stdout.'
+                }, file=stdout)
+            print('Options:', file=stdout)
+            print('-3, --both      Use both single- and double-thickness lines (default)', file=stdout)
+            print('-d, --debug     Write the tritmap to stderr', file=stdout)
+            print('-2, --double    Use double-thickness lines exclusively', file=stdout)
+            print('-f, --fast      Skip the expensive filling heuristic', file=stdout)
+            print('-h, --help      Show this message and exit', file=stdout)
+            print('-oFILE,', file=stdout)
+            print('--output=FILE   Send output to FILE (default: stdout)', file=stdout)
+            print('-1, --single    Use single-thickness lines exclusively', file=stdout)
+            print('-s, --slow      Use the expensive filling heuristic (default)', file=stdout)
+            print('-t, --traditional Use double outer maze walls', file=stdout)
+            print('-m, --modern    Use single outer maze walls', file=stdout)
+            print('-v, --verbose   Write the dotmap to stderr', file=stdout)
+            print(file=stdout)
+            print('Read a plain-ASCII MyMan maze from stdin or a specified INFILE,', file=stdout)
+            print('convert ASCII-art to Unicode, and write the result to stdout.', file=stdout)
             return
         elif k in ('-o', '--output'):
             outfn = v
@@ -417,13 +417,13 @@ def main(argv, envp, stdin, stdout, stderr):
     else:
         infn = args[0]
     if infn == '-':
-        infile = sys.stdin
+        infile = sys.stdin.buffer
     else:
-        infile = file(infn, 'rb')
+        infile = open(infn, 'rb')
     if outfn == '-':
-        outfile = sys.stdout
+        outfile = sys.stdout.buffer
     else:
-        outfile = file(outfn, 'wb')
+        outfile = open(outfn, 'wb')
     line = infile.readline().decode('utf-8').rstrip(u'\r\n').lstrip(u'\ufeff')
     while ("".join(line.split(u"\\\\")))[-1:] == u"\\":
         line = line + u'\r\n' + infile.readline().decode('utf-8').rstrip(u'\r\n')
@@ -440,13 +440,13 @@ def main(argv, envp, stdin, stdout, stderr):
     if opts: outfile.write((u' %s' % opts).encode('utf-8'))
     outfile.write(u'\r\n'.encode('utf-8'))
     outfile.flush()
-    for maze in xrange(n):
-        rows = [ infile.readline().decode('utf-8').rstrip('\r\n') + u'X' for row in xrange(h) ] + [ u''.join(u'X' for col in xrange(w + 1)) ]
+    for maze in range(n):
+        rows = [ infile.readline().decode('utf-8').rstrip('\r\n') + u'X' for row in range(h) ] + [ u''.join(u'X' for col in range(w + 1)) ]
         dots = [ row for row in rows ]
-        for row in xrange(0, h):
+        for row in range(0, h):
             ch1 = rows[row][w - 1]
             ch2 = rows[row][0]
-            if (row in xrange(1, h - 1)) and (ch1 in u' ' and ch2 in u' '):
+            if (row in range(1, h - 1)) and (ch1 in u' ' and ch2 in u' '):
                 northwest = rows[row - 1][w - 1] in u'+-~'
                 northeast = rows[row - 1][0] in u'+-~'
                 southwest = rows[row + 1][w - 1] in u'+-~'
@@ -458,10 +458,10 @@ def main(argv, envp, stdin, stdout, stderr):
                         rows[row + 1] = rows[row + 1][:w] + u'-'
             elif ch1 in u'-~' or ch2 in u'-~':
                 rows[row] = rows[row][:w] + u'-'
-        for col in xrange(0, w):
+        for col in range(0, w):
             ch1 = rows[h - 1][col]
             ch2 = rows[0][col]
-            if (col in xrange(1, w - 1)) and (ch1 in u' ' and ch2 in u' '):
+            if (col in range(1, w - 1)) and (ch1 in u' ' and ch2 in u' '):
                 northwest = rows[h - 1][col - 1] in u'+|l'
                 northeast = rows[h - 1][col + 1] in u'+|l'
                 southwest = rows[0][col - 1] in u'+|l'
@@ -478,12 +478,12 @@ def main(argv, envp, stdin, stdout, stderr):
             stderr.flush()
             stderr.write((u'\r\n'.join(rows) + u'\r\n').encode('utf-8'))
             stderr.flush()
-        for row in xrange(h + 1):
+        for row in range(h + 1):
             orow = u''
             line1 = []
             line2 = []
             line3 = []
-            for col in xrange(w + 1):
+            for col in range(w + 1):
                 ch = rows[row][col]
                 trits = [ [ -1, -1, -1 ], [ -1, -1, -1 ], [ -1, -1, -1 ] ]
                 if ch in u'+':
@@ -542,9 +542,9 @@ def main(argv, envp, stdin, stdout, stderr):
             tritmap += [ line1, line2, line3 ]
             orows.append(orow)
         if use_fill:
-            for row in xrange(len(tritmap)):
+            for row in range(len(tritmap)):
                 line = tritmap[row]
-                for col in xrange(len(line)):
+                for col in range(len(line)):
                     ntritmap = [ [ trit for trit in line ] for line in tritmap ]
                     try:
                         trit_fill_1(ntritmap, row, col, traditional)
@@ -558,8 +558,8 @@ def main(argv, envp, stdin, stdout, stderr):
                     stderr.write(ch.encode('utf-8'))
                 stderr.write(u'\r\n'.encode('utf-8'))
                 stderr.flush()
-        for row in xrange(h):
-            for col in xrange(w):
+        for row in range(h):
+            for col in range(w):
                 ich = rows[row][col]
                 ch = orows[row][col]
                 code = 27 * tritmap[row * 3][col * 3] + 9 * tritmap[row * 3][col * 3 + 2] + 3 * tritmap[row * 3 + 2][col * 3] + tritmap[row * 3 + 2][col * 3 + 2]

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #  bitmap2.py - bitmap tile compactor for the MyMan video game
 #  Copyright 2007, Benjamin Sittler <bsittler@gmail.com>
@@ -67,7 +67,7 @@ def combine(a, b):
         b += a[len(b)]
         pass
     c = []
-    for i in xrange(len(a)):
+    for i in range(len(a)):
         c.append(compact(a[i], b[i]))
         pass
     return ''.join(c)
@@ -76,7 +76,7 @@ first = True
 
 newline = False
 
-for line in sys.stdin.readlines():
+for line in sys.stdin.buffer.readlines():
     line = line.decode('utf-8')
     newline = False
     if line:
@@ -88,8 +88,8 @@ for line in sys.stdin.readlines():
     if first:
         first = False
         if line[:1] == u'\ufeff': line = line[1:]
-        sys.stdout.write(u'\ufeff'.encode('utf-8'))
-        sys.stdout.flush()
+        sys.stdout.buffer.write(u'\ufeff'.encode('utf-8'))
+        sys.stdout.buffer.flush()
         try:
             flags = 0
             if '~' in line:
@@ -113,7 +113,7 @@ for line in sys.stdin.readlines():
         continue
     elif last:
         if line[:1] != ':':
-            sys.stdout.write(last.encode('utf-8'))
+            sys.stdout.buffer.write(last.encode('utf-8'))
             pass
         else:
             line = combine(last, line)
@@ -121,14 +121,14 @@ for line in sys.stdin.readlines():
         pass
     if newline: line += u'\n'
     newline = False
-    sys.stdout.write(line.encode('utf-8'))
-    sys.stdout.flush()
+    sys.stdout.buffer.write(line.encode('utf-8'))
+    sys.stdout.buffer.flush()
     last = ''
     pass
 
 if newline: last += u'\n'
 
 if last:
-    sys.stdout.write(last.encode('utf-8'))
-    sys.stdout.flush()
+    sys.stdout.buffer.write(last.encode('utf-8'))
+    sys.stdout.buffer.flush()
     pass
