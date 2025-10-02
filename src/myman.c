@@ -4903,9 +4903,17 @@ pager(void)
     int c = ERR;
     int k = ERR;
 
-#if HAVE_CURS_SET
-    curs_set(0); /* Hide cursor during help display */
-#endif
+    FILE *debug_pager = fopen("/tmp/glomph-debug.log", "a");
+    static int pager_call_count = 0;
+    pager_call_count++;
+    if (debug_pager) {
+        fprintf(debug_pager, "\n=== pager() call #%d: pager_notice=%p pager_remaining=%p ===\n", 
+                pager_call_count, (void*)pager_notice, (void*)pager_remaining);
+        if (pager_notice) fprintf(debug_pager, "  pager_notice length: %zu\n", strlen(pager_notice));
+        if (pager_remaining) fprintf(debug_pager, "  pager_remaining length: %zu\n", strlen(pager_remaining));
+        fflush(debug_pager);
+    }
+
 #if USE_ATTR || USE_COLOR
     my_attrset(0);
 #endif
@@ -4921,12 +4929,24 @@ pager(void)
         if (pager_notice)
         {
             pager_remaining = pager_notice;
+            if (debug_pager) { fprintf(debug_pager, "  pager: Set pager_remaining=pager_notice\n"); fflush(debug_pager); }
         }
     }
     while (pager_remaining && (! quit_requested) && (! reinit_requested))
     {
         const char *pager;
         int y, x;
+        static int loop_iter = 0; loop_iter++;
+        if (debug_pager && loop_iter <= 10) {
+            fprintf(debug_pager, "  Loop iter %d: pager_remaining=%p quit=%d reinit=%d\n", 
+                    loop_iter, (void*)pager_remaining, quit_requested, reinit_requested);
+            fflush(debug_pager);
+        }
+        if (loop_iter > 1000) { 
+            if (debug_pager) fprintf(debug_pager, "  SAFETY BREAK: infinite loop detected!\n");
+            break; 
+        }
+
 
         pager_move(0, 0);
 #if USE_COLOR
@@ -5162,17 +5182,12 @@ pager(void)
                     my_refresh();
                     do
                     {
-#if HAVE_NODELAY
-                        /* Temporarily disable nodelay for modal help input */
-                        nodelay(stdscr, FALSE);
-#endif
-                        /* Move cursor out of sight during blocking input */
-                        move(LINES - 1, COLS - 1);
-                        k = my_getch();
-#if HAVE_NODELAY
-                        /* Restore nodelay mode */
-                        nodelay(stdscr, TRUE);
-#endif
+                        while ((k = my_getch()) == ERR)
+                        {
+                            my_refresh();
+                            if (got_sigwinch) break;
+                            my_usleep(100000UL);
+                        }
                         if (IS_LEFT_ARROW(k) || (k == '<') || (k == ','))
                         {
                             pager_arrow_magic = 1;
@@ -5419,17 +5434,12 @@ pager(void)
                 }
             }
             my_refresh();
-#if HAVE_NODELAY
-            /* Temporarily disable nodelay for modal help input */
-            nodelay(stdscr, FALSE);
-#endif
-            /* Move cursor out of sight during blocking input */
-            move(LINES - 1, COLS - 1);
-            k = my_getch();
-#if HAVE_NODELAY
-            /* Restore nodelay mode */
-            nodelay(stdscr, TRUE);
-#endif
+            while ((k = my_getch()) == ERR)
+            {
+                my_refresh();
+                if (got_sigwinch) break;
+                my_usleep(100000UL);
+            }
             if (IS_LEFT_ARROW(k) || (k == '<') || (k == ','))
             {
                 pager_arrow_magic = 1;
@@ -5589,6 +5599,12 @@ pager(void)
         }
 #endif
         my_move(0, 0);
+    }
+    if (debug_pager) {
+        fprintf(debug_pager, "=== pager() exiting: pager_remaining=%p quit=%d reinit=%d ===\n",
+                (void*)pager_remaining, quit_requested, reinit_requested);
+        fclose(debug_pager);
+        debug_pager = 0;
     }
 }
 
@@ -6816,8 +6832,26 @@ gameinput(void)
         }
         else if ((k == '\?') || (k == MYMANCTRL('H')))
         {
-            gamehelp();
-            return 0;
+            /* Temporarily disabled - help system under refactoring */
+            /* TODO: Re-enable after pager modularization (Phase 2.4) */
+            /* gamehelp(); */
+            
+            /* Show temporary message */
+            my_move(0, 0);
+            my_addstr("Help temporarily disabled during refactoring.", 0);
+            my_move(1, 0); 
+            my_addstr("Run './glomph-maze --keys' to see controls.", 0);
+            my_move(2, 0);
+            my_addstr("Press any key to continue...", 0);
+            my_refresh();
+#if HAVE_NODELAY
+            nodelay(stdscr, FALSE);
+#endif
+            my_getch();
+#if HAVE_NODELAY
+            nodelay(stdscr, TRUE);
+#endif
+            return 1; /* Trigger screen refresh */
         } else if ((k == '@') || (got_sigwinch && (k == ERR)))
         {
             if (got_sigwinch)
