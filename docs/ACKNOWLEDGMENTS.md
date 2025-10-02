@@ -58,3 +58,8 @@ This fork relies on the following open source projects and tools:
 ### Version Control
 * **Git** - Version control system
 * **GitHub** - Repository hosting
+
+### AI Development Tools
+* **OpenCode** - AI-powered code assistant (https://github.com/sst/opencode)
+* **OpenRouter** - Unified API for AI models (https://openrouter.ai)
+* **Claude** - AI assistant by Anthropic for code development and refactoring
