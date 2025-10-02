@@ -156,11 +156,11 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "C compiler: ${CMAKE_C_COMPILER_ID} ${CMAKE_C_COMPILER_VERSION}")
 message(STATUS "Curses library: ${CURSES_LIBRARIES}")
 
-# Create symlinks to data directories in build folder for development
+# Create symlinks to asset directories in build folder for development
 add_custom_target(data_symlinks ALL
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/chr ${CMAKE_BINARY_DIR}/chr
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/lvl ${CMAKE_BINARY_DIR}/lvl
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/spr ${CMAKE_BINARY_DIR}/spr
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/sfx ${CMAKE_BINARY_DIR}/sfx
-    COMMENT "Creating symlinks to data directories"
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/tiles ${CMAKE_BINARY_DIR}/chr
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/mazes ${CMAKE_BINARY_DIR}/lvl
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/sprites ${CMAKE_BINARY_DIR}/spr
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/sounds ${CMAKE_BINARY_DIR}/sfx
+    COMMENT "Creating symlinks to asset directories"
 )
