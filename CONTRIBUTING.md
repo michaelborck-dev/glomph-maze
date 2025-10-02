@@ -101,7 +101,7 @@ glomph-maze/
 ├── lvl/           # Maze layouts
 ├── spr/           # Sprite graphics
 ├── sfx/           # Sound effects
-├── utl/           # Python utility scripts
+├── scripts/       # Utility scripts (Python & shell)
 ├── build/         # Build output (generated)
 └── docs/          # Documentation
 ```
@@ -167,11 +167,11 @@ Want to create custom content?
 
 **Maze files (lvl/):**
 - ASCII art format
-- Use Python utility: `utl/asc2txt.py --help`
+- Use Python utility: `scripts/asc2txt.py --help`
 
 **Tile/sprite files (chr/, spr/):**
 - ASCII art format
-- Use Python utilities: `utl/bitmap2.py`, `utl/bitmap4.py`
+- Use Python utilities: `scripts/bitmap2.py`, `scripts/bitmap4.py`
 
 See existing files for examples.
 

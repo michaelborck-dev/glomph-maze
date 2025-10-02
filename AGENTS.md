@@ -23,7 +23,7 @@ See `CMAKE_SETUP.md` for details.
 - **Test**: `./build/bigman --help` or `./build/hugeman --help` (basic smoke test)
 
 ## Changelog Commands
-- **Generate changelog**: `./generate_changelog.sh` (regenerates CHANGELOG.md from git history)
+- **Generate changelog**: `./scripts/generate_changelog.sh` (regenerates CHANGELOG.md from git history)
 
 ## Known Issues
 - **Help System**: Temporarily disabled to prevent infinite loop bug
