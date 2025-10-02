@@ -6833,24 +6833,7 @@ gameinput(void)
         else if ((k == '\?') || (k == MYMANCTRL('H')))
         {
             /* Temporarily disabled - help system under refactoring */
-            /* TODO: Re-enable after pager modularization (Phase 2.4) */
-            /* gamehelp(); */
-            
-            /* Show temporary message */
-            my_move(0, 0);
-            my_addstr("Help temporarily disabled during refactoring.", 0);
-            my_move(1, 0); 
-            my_addstr("Run './glomph-maze --keys' to see controls.", 0);
-            my_move(2, 0);
-            my_addstr("Press any key to continue...", 0);
-            my_refresh();
-#if HAVE_NODELAY
-            nodelay(stdscr, FALSE);
-#endif
-            my_getch();
-#if HAVE_NODELAY
-            nodelay(stdscr, TRUE);
-#endif
+            gamehelp();
             return 1; /* Trigger screen refresh */
         } else if ((k == '@') || (got_sigwinch && (k == ERR)))
         {

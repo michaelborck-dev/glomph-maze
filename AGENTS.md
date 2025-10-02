@@ -26,10 +26,7 @@ See `CMAKE_SETUP.md` for details.
 - **Generate changelog**: `./scripts/generate_changelog.sh` (regenerates CHANGELOG.md from git history)
 
 ## Known Issues
-- **Help System**: Temporarily disabled to prevent infinite loop bug
-  - Pressing `?` or `Ctrl-H` shows a message: "Help temporarily disabled during refactoring"
-  - Use `./bigman --keys` to view controls
-  - Will be re-enabled after pager modularization (Phase 2.4 of REFACTOR_PLAN.md)
+None currently. The help system has been re-enabled and is working correctly.
 
 ## Code Style Guidelines
 
