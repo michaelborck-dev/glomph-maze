@@ -1,9 +1,10 @@
 /*
- * pager.h - Text pager interface for Glomph Maze
- * Copyright 2025, Michael Borck
- *
+ * pager.h - Text pager interface
+ * 
  * Extracted from myman.c during Phase 2 refactoring.
- * This module handles the in-game help system and text display.
+ * 
+ * Copyright 1997-2009, Benjamin C. Wiley Sittler <bsittler@gmail.com>
+ * Copyright 2025, Michael Borck <michael@borck.dev>
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
