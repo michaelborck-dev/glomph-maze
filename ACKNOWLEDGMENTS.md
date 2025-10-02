@@ -1,3 +1,7 @@
+# Acknowledgments
+
+## Original MyMan Project
+
 Many thanks are due:
 
 * to "Raina/Titan", for the lovely sound track (sfx/start.xm) first
@@ -32,3 +36,25 @@ Many thanks are due:
 
 * and to my family, for their patience, sacrifice and understanding
   while I spend time on this project without hope of reward.
+
+## Glomph Maze Fork
+
+This fork relies on the following open source projects and tools:
+
+### Build System
+* **CMake** - Cross-platform build system generator
+* **GCC/Clang** - C compilers
+
+### Libraries
+* **ncurses** - Terminal UI library for text-based rendering
+* **PDCurses** - Portable curses implementation (Windows support)
+
+### Development Tools
+* **clang-format** - Code formatting
+* **clang-tidy** - Static analysis and linting
+* **cppcheck** - Additional static analysis
+* **Python 3** - Utility scripts for maze/tile creation
+
+### Version Control
+* **Git** - Version control system
+* **GitHub** - Repository hosting
