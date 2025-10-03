@@ -4300,6 +4300,7 @@ snapshot_addch(short inbyte)
 }
 #endif /* USE_NEW_SCREEN */
 
+#ifndef USE_NEW_SCREEN
 /* non-blocking version of getch(); return a single character if it is
  * available, ERR otherwise */
 static int
@@ -4322,6 +4323,7 @@ my_getch(void)
     k = getch();
     return k;
 }
+#endif /* USE_NEW_SCREEN */
 
 #ifndef USE_NEW_SCREEN
 /* add CP437 byte b with attributes attrs */
@@ -4732,6 +4734,7 @@ my_addch(unsigned long b, chtype attrs)
 }
 #endif /* USE_NEW_SCREEN */
 
+#ifndef USE_NEW_SCREEN
 /* add CP437 string s with attributes attrs */
 static int
 my_addstr(const char *s, chtype attrs)
@@ -4755,6 +4758,7 @@ my_addstr(const char *s, chtype attrs)
     }
     return ret;
 }
+#endif /* USE_NEW_SCREEN */
 
 #ifdef XCURSES
 #define XCURSES_USAGE \

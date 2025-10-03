@@ -46,5 +46,9 @@ void my_move(int y, int x);
 
 /* Character output functions */
 int my_addch(unsigned long b, chtype attrs);
+int my_addstr(const char *s, chtype attrs);
+
+/* Input functions */
+int my_getch(void);
 
 #endif

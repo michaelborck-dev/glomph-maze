@@ -1264,3 +1264,47 @@ int my_addch(unsigned long b, chtype attrs)
 #endif
     return ret;
 }
+
+int
+my_addstr(const char *s, chtype attrs)
+{
+    size_t i;
+    int ret = 0;
+    int y, x;
+
+    getyx(stdscr, y, x);
+    for (i = 0; s[i]; i ++)
+    {
+        unsigned long b;
+
+        b = (unsigned long) (unsigned char) s[i];
+        move(y, x + i * (CJK_MODE ? 2 : 1));
+        ret = my_addch(b, attrs);
+        if (ret == ERR)
+        {
+            break;
+        }
+    }
+    return ret;
+}
+
+int
+my_getch(void)
+{
+    int k = ERR;
+#if ! HAVE_NODELAY
+    {
+        int avail = 1;
+
+#ifdef FIONREAD
+        ioctl(fileno(stdin), FIONREAD, &avail);
+#endif
+        if (! avail)
+        {
+            return k;
+        }
+    }
+#endif
+    k = getch();
+    return k;
+}
