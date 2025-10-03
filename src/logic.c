@@ -50,21 +50,6 @@
 #endif
 #endif
 
-#ifdef macintosh
-#if TARGET_API_MAC_CARBON
-/* Case 1: flat Carbon headers */
-#include <Carbon.h>
-#else /* ! defined(TARGET_API_MAC_CARBON) */
-/* Case 2: Toolbox */
-#include <ConditionalMacros.h>
-#if defined(UNIVERSAL_INTERFACES_VERSION) && (UNIVERSAL_INTERFACES_VERSION >= 0x0300)
-#include <MacTypes.h>
-#else
-#include <Types.h>
-#endif
-#include <Files.h>
-#endif /* ! defined(TARGET_API_MAC_CARBON) */
-#endif /* ! defined(macintosh) */
 
 
 /* MyMan utilities; also defines cruft like __MSDOS__ under some circumstances */

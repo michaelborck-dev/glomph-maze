@@ -35,11 +35,6 @@
 #include "guess.h"
 #endif
 
-/* used in macbuild.txt to avoid 8bit chars */
-#ifndef CHAR_SOLIDUS
-#define CHAR_SOLIDUS "/"
-#endif
-
 /* used in various WIN32 workaround functions */
 #ifdef __BORLANDC__
 #ifndef LIT64
