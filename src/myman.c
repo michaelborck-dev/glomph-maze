@@ -137,34 +137,6 @@
 #define F_OK 0
 #endif
 
-#ifndef USE_SDL_MIXER
-#define USE_SDL_MIXER 0
-#endif
-
-#ifndef USE_SDL
-#undef USE_SDL_MIXER
-#define USE_SDL_MIXER 0
-#else
-#if ! USE_SDL
-#undef USE_SDL_MIXER
-#define USE_SDL_MIXER 0
-#endif
-#endif
-
-/* SDL sometimes redefines main */
-#ifdef USE_SDL
-#if USE_SDL
-#ifdef main
-#define _SDL_main_h
-#else
-#define MAIN_NO_ENVP
-#endif
-#include <SDL.h>
-#if USE_SDL_MIXER
-#include <SDL_mixer.h>
-#endif
-#endif
-#endif
 
 /* terminal-screen handling library */
 
@@ -286,10 +258,6 @@
 #endif
 
 #ifndef MY_CURSES_H
-#ifdef SDLCURSES
-#include "sdlcurs.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
 #endif
 
 #ifdef MY_CURSES_H
@@ -733,16 +701,6 @@ static void sigwinch_handler(int signum)
 #endif
 
 #ifdef __PDCURSES__
-#ifdef USE_SDL
-#if USE_SDL
-#ifndef USE_RAW
-#define USE_RAW 1
-#endif
-#ifndef USE_RAW_UCS
-#define USE_RAW_UCS 0
-#endif /* ! defined(USE_RAW_UCS) */
-#endif
-#endif
 #ifdef PDC_BUILD
 #if PDC_BUILD >= 3300
 /* PDCurses does implement init_color as of release 3.3 */
