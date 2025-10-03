@@ -663,7 +663,7 @@ static const char *MYMANSIZE_str = MYMANSIZE;
 #endif
 
 #ifndef TILEFILE
-#define TILEFILE "chr/chr5x2.txt"
+#define TILEFILE TILEDIR "/chr5x2.txt"
 #endif
 
 #ifdef BUILTIN_TILE
@@ -678,7 +678,7 @@ static const char TILEFILE_str[] = TILEFILE;
 #endif
 
 #ifndef SPRITEFILE
-#define SPRITEFILE "spr/spr7x3.txt"
+#define SPRITEFILE SPRITEDIR "/spr7x3.txt"
 #endif
 
 #ifdef BUILTIN_SPRITE
@@ -1332,7 +1332,7 @@ static const char *MYMANVARIANT_str = MYMANVARIANT;
 
 
 #ifndef MAZEFILE
-#define MAZEFILE "lvl/maze.txt"
+#define MAZEFILE MAZEDIR "/maze.txt"
 #endif
 
 #ifdef BUILTIN_MAZE
@@ -4083,11 +4083,11 @@ gamesfx(void)
                 myman_sfx &= ~myman_sfx_ ## n; \
                 if ((use_sound && ! myman_demo) && ! n##_music) \
                 { \
-                    n##_music = Mix_LoadMUS("sfx/"#n".xm"); \
+                    n##_music = Mix_LoadMUS(SOUNDDIR "/"#n".xm"); \
                 } \
                 if ((use_sound && ! myman_demo) && ! n##_music) \
                 { \
-                    n##_music = Mix_LoadMUS("sfx/"#n".mid"); \
+                    n##_music = Mix_LoadMUS(SOUNDDIR "/"#n".mid"); \
                 } \
                 if ((use_sound && ! myman_demo) && n##_music) \
                 { \

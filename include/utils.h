@@ -28,7 +28,23 @@
 
 #undef DATADIR /* FIXME: conflicts with Win32 header files */
 
-/* subdirectory for graphics datafiles */
+/* Asset directories - can be overridden at compile time */
+#ifndef TILEDIR
+#define TILEDIR "tiles"
+#endif
+
+#ifndef SPRITEDIR
+#define SPRITEDIR "sprites"
+#endif
+
+#ifndef MAZEDIR
+#define MAZEDIR "mazes"
+#endif
+
+#ifndef SOUNDDIR
+#define SOUNDDIR "sounds"
+#endif
+
 #ifndef GFXDIR
 #define GFXDIR "gfx"
 #endif

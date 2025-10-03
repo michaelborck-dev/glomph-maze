@@ -54,8 +54,12 @@ macro(add_size_variant name size tiles sprites)
     
     target_compile_definitions(${name} PRIVATE
         MYMANSIZE="${size}"
-        TILEFILE="chr/${tiles}"
-        SPRITEFILE="spr/${sprites}"
+        TILEDIR="tiles"
+        SPRITEDIR="sprites"
+        MAZEDIR="mazes"
+        SOUNDDIR="sounds"
+        TILEFILE="tiles/${tiles}"
+        SPRITEFILE="sprites/${sprites}"
     )
     
     target_link_libraries(${name} ${CURSES_LIBRARIES})
@@ -154,9 +158,9 @@ message(STATUS "Curses library: ${CURSES_LIBRARIES}")
 
 # Create symlinks to asset directories in build folder for development
 add_custom_target(data_symlinks ALL
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/tiles ${CMAKE_BINARY_DIR}/chr
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/mazes ${CMAKE_BINARY_DIR}/lvl
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/sprites ${CMAKE_BINARY_DIR}/spr
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/sounds ${CMAKE_BINARY_DIR}/sfx
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/tiles ${CMAKE_BINARY_DIR}/tiles
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/mazes ${CMAKE_BINARY_DIR}/mazes
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/sprites ${CMAKE_BINARY_DIR}/sprites
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/sounds ${CMAKE_BINARY_DIR}/sounds
     COMMENT "Creating symlinks to asset directories"
 )
