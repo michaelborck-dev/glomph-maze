@@ -25,23 +25,6 @@
 #ifndef MYMAN_UTILS_H_INCLUDED
 #define MYMAN_UTILS_H_INCLUDED 1
 
-#if ! defined(WIN32)
-#if defined(_WIN32)
-
-/* some Win32 C compilers do not define WIN32 */
-#define WIN32 1
-
-#else /* ! defined(_WIN32) */
-#if defined(DOS) || defined(_MSDOS) || defined(__DOS__) || defined(__TURBOC__)
-
-/* some DOS C compilers do not define __MSDOS__ */
-#ifndef __MSDOS__
-#define __MSDOS__ 1
-#endif
-
-#endif /* defined(DOS) || defined(_MSDOS) || defined(__DOS__) || defined(__TURBOC__) */
-#endif /* ! defined(_WIN32) */
-#endif /* ! defined(WIN32) */
 
 #undef DATADIR /* FIXME: conflicts with Win32 header files */
 
