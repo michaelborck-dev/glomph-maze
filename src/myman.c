@@ -3377,6 +3377,7 @@ int location_is_suspect = 0;
 int last_valid_line = 0;
 int last_valid_col = -1;
 
+#ifndef USE_NEW_SCREEN
 static int
 my_erase(void)
 {
@@ -3536,6 +3537,7 @@ my_erase(void)
         return ret;
     }
 }
+#endif /* USE_NEW_SCREEN */
 
 #ifndef USE_NEW_SCREEN
 int

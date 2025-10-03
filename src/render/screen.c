@@ -35,6 +35,9 @@
 #include "screen.h"
 #include "globals.h"
 #include "utils.h"
+#include <string.h>
+#include <stdlib.h>
+#include <locale.h>
 
 /* Extracted from myman.c line 3366 */
 void
@@ -1357,4 +1360,163 @@ my_refresh(void)
         last_valid_line = LINES - 1;
     }
     return refresh();
+}
+
+int
+my_erase(void)
+{
+    if (snapshot || snapshot_txt)
+    {
+        const char *my_locale = "en";
+        char *my_locale_dynamic = NULL;
+
+#ifdef LC_CTYPE
+        my_locale = setlocale(LC_CTYPE, "");
+#endif
+        if ((! my_locale) || (! *my_locale))
+        {
+            my_locale = "en";
+        }
+        my_locale_dynamic = strdup(my_locale);
+        if (! my_locale_dynamic)
+        {
+            my_locale = "en";
+        }
+        else
+        {
+            int i;
+
+            my_locale = my_locale_dynamic;
+            for (i = 0; my_locale_dynamic[i]; i ++)
+            {
+                if (my_locale_dynamic[i] == '_')
+                {
+                    my_locale_dynamic[i] = '-';
+                    continue;
+                }
+                if ((my_locale_dynamic[i] == '.')
+                    ||
+                    (my_locale_dynamic[i] == '\"')
+                    ||
+                    (my_locale_dynamic[i] == '@')
+                    ||
+                    (my_locale_dynamic[i] < 0x20)
+                    ||
+                    (my_locale_dynamic[i] > 0x7E))
+                {
+                    my_locale_dynamic[i] = '\0';
+                    break;
+                }
+            }
+            if ((! my_locale_dynamic[0])
+                ||
+                (! strcmp(my_locale_dynamic, "C"))
+                ||
+                (! strcmp(my_locale_dynamic, "POSIX")))
+            {
+                free((void *) my_locale_dynamic);
+                my_locale_dynamic = NULL;
+                my_locale = "en";
+            }
+        }
+        snapshot_x = 0;
+        snapshot_y = 0;
+        snapshot_attrs = 0;
+        snapshot_attrs_active = 0;
+        if (snapshot)
+        {
+            fprintf(
+                snapshot,
+                "%s"
+                CRLF
+                "%s"
+                CRLF
+                "<html xmlns=\"%s\" xml:lang=\"%s\" lang=\"%s\">"
+                CRLF
+                "<head>"
+                CRLF
+                "<meta name=\"generator\" content=\"%s %s\" />"
+                CRLF
+                "<meta http-equiv=\"Content-type\" content=\"%s\" />"
+                CRLF
+                "<title>%s</title>"
+                CRLF
+                "</head>"
+                CRLF
+                "<body%s%s><pre><font face=\"%s\">"
+                CRLF,
+
+                ((use_acs && use_raw && ! use_raw_ucs)
+                 ? "<\?xml version=\"1.0\" encoding=\"CP437\"\?>"
+                 : "<\?xml version=\"1.0\" encoding=\"UTF-8\"\?>"),
+
+                "<!DOCTYPE html"
+                CRLF
+                "     PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\""
+                CRLF
+                "    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">",
+
+                "http://www.w3.org/1999/xhtml",
+
+                my_locale, my_locale,
+
+                MYMAN, MYMANVERSION,
+
+                ((use_acs && use_raw && ! use_raw_ucs)
+                 ? "text/html; charset=CP437"
+                 : "text/html; charset=UTF-8"),
+
+                "MyMan Screenshot [" MYMAN " " MYMANVERSION "]",
+
+                snapshot_use_color ? " text=\"white\"" : "",
+                snapshot_use_color ? " bgcolor=\"black\"" : "",
+
+                (CJK_MODE
+                 ?
+                 "sazanami gothic, kochi gothic, ar pl sew sung, osaka, kai, biaukai, stkaiti, ms gothic, nsimsun, mingliu, fixedsys, courier, monospace"
+                 :
+                 "courier new, courier, monaco, fixedsys, lucida sans unicode, freemono, fixed, monospace"));
+            fflush(snapshot);
+        }
+        if (snapshot_txt)
+        {
+            fputc_utf8(0xFEFF, snapshot_txt);
+            fprintf(snapshot_txt,
+                    "%s"
+                    CRLF,
+                    "MyMan Screenshot [" MYMAN " " MYMANVERSION "]");
+            fflush(snapshot_txt);
+        }
+        if (my_locale)
+        {
+#ifdef LC_CTYPE
+            setlocale(LC_CTYPE, my_locale);
+#endif
+            if (my_locale_dynamic)
+            {
+                free((void *) my_locale_dynamic);
+                my_locale_dynamic = NULL;
+                my_locale = NULL;
+            }
+        }
+    }
+
+    if (location_is_suspect)
+    {
+        last_valid_line = 0;
+        last_valid_col = -1;
+#ifdef OK
+        return OK;
+#else
+        return ! ERR;
+#endif
+    }
+    last_valid_col = COLS - 1;
+    last_valid_line = LINES - 1;
+    {
+        int ret;
+
+        ret = erase();
+        return ret;
+    }
 }
