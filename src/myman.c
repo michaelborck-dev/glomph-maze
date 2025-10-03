@@ -136,9 +136,6 @@
 #endif
 
 #ifndef MY_CURSES_H
-#ifdef SLCURSES
-#define MY_CURSES_H <slcurses.h>
-#endif
 #endif
 
 
@@ -154,45 +151,6 @@
 /* work-arounds for old BSD curses */
 
 /* work-arounds for slcurses */
-#ifdef SLCURSES
-
-#ifndef use_env
-#define use_env(x)
-#endif
-
-#ifndef USE_A_CHARTEXT
-#define USE_A_CHARTEXT 1
-#endif
-
-#ifndef curscr
-#define curscr stdscr
-#endif
-
-#ifndef MY_INIT_PAIR_RET
-#define MY_INIT_PAIR_RET , ~ERR
-#endif
-
-#ifndef USE_PALETTE
-#define USE_PALETTE 0
-#endif
-
-#ifndef intrflush
-#define intrflush(win, x)
-#endif
-
-#ifndef DISABLE_IDLOK
-#ifndef idlok
-#define DISABLE_IDLOK
-#endif
-#endif
-
-#ifndef pair_content
-#define pair_content(p,f,b) \
-((*(f) = (p) ? ((SLtt_get_color_object ((p))) >> 16) : 7), \
- (*(b) = (p) ? (((SLtt_get_color_object ((p))) >> 8) & 0xff) : 0))
-#endif
-
-#endif
 
 /* HAVE_SETATTR: does our curses implementation include setattr()/clrattr()? */
 
@@ -209,11 +167,7 @@
 /* for resizing */
 
 #ifndef USE_IOCTL
-#ifdef __PDCURSES__
-#define USE_IOCTL 0
-#else
 #define USE_IOCTL 1
-#endif
 #endif
 
 #if USE_IOCTL
@@ -232,14 +186,10 @@
 #endif
 
 #ifndef USE_SIGWINCH
-#ifdef __PDCURSES__
-#define USE_SIGWINCH 0
-#else
 #ifdef SIGWINCH
 #define USE_SIGWINCH 1
 #else
 #define USE_SIGWINCH 0
-#endif
 #endif
 #endif
 
@@ -387,20 +337,6 @@ static void sigwinch_handler(int signum)
 #define CRLF "\r\n"
 #endif
 
-#ifdef __PDCURSES__
-#ifdef PDC_BUILD
-#if PDC_BUILD >= 3300
-/* PDCurses does implement init_color as of release 3.3 */
-#ifndef USE_PALETTE
-#define USE_PALETTE 1
-#endif
-#endif
-#endif
-/* PDCurses doesn't implement init_color as of release 2.2 */
-#ifndef USE_PALETTE
-#define USE_PALETTE 0
-#endif
-#endif
 
 #ifndef USE_WIDEC_SUPPORT
 #ifdef WACS_ULCORNER
@@ -456,11 +392,6 @@ static void sigwinch_handler(int signum)
 #endif
 
 #ifndef SWAPDOTS
-#ifdef __PDCURSES__
-#ifndef XCURSES
-#define SWAPDOTS 1
-#endif
-#endif
 #endif
 
 #ifndef SWAPDOTS
@@ -6715,9 +6646,6 @@ myman(void)
                          "MyMan [" MYMAN " " MYMANVERSION "]",
                          MYMAN);
 #else
-#if defined(SLCURSES) || defined(__PDCURSES__)
-        if (! reinit_requested)
-#endif
         {
             if (! initscr())
             {
@@ -6726,19 +6654,10 @@ myman(void)
                 exit(1);
             }
 #endif
-#ifdef __PDCURSES__
-#ifdef PDC_BUILD
-#if PDC_BUILD >= 2400
-            PDC_set_title("MyMan [" MYMAN " " MYMANVERSION "]");
-#endif
-#endif
-            use_default_colors();
-#else
 #ifdef NCURSES_VERSION
             use_default_colors();
 #endif
         }
-#endif
         my_clear();
         cbreak();
         noecho();
@@ -6784,9 +6703,6 @@ myman(void)
             use_color = has_colors();
             use_color_p = 1;
         }
-#endif
-#ifdef SLCURSES
-        if (! reinit_requested)
 #endif
         {
             start_color();
@@ -6872,11 +6788,7 @@ myman(void)
                 if (! myman_lines) myman_lines = LINES;
                 if (! myman_columns) myman_columns = COLS;
 #ifdef KEY_RESIZE
-#ifdef __PDCURSES__
-                resize_term(0, 0);
-#else
                 resizeterm(myman_lines ? myman_lines : LINES, myman_columns ? myman_columns : COLS);
-#endif
 #else
                 {
                     static char buf[32];
@@ -7475,49 +7387,6 @@ main(int argc, char *argv[]
 #endif
     progname = (argc > 0) ? argv[0] : "";
     // pager_notice = MYMANLEGALNOTICE;  // skipped for better UX, see help (? or Ctrl-H) for license
-#ifdef MACCURSES
-#ifdef __CARBON__
-    /* when launched as a CFM application under Mac OS X, there is no
-     * argv[0], so we jump through a few hoops to figure out what it
-     * should have been. */
-    if ((argc == 0)
-        ||
-        ((argc == 2) && (! strncmp(argv[1], "-psn_", strlen("-psn_")))))
-    {
-        ProcessSerialNumber psn;
-
-        if (noErr == MacGetCurrentProcess(&psn))
-        {
-            FSSpec processAppSpec;
-            ProcessInfoRec pir;
-
-            memset((void *) &pir, 0, sizeof(pir));
-            pir.processInfoLength = sizeof(pir);
-            pir.processAppSpec = &processAppSpec;
-            if (noErr == GetProcessInformation(&psn, &pir))
-            {
-                FSRef location;
-
-                if (noErr == FSpMakeFSRef(&processAppSpec, &location))
-                {
-                    static UInt8 path[256];
-
-                    if (noErr == FSRefMakePath(&location, path, sizeof(path) - 1))
-                    {
-                        progname = (char *) path;
-                    }
-                }
-            }
-        }
-    }
-    /* when launched as a native application under Mac OS X, there may
-     * be a bogus process serial number parameter. */
-    if ((argc == 2) && (! strncmp(argv[1], "-psn_", strlen("-psn_"))))
-    {
-        argc = 1;
-    }
-#endif /* defined(__CARBON__) */
-#endif /* defined(MACCURSES) */
     progname = (progname && *progname) ? progname : MYMAN;
     td = 0.0L;
     for (i = 0; i < SPRITE_REGISTERS; i ++) {
