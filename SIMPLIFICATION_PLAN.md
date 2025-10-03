@@ -14,9 +14,9 @@
 - Result: Headers cleaned
 
 ### Step 2: Update CMakeLists.txt
-- [ ] Remove mygetopt from build
-- [ ] Assume ncurses available
-- [ ] Test build: `cmake --build build`
+- [x] Remove mygetopt from build
+- [x] Assume ncurses available
+- [x] Test build: `cmake --build build`
 
 ### Step 3: Simplify myman.c - Platform Detection (Incremental)
 For each platform, remove conditionals and test:
