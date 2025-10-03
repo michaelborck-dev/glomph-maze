@@ -124,9 +124,6 @@
 
 #include <curses.h>
 
-#ifdef OPTCURSES
-#include "optcurs.h"
-#endif
 
 
 
