@@ -18,7 +18,18 @@
 - [x] Assume ncurses available
 - [x] Test build: `cmake --build build`
 
-### Step 3: Simplify myman.c - Platform Detection (Incremental)
+### ✅ Step 3: Delete Disabled Platform Code (DONE)
+Removed all `#if 0` blocks for legacy platforms:
+- [x] Deleted OLD_XCURSES (5 blocks)
+- [x] Deleted OLD_CACACURSES (1 block)
+- [x] Deleted OLD_GTKCURSES (2 blocks)
+- [x] Deleted OLD_FLTKCURSES (1 block)
+- [x] Deleted OLD_ALLEGROCURSES (2 blocks)
+- [x] Deleted OLD_SLANG_VERSION (2 blocks)
+- [x] Test build: ✅ All 4 variants working
+- **Result:** 7,957 → 7,860 lines (removed 97 lines)
+
+### Step 4: Remove Remaining Platform Conditionals (Next)
 For each platform, remove conditionals and test:
 
 Round 1 - DOS/Windows 95:
@@ -37,15 +48,11 @@ Round 3 - Obscure Unix:
 - [ ] Remove `#ifdef __APPLE__` (old pre-OSX) blocks
 - [ ] Test build
 
-Round 4 - Alternate Graphics:
-- [ ] Remove SDL-specific code
-- [ ] Remove Allegro-specific code
-- [ ] Keep only ncurses
+Round 4 - Alternate Graphics (Keep SDL_MIXER!):
+- [ ] Remove old SDL graphics code (not SDL_MIXER audio!)
+- [ ] Keep modern SDL_MIXER sound system
+- [ ] Keep only ncurses for display
 - [ ] Test build
-
-### Step 4: Replace mygetopt with getopt
-- [ ] Update argument parsing to use system getopt
-- [ ] Test: `./build/glomph-big --help`
 
 ### Expected Intermediate Results
 After each round:
@@ -53,10 +60,12 @@ After each round:
 - ✅ Game runs: `./build/glomph-big`
 - ✅ Line count decreases
 
-### Expected Final Result
-- From: 7,999 lines
-- To: ~4,000-5,000 lines (estimated)
-- Cleaner, modern codebase ready for Option D
+### Current Progress
+- **Starting point:** 7,999 lines (before any simplification)
+- **After header removal:** 7,957 lines (42 lines from disabled graphics blocks)
+- **After #if 0 deletion:** 7,860 lines (97 lines of dead platform code)
+- **Target:** ~4,000-5,000 lines (estimated)
+- **Remaining:** ~3,860 lines to remove
 
 ---
 
@@ -75,18 +84,20 @@ After simplification complete:
 ## Progress Tracking
 
 ### Platform Code Removed:
-- ✅ Headers: 16 alternate curses implementations
+- ✅ Headers: 16 alternate curses implementations (30,345 lines)
 - ✅ mygetopt: 710 lines
+- ✅ Disabled graphics blocks: 42 lines
+- ✅ #if 0 dead code: 97 lines (XCURSES, CACA, GTK, FLTK, ALLEGRO, SLANG)
 - [ ] DOS/Windows 95 code in myman.c
 - [ ] VMS code in myman.c
 - [ ] Obscure Unix code in myman.c
 - [ ] Alternate graphics code in myman.c
 
 ### Builds Status:
-- [ ] glomph-huge compiles
-- [ ] glomph-big compiles
-- [ ] glomph-small compiles
-- [ ] glomph-narrow compiles
+- ✅ hugeman compiles & runs
+- ✅ bigman compiles & runs
+- ✅ smallman compiles & runs
+- ✅ squareman compiles & runs
 
 ---
 **Branch:** `modern-simplify`

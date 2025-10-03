@@ -155,32 +155,7 @@
 #endif
 #endif
 
-#ifndef MY_CURSES_H
-#if 0 // OLD_XCURSES
-#define MY_CURSES_H <xcurses.h>
-#endif
-#endif
 
-#ifndef MY_CURSES_H
-#if 0 // OLD_CACACURSES
-#include "cacacurs.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#if 0 // OLD_GTKCURSES
-#include "gtkcurs.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#if 0 // OLD_FLTKCURSES
-#include "fltkcurs.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
 
 #ifndef MY_CURSES_H
 #ifdef AACURSES
@@ -233,13 +208,6 @@
 #ifndef MY_CURSES_H
 #ifdef MACCURSES
 #include "maccurs.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#if 0 // OLD_ALLEGROCURSES
-#include "allegcur.h"
 #define MY_CURSES_H "optcurs.h"
 #endif
 #endif
@@ -975,17 +943,6 @@ static int locale_is_utf8(void)
 #endif
 
 #ifndef USE_RAW_UCS
-#if 0 // OLD_SLANG_VERSION
-#if SLANG_VERSION >= 20000
-#define USE_RAW_UCS 1
-#else
-#ifdef SLCURSES
-#ifdef UTF8
-#define USE_RAW_UCS 1
-#endif
-#endif
-#endif
-#endif
 #endif
 
 #ifndef USE_RAW_UCS
@@ -4673,12 +4630,7 @@ my_addstr(const char *s, chtype attrs)
     return ret;
 }
 
-#if 0 // OLD_XCURSES
-#define XCURSES_USAGE \
-" [ -- toolkit-options]"
-#else
 #define XCURSES_USAGE
-#endif
 
 #define SUMMARY(progname) \
 "Usage: %s [-h] [options]" \
@@ -5577,23 +5529,6 @@ static int sdl_audio_open = 0;
 void
 gamesfx(void)
 {
-#if 0 // OLD_ALLEGROCURSES
-#define handle_sfx(n) \
-            do { if (myman_sfx & myman_sfx_ ## n) \
-            { \
-                static MIDI *n##_music = 0; \
-                myman_sfx &= ~myman_sfx_ ## n; \
-                if ((use_sound && ! myman_demo) && ! n##_music) \
-                { \
-                    n##_music = load_midi("sfx/"#n".mid"); \
-                } \
-                if ((use_sound && ! myman_demo) && n##_music) \
-                { \
-                    stop_midi(); \
-                    play_midi(n##_music, 0); \
-                } \
-            } } while (0)
-#else
 #if USE_SDL_MIXER
 #define handle_sfx(n) \
             do { if ((myman_sfx & myman_sfx_ ## n) && sdl_audio_open) \
@@ -5618,7 +5553,6 @@ gamesfx(void)
 #define handle_sfx(n) do { if (myman_sfx & myman_sfx_ ## n) { myman_sfx &= ~myman_sfx_##n; if ((myman_sfx_##n & ~myman_sfx_nobeep_mask) && use_sound && ! myman_demo) beep(); } } while (0)
 #else
 #define handle_sfx(n) do { if (myman_sfx & myman_sfx_ ## n) { myman_sfx &= ~myman_sfx_##n; } } while (0)
-#endif
 #endif
 #endif
     handle_sfx(credit);
@@ -7042,14 +6976,7 @@ gameinput(void)
 static void
 myman(void)
 {
-#if 0 // OLD_SLANG_VERSION
-#if SLANG_VERSION >= 20000
-    SLutf8_enable(-1);
-    SLtt_utf8_enable(1);
-    SLsmg_utf8_enable(1);
-    SLinterp_utf8_enable(1);
-#endif
-#endif
+
     do
     {
 #if USE_SDL_MIXER
@@ -7062,12 +6989,7 @@ myman(void)
 #endif
         if (! myman_lines) myman_lines = (reflect ? (maze_w * gfx_w) : (maze_h * gfx_h)) + (3 * tile_h + sprite_h);
         if (! myman_columns) myman_columns = (reflect ? (maze_h * gfx_h) : (maze_w * gfx_w)) * (use_fullwidth ? 2 : 1);
-#if 0 // OLD_GTKCURSES
-        if (((! myman_getenv("GTKCURSES_ICON")) || ! *(myman_getenv("GTKCURSES_ICON"))) && MYMANICONPNG && *MYMANICONPNG)
-        {
-            myman_setenv("GTKCURSES_ICON", MYMANICONPNG);
-        }
-#endif
+
 #ifdef INITSCR_WITH_HINTS
         initscrWithHints(myman_lines,
                          myman_columns,
@@ -7078,14 +7000,6 @@ myman(void)
         if (! reinit_requested)
 #endif
         {
-#if 0 // OLD_XCURSES
-            if (! Xinitscr(argc, argv))
-            {
-                perror("Xinitscr");
-                fflush(stderr);
-                exit(1);
-            }
-#else
             if (! initscr())
             {
                 perror("initscr");
@@ -7103,7 +7017,6 @@ myman(void)
 #else
 #ifdef NCURSES_VERSION
             use_default_colors();
-#endif
 #endif
         }
 #endif
@@ -7260,9 +7173,7 @@ myman(void)
     } while (reinit_requested);
     fprintf(stderr, "%s: scored %d points\n",
             progname, score);
-#if 0 // OLD_XCURSES
-    XCursesExit();
-#endif
+
 #if USE_ICONV
     if (cd_to_wchar != (iconv_t) -1)
     {
@@ -7648,19 +7559,11 @@ parse_myman_args(int argc, char **argv)
         debug = atoi(myman_getenv("MYMAN_DEBUG"));
         debug = debug ? debug : 1;
     }
-#if 0 // OLD_XCURSES
-    argv[optind - 1] = progname;
-    argc -= optind;
-    argc ++;
-    argv += optind;
-    argv --;
-#else
     if (optind < argc)
     {
         fprintf(stderr, SUMMARY(progname));
         fflush(stderr), exit(2);
     }
-#endif
     if (strcmp(defvariant, MYMANVARIANT))
     {
         fprintf(stderr,
