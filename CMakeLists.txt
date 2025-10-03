@@ -28,7 +28,6 @@ find_package(Curses REQUIRED)
 # Include directories
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/inc
-    ${CMAKE_CURRENT_SOURCE_DIR}/mygetopt
     ${CURSES_INCLUDE_DIR}
 )
 
@@ -37,7 +36,6 @@ set(COMMON_SOURCES
     src/myman.c
     src/utils.c
     src/logic.c
-    mygetopt/mygetopt.c
 )
 
 # Define size variants with their tile/sprite files
@@ -55,7 +53,6 @@ macro(add_size_variant name size tiles sprites)
     add_executable(${name} ${COMMON_SOURCES})
     
     target_compile_definitions(${name} PRIVATE
-        MYGETOPT=1
         MYMANSIZE="${size}"
         TILEFILE="chr/${tiles}"
         SPRITEFILE="spr/${sprites}"
