@@ -3591,6 +3591,7 @@ my_refresh(void)
     return refresh();
 }
 
+#ifndef USE_NEW_SCREEN
 static void
 my_move(int y, int x)
 {
@@ -3689,6 +3690,7 @@ my_move(int y, int x)
     }
     while(0);
 }
+#endif /* USE_NEW_SCREEN */
 
 #if USE_ATTR || USE_COLOR
 
@@ -3761,6 +3763,7 @@ static chtype my_attrs = 0;
 
 #endif /* USE_ATTR || USE_COLOR */
 
+#ifndef USE_NEW_SCREEN
 static int
 my_attrset(chtype attrs)
 {
@@ -3781,6 +3784,7 @@ my_attrset(chtype attrs)
 #endif /* USE_ATTR || USE_COLOR */
     return 1;
 }
+#endif /* USE_NEW_SCREEN */
 
 /* add a cp437 string to the HTML snapshot */
 static void

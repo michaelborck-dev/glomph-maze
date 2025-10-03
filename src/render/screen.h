@@ -38,5 +38,9 @@ void snapshot_attrset_active(chtype attrs);
 
 /* Attribute setting functions */
 int my_real_attrset(chtype attrs);
+int my_attrset(chtype attrs);
+
+/* Window management functions */
+void my_move(int y, int x);
 
 #endif

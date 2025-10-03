@@ -219,3 +219,129 @@ my_real_attrset(chtype attrs)
 #endif
     return 1;
 }
+
+/* Extracted from myman.c line 3765 */
+int
+my_attrset(chtype attrs)
+{
+    snapshot_attrset(attrs);
+#if USE_ATTR || USE_COLOR
+    attrs ^= (snapshot || snapshot_txt) ?
+#ifdef MY_A_REVERSE
+      MY_A_REVERSE
+#else
+      0
+#endif
+      : 0;
+#if DANGEROUS_ATTRS
+    my_attrs = attrs;
+#else
+    my_real_attrset(attrs);
+#endif
+#endif /* USE_ATTR || USE_COLOR */
+    return 1;
+}
+
+#ifndef CRLF
+#define CRLF "\r\n"
+#endif
+
+/* Extracted from myman.c line 3595 */
+void
+my_move(int y, int x)
+{
+    if ((y < 0) || (x < 0) || (y > LINES) || (x > COLS))
+    {
+        return;
+    }
+    if ((snapshot || snapshot_txt)
+        &&
+        ((x != snapshot_x) || (y != snapshot_y)))
+    {
+        snapshot_attrset_active(0);
+        if ((snapshot || snapshot_txt)
+            &&
+            (y < snapshot_y))
+        {
+            if (snapshot)
+            {
+                fprintf(snapshot, "<!-- cuu%d -->", snapshot_y - y);
+                fflush(snapshot);
+            }
+            snapshot_y = y;
+        }
+        if (snapshot && (x < snapshot_x) && (y == snapshot_y))
+        {
+            fprintf(snapshot, "<!-- cub%d -->", snapshot_x - x);
+            fflush(snapshot);
+        }
+        while ((y > snapshot_y) || (x < snapshot_x))
+        {
+            snapshot_y ++;
+            snapshot_x = 0;
+            if (snapshot)
+            {
+                fprintf(snapshot,
+                        CRLF);
+                fflush(snapshot);
+            }
+            if (snapshot_txt)
+            {
+                fprintf(snapshot_txt,
+                        CRLF);
+                fflush(snapshot_txt);
+            }
+        }
+        while (x > snapshot_x)
+        {
+            if (snapshot)
+            {
+                fprintf(snapshot,
+                        " ");
+                fflush(snapshot);
+            }
+            if (snapshot_txt)
+            {
+                fprintf(snapshot_txt,
+                        " ");
+                fflush(snapshot_txt);
+            }
+            snapshot_x ++;
+        }
+    }
+
+    do
+    {
+        int cur_y, cur_x;
+
+        getyx(stdscr, cur_y, cur_x);
+        if (location_is_suspect)
+        {
+            if (last_valid_col == (COLS - 1))
+            {
+                last_valid_col = -1;
+                last_valid_line ++;
+            }
+            while (y > last_valid_line)
+            {
+                move(last_valid_line, last_valid_col + 1);
+                clrtoeol();
+                last_valid_line ++;
+                last_valid_col = -1;
+            }
+            while ((y == last_valid_line)
+                   &&
+                   (x > (last_valid_col + 1)))
+            {
+                move(last_valid_line, ++ last_valid_col);
+                addch(' ');
+            }
+        }
+        getyx(stdscr, cur_y, cur_x);
+        if ((y != cur_y) || (x != cur_x))
+        {
+            move(y, x);
+        }
+    }
+    while(0);
+}
