@@ -338,13 +338,6 @@ static void sigwinch_handler(int signum)
 #endif
 
 
-#ifndef USE_WIDEC_SUPPORT
-#ifdef WACS_ULCORNER
-#define USE_WIDEC_SUPPORT 1
-#else
-#define USE_WIDEC_SUPPORT 0
-#endif
-#endif
 
 #ifndef CCHARW_MAX
 #define CCHARW_MAX 6
@@ -392,13 +385,7 @@ static void sigwinch_handler(int signum)
 #endif
 
 #ifndef SWAPDOTS
-#endif
-
-#ifndef SWAPDOTS
-#define SWAPDOTS ((USE_WIDEC_SUPPORT) ? locale_is_utf8() : 0)
-#ifndef NEED_LOCALE_IS_UTF8
-#define NEED_LOCALE_IS_UTF8 1
-#endif
+#define SWAPDOTS 0
 #endif
 
 #ifdef NEED_LOCALE_IS_UTF8
@@ -568,11 +555,7 @@ static int locale_is_utf8(void)
 #endif
 
 #ifndef USE_RAW_UCS
-#if USE_WIDEC_SUPPORT
-#define USE_RAW_UCS 1
-#else
 #define USE_RAW_UCS 0
-#endif
 #endif
 
 #ifndef USE_RAW
@@ -583,160 +566,6 @@ static int locale_is_utf8(void)
 #define USE_ACS 1
 #endif
 
-#if USE_WIDEC_SUPPORT
-
-#ifdef WACS_BDDB
-#endif
-#ifdef WACS_BSSB
-#endif
-#ifdef WACS_ULCORNER
-#endif
-#ifdef WACS_DDBB
-#endif
-#ifdef WACS_SSBB
-#endif
-#ifdef WACS_LLCORNER
-#endif
-#ifdef WACS_BBDD
-#endif
-#ifdef WACS_BBSS
-#endif
-#ifdef WACS_URCORNER
-#endif
-#ifdef WACS_DBBD
-#endif
-#ifdef WACS_SBBS
-#endif
-#ifdef WACS_LRCORNER
-#endif
-#ifdef WACS_DBDD
-#endif
-#ifdef WACS_SBSD
-#endif
-#ifdef WACS_DBDS
-#endif
-#ifdef WACS_SBSS
-#endif
-#ifdef WACS_RTEE
-#endif
-#ifdef WACS_DDDB
-#endif
-#ifdef WACS_SDSB
-#endif
-#ifdef WACS_DSDB
-#endif
-#ifdef WACS_SSSB
-#endif
-#ifdef WACS_LTEE
-#endif
-#ifdef WACS_DDBD
-#endif
-#ifdef WACS_SDBD
-#endif
-#ifdef WACS_DSBS
-#endif
-#ifdef WACS_SSBS
-#endif
-#ifdef WACS_BTEE
-#endif
-#ifdef WACS_BDDD
-#endif
-#ifdef WACS_BDSD
-#endif
-#ifdef WACS_BSDS
-#endif
-#ifdef WACS_BSSS
-#endif
-#ifdef WACS_TTEE
-#endif
-#ifdef WACS_BDSS
-#endif
-#ifdef WACS_BDSB
-#endif
-#ifdef WACS_SSDB
-#endif
-#ifdef WACS_BSDB
-#endif
-#ifdef WACS_SDBS
-#endif
-#ifdef WACS_SDBB
-#endif
-#ifdef WACS_DSSB
-#endif
-#ifdef WACS_DSBB
-#endif
-#ifdef WACS_BSSD
-#endif
-#ifdef WACS_BBSD
-#endif
-#ifdef WACS_SBDS
-#endif
-#ifdef WACS_BBDS
-#endif
-#ifdef WACS_SSBD
-#endif
-#ifdef WACS_SBBD
-#endif
-#ifdef WACS_DBSS
-#endif
-#ifdef WACS_DBBS
-#endif
-#ifdef WACS_BDBD
-#endif
-#ifdef WACS_BSBS
-#endif
-#ifdef WACS_HLINE
-#endif
-#ifdef WACS_DBDB
-#endif
-#ifdef WACS_SBSB
-#endif
-#ifdef WACS_VLINE
-#endif
-#ifdef WACS_DDDD
-#endif
-#ifdef WACS_SDSD
-#endif
-#ifdef WACS_DSDS
-#endif
-#ifdef WACS_SSSS
-#endif
-#ifdef WACS_PLUS
-#endif
-#ifdef WACS_DIAMOND
-#endif
-#ifdef WACS_DEGREE
-#endif
-#ifdef WACS_BBBB
-#endif
-#ifdef WACS_BULLET
-#endif
-#ifdef WACS_DARROW
-#endif
-#ifdef WACS_UARROW
-#endif
-#ifdef WACS_LANTERN
-#endif
-#ifdef WACS_BOARD
-#endif
-#ifdef WACS_CKBOARD
-#endif
-#ifdef WACS_BLOCK
-#endif
-#ifdef WACS_LARROW
-#endif
-#ifdef WACS_LEQUAL
-#endif
-#ifdef WACS_RARROW
-#endif
-#ifdef WACS_GEQUAL
-#endif
-#ifdef WACS_PI
-#endif
-#ifdef WACS_STERLING
-#endif
-
-#else /* ! USE_WIDEC_SUPPORT */
 
 #ifdef ACS_BDDB
 #endif
@@ -889,7 +718,6 @@ static int locale_is_utf8(void)
 #ifdef ACS_STERLING
 #endif
 
-#endif /* ! USE_WIDEC_SUPPORT */
 
 #ifdef BUILTIN_SIZE
 extern const char *builtin_size;
@@ -952,28 +780,7 @@ static const char SPRITEFILE_str[] = SPRITEFILE;
 #endif
 
 /* mapping from CP437 to VT-100 altcharset */
-#if USE_WIDEC_SUPPORT
-/* ncurses defines WACS_* as cchar_t * whereas unix95 (at least
- * according to TenDRA) defines them as cchar_t */
-#ifdef NCURSES_VERSION
-#ifndef MY_WACS_PTR
-#define MY_WACS_PTR
-#endif
-#ifndef MY_WACS_REF
-#define MY_WACS_REF *
-#endif
-#else
-#ifndef MY_WACS_PTR
-#define MY_WACS_PTR &
-#endif
-#ifndef MY_WACS_REF
-#define MY_WACS_REF
-#endif
-#endif
-static cchar_t MY_WACS_REF
-#else
 static chtype
-#endif
 altcharset_cp437[256];
 
 /* mapping from CP437 to ASCII */
@@ -989,14 +796,10 @@ static chtype cp437_to_ascii(unsigned char ch)
 
 
 #ifndef USE_WCWIDTH
-#if USE_WIDEC_SUPPORT
-#define USE_WCWIDTH 1
-#else
 #if USE_RAW_UCS
 #define USE_WCWIDTH 1
 #else
 #define USE_WCWIDTH 0
-#endif
 #endif
 #endif
 
@@ -1043,26 +846,6 @@ static int my_wcwidth(wchar_t wc)
     return len;
 }
 
-#if USE_WIDEC_SUPPORT
-
-static int
-my_wcswidth(const wchar_t *s, size_t n)
-{
-    int ret = 0;
-
-    while ((n --) && (*s != L'\0'))
-    {
-        int cret = my_wcwidth(*s);
-        if (cret != -1)
-        {
-            ret += cret;
-        }
-        s ++;
-    }
-    return ret;
-}
-
-#endif
 
 #endif
 
@@ -1075,56 +858,33 @@ init_trans(int use_bullet_for_dots)
         if (isprint(i))
         {
             altcharset_cp437[i] =
-#if USE_WIDEC_SUPPORT
-                NULL;
-#endif
             ascii_cp437[i] = i;
         }
         else
         {
             altcharset_cp437[i] =
-#if USE_WIDEC_SUPPORT
-                NULL;
-#endif
             ascii_cp437[i] =
                 '\?';
         }
     altcharset_cp437[19] =
-#if USE_WIDEC_SUPPORT
-                NULL;
-#endif
         ascii_cp437[19] = '!';
     altcharset_cp437[220] =
-#if USE_WIDEC_SUPPORT
-                NULL;
-#endif
         ascii_cp437[220] = ',';
     altcharset_cp437[221] =
-#if USE_WIDEC_SUPPORT
-                NULL;
-#endif
         ascii_cp437[221] = '#';
     altcharset_cp437[222] =
-#if USE_WIDEC_SUPPORT
-                NULL;
-#endif
         ascii_cp437[222] = '#';
     altcharset_cp437[223] =
-#if USE_WIDEC_SUPPORT
-                NULL;
-#endif
         ascii_cp437[223] = '\"';
     
 #if USE_ATTR
 #ifdef A_REVERSE
     if (! isprint(8))
     {
-#if ! USE_WIDEC_SUPPORT
         if (! (A_REVERSE & 0xff))
         {
             altcharset_cp437[8] |= A_REVERSE;
         }
-#endif
         if (! (A_REVERSE & 0x7f))
         {
             ascii_cp437[8] |= A_REVERSE;
@@ -1144,9 +904,6 @@ init_trans(int use_bullet_for_dots)
     ACS_ULCORNER;
 #endif
 #endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
-#endif
     ascii_cp437[201] =
         ascii_cp437[218] =
         '+';
@@ -1161,9 +918,6 @@ init_trans(int use_bullet_for_dots)
 #ifdef ACS_LLCORNER
     ACS_LLCORNER;
 #endif
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[200] =
         ascii_cp437[192] =
@@ -1180,9 +934,6 @@ init_trans(int use_bullet_for_dots)
     ACS_URCORNER;
 #endif
 #endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
-#endif
     ascii_cp437[187] =
         ascii_cp437[191] =
         '+';
@@ -1197,9 +948,6 @@ init_trans(int use_bullet_for_dots)
 #ifdef ACS_LRCORNER
     ACS_LRCORNER;
 #endif
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[188] =
         ascii_cp437[217] =
@@ -1223,9 +971,6 @@ init_trans(int use_bullet_for_dots)
 #ifdef ACS_RTEE
     ACS_RTEE;
 #endif
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[189] =
         ascii_cp437[183] =
@@ -1254,9 +999,6 @@ init_trans(int use_bullet_for_dots)
     ACS_LTEE;
 #endif
 #endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
-#endif
     ascii_cp437[211] =
         ascii_cp437[214] =
         ascii_cp437[204] =
@@ -1284,9 +1026,6 @@ init_trans(int use_bullet_for_dots)
     ACS_BTEE;
 #endif
 #endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
-#endif
     ascii_cp437[190] =
         ascii_cp437[212] =
         ascii_cp437[202] =
@@ -1313,9 +1052,6 @@ init_trans(int use_bullet_for_dots)
 #ifdef ACS_TTEE
     ACS_TTEE;
 #endif
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[184] =
         ascii_cp437[213] =
@@ -1416,9 +1152,6 @@ init_trans(int use_bullet_for_dots)
     ACS_HLINE;
 #endif
 #endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
-#endif
     ascii_cp437[205] =
         ascii_cp437[196] =
         '-';
@@ -1433,9 +1166,6 @@ init_trans(int use_bullet_for_dots)
 #ifdef ACS_VLINE
     ACS_VLINE;
 #endif
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[186] =
         ascii_cp437[179] =
@@ -1464,9 +1194,6 @@ init_trans(int use_bullet_for_dots)
 #ifdef ACS_DIAMOND
         ACS_DIAMOND;
 #endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
-#endif
     ascii_cp437[206] =
         ascii_cp437[215] =
         ascii_cp437[216] =
@@ -1477,17 +1204,11 @@ init_trans(int use_bullet_for_dots)
 #ifdef ACS_DEGREE
         ACS_DEGREE;
 #endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
-#endif
     ascii_cp437[248] =
         '\'';
     altcharset_cp437[241] =
 #ifdef  ACS_PLMINUS
         ACS_PLMINUS;
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[241] =
         '#';
@@ -1495,16 +1216,11 @@ init_trans(int use_bullet_for_dots)
 #ifdef ACS_BBBB
         ACS_BBBB;
 #endif
-#if ! USE_WIDEC_SUPPORT
     altcharset_cp437[8] =
-#endif
         altcharset_cp437[9] =
         altcharset_cp437[254] =
 #ifdef ACS_BULLET
         ACS_BULLET;
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[7] =
         ascii_cp437[8] =
@@ -1513,12 +1229,10 @@ init_trans(int use_bullet_for_dots)
         'o';
 #if USE_ATTR
 #ifdef A_REVERSE
-#if ! USE_WIDEC_SUPPORT
     if (! (A_REVERSE & 0xff))
     {
         altcharset_cp437[8] |= A_REVERSE;
     }
-#endif
     if (! (A_REVERSE & 0x7f))
     {
         ascii_cp437[8] |= A_REVERSE;
@@ -1530,9 +1244,6 @@ init_trans(int use_bullet_for_dots)
 #ifdef ACS_DARROW
         ACS_DARROW;
 #else
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
-#endif
     ascii_cp437[25] =
         ascii_cp437[31] =
         'v';
@@ -1542,9 +1253,6 @@ init_trans(int use_bullet_for_dots)
 #ifdef ACS_UARROW
         ACS_UARROW;
 #else
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
-#endif
     ascii_cp437[24] =
         ascii_cp437[30] =
         '^';
@@ -1567,9 +1275,6 @@ init_trans(int use_bullet_for_dots)
 #ifdef ACS_BLOCK
         ACS_BLOCK;
 #endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
-#endif
     ascii_cp437[15] =
         ascii_cp437[176] =
         ascii_cp437[177] =
@@ -1587,9 +1292,6 @@ init_trans(int use_bullet_for_dots)
 #ifdef ACS_LEQUAL
         ACS_LEQUAL;
 #endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
-#endif
     ascii_cp437[174] =
         ascii_cp437[243] =
         ascii_cp437[27] =
@@ -1605,9 +1307,6 @@ init_trans(int use_bullet_for_dots)
 #ifdef ACS_GEQUAL
         ACS_GEQUAL;
 #endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
-#endif
     ascii_cp437[175] =
         ascii_cp437[242] =
         ascii_cp437[26] =
@@ -1617,33 +1316,21 @@ init_trans(int use_bullet_for_dots)
 #ifdef ACS_PI
         ACS_PI;
 #endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
-#endif
     ascii_cp437[227] =
         '*';
     altcharset_cp437[156] =
 #ifdef ACS_STERLING
         ACS_STERLING;
 #endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
-#endif
     ascii_cp437[156] =
         'f';
-#if ! USE_WIDEC_SUPPORT
     altcharset_cp437[0] =
-#endif
         ascii_cp437[0] =
         ' ';
-#if ! USE_WIDEC_SUPPORT
     altcharset_cp437[240] =
-#endif
         ascii_cp437[240] =
         '=';
-#if ! USE_WIDEC_SUPPORT
     altcharset_cp437[247] =
-#endif
         ascii_cp437[247] =
         '=';
     ascii_cp437[249] =
@@ -1656,32 +1343,18 @@ init_trans(int use_bullet_for_dots)
         altcharset_cp437[249] =
             altcharset_cp437[250] = altcharset_cp437[254];
         altcharset_cp437[254] =
-#if USE_WIDEC_SUPPORT
-            NULL;
-#else
         'o';
-#endif
     }
     else
     {
         altcharset_cp437[249] =
             altcharset_cp437[250] =
-#if USE_WIDEC_SUPPORT
-            NULL;
-#else
         '.';
-#endif
     }
     altcharset_cp437[255] =
-#if USE_WIDEC_SUPPORT
-        NULL;
-#endif
     ascii_cp437[255] =
         ' ';
     altcharset_cp437[158] =
-#if USE_WIDEC_SUPPORT
-        NULL;
-#endif
     ascii_cp437[158] =
         'P';
 }
@@ -2838,11 +2511,7 @@ snapshot_addch(short inbyte)
 {
 
 #undef SNAPSHOT_ADDCH__NARROWC
-#if USE_WIDEC_SUPPORT
-#define SNAPSHOT_ADDCH__NARROWC(c) NULL
-#else
 #define SNAPSHOT_ADDCH__NARROWC(c) (c)
-#endif
 
     if (snapshot || snapshot_txt)
     {
@@ -3434,180 +3103,6 @@ my_addch(unsigned long b, chtype attrs)
         {
             if (use_acs)
             {
-#if USE_WIDEC_SUPPORT
-                if (use_raw && use_raw_ucs)
-                {
-                    unsigned long my_ucs;
-                    wchar_t my_wch;
-                    int my_wcw;
-
-                    my_ucs = uni_cp437[b];
-                    my_wch = ucs_to_wchar(my_ucs);
-                    my_wcw = my_wch ? my_wcwidth(my_wch) : 0;
-                    if ((my_wcw > 0) && (my_wcw <= ((CJK_MODE) ? 2 : 1)))
-                    {
-                        ret = addnwstr(&my_wch, 1);
-                        getyx(stdscr, new_y, new_x);
-                        if ((old_x != new_x) || (old_y != new_y))
-                        {
-                            if (CJK_MODE && (my_wcw == 1))
-                            {
-                                unsigned char rhs;
-
-                                rhs = cp437_fullwidth_rhs[b];
-                                if ((int) (unsigned char) rhs)
-                                {
-                                    wchar_t wrhs;
-
-                                    wrhs = ucs_to_wchar(uni_cp437_fullwidth[(int) (unsigned char) rhs]);
-                                    my_wcw += wrhs ? my_wcwidth(wrhs) : 0;
-                                    if (my_wcw == 2)
-                                    {
-                                        addnwstr(&wrhs, 1);
-                                    }
-                                }
-                            }
-                            else if (CJK_MODE && (my_wcw == 2)
-                                     &&
-                                     (((old_x + 1) % COLS) == (new_x % COLS)))
-                            {
-                                location_is_suspect = 1;
-                                leaveok(stdscr, FALSE);
-                                move(0, 0);
-                                refresh();
-                                leaveok(stdscr, TRUE);
-                                move((old_y + ((old_x + 2) / COLS)) % LINES, (old_x + 2) % COLS);
-                            }
-                            break;
-                        }
-                        /* U+30FB KATAKANA MIDDLE DOT -> 0xFF0E FULLWIDTH FULL STOP */
-                        if (my_ucs == 0x30fb)
-                        {
-                            my_wch = ucs_to_wchar(0xff0e);
-                            my_wcw = my_wch ? my_wcwidth(my_wch) : 0;
-                            ret = addnwstr(&my_wch, 1);
-                            getyx(stdscr, new_y, new_x);
-                            if ((old_x != new_x) || (old_y != new_y))
-                            {
-                                if (CJK_MODE && (my_wcw == 2)
-                                    &&
-                                    (((old_x + 1) % COLS) == (new_x % COLS)))
-                                {
-                                }
-                                break;
-                            }
-                        }
-                        /* U+301C WAVE DASH -> 0xFF5E FULLWIDTH TILDE */
-                        if (my_ucs == 0x301c)
-                        {
-                            my_wch = ucs_to_wchar(0xff5e);
-                            my_wcw = my_wch ? my_wcwidth(my_wch) : 0;
-                            ret = addnwstr(&my_wch, 1);
-                            getyx(stdscr, new_y, new_x);
-                            if ((old_x != new_x) || (old_y != new_y))
-                            {
-                                if (CJK_MODE && (my_wcw == 2)
-                                    &&
-                                    (((old_x + 1) % COLS) == (new_x % COLS)))
-                                {
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (altcharset_cp437[b])
-                {
-                    wchar_t my_wchbuf[CCHARW_MAX];
-                    attr_t my_acs_attrs;
-                    short my_color_pair;
-                    attr_t my_current_attrs;
-                    int my_len;
-
-                    my_len =
-                        getcchar(
-                            MY_WACS_PTR altcharset_cp437[b],
-                            NULL,
-                            &my_acs_attrs,
-                            &my_color_pair,
-                            NULL);
-                    if (my_len &&
-                        (getcchar(
-                            MY_WACS_PTR altcharset_cp437[b],
-                            my_wchbuf,
-                            &my_acs_attrs,
-                            &my_color_pair,
-                            NULL) != ERR) &&
-                        (my_wcswidth(my_wchbuf, my_len) == 1))
-                    {
-#ifdef _XOPEN_SOURCE_EXTENDED
-                        attr_get(
-                            & my_current_attrs,
-                            & my_color_pair,
-                            NULL);
-                        attr_set(
-                            my_current_attrs | my_acs_attrs,
-                            my_color_pair,
-                            NULL);
-#else
-                        my_current_attrs = attr_get();
-                        attr_set(my_current_attrs | my_acs_attrs);
-#endif
-                        ret = addnwstr(
-                            my_wchbuf,
-                            my_len);
-                        getyx(stdscr, new_y, new_x);
-                        if (CJK_MODE && ((old_x != new_x) || (old_y != new_y)))
-                        {
-                            unsigned char rhs;
-                        
-                            rhs = cp437_fullwidth_rhs[b];
-                            if ((int) (unsigned char) rhs)
-                            {
-                                if (altcharset_cp437[(int) (unsigned char) rhs])
-                                {
-                                    my_len =
-                                        getcchar(
-                                            MY_WACS_PTR altcharset_cp437[(int) (unsigned char) rhs],
-                                            NULL,
-                                            &my_acs_attrs,
-                                            &my_color_pair,
-                                            NULL);
-                                    if (my_len &&
-                                        (getcchar(
-                                            MY_WACS_PTR altcharset_cp437[(int) (unsigned char) rhs],
-                                            my_wchbuf,
-                                            &my_acs_attrs,
-                                            &my_color_pair,
-                                            NULL) != ERR) &&
-                                        (my_wcswidth(my_wchbuf, my_len) == 1))
-                                    {
-                                        addnwstr(
-                                            my_wchbuf,
-                                            my_len);
-                                    }
-                                }
-                                else
-                                {
-                                    addch(ascii_cp437[(int) (unsigned char) rhs]);
-                                }
-                            }
-                        }
-#ifdef _XOPEN_SOURCE_EXTENDED
-                        attr_set(
-                            my_current_attrs,
-                            my_color_pair,
-                            NULL);
-#else
-                        attr_set(my_current_attrs);
-#endif
-                        if ((old_x != new_x) || (old_y != new_y))
-                        {
-                            break;
-                        }
-                    }
-                }
-#else /* ! USE_WIDEC_SUPPORT */
                 if (use_raw && use_raw_ucs)
                 {
                     c = uni_cp437[b];
@@ -3751,7 +3246,6 @@ my_addch(unsigned long b, chtype attrs)
                     }
                     break;
                 }
-#endif /* ! USE_WIDEC_SUPPORT */
             }
         }
         c = ascii_cp437[b];
