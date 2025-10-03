@@ -29,10 +29,6 @@
 #endif
 #endif
 
-/* feature guessing */
-#ifndef MYMAN_GUESS_H_INCLUDED
-#include "guess.h"
-#endif
 
 #include <ctype.h>
 #include <errno.h>

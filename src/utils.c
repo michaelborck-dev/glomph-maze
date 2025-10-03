@@ -29,15 +29,9 @@
 #endif
 #endif
 
-/* feature guessing */
-#ifndef MYMAN_GUESS_H_INCLUDED
-#include "guess.h"
-#endif
 
 #include <ctype.h>
-#if HAVE_UNISTD_H
 #include <unistd.h>
-#endif
 #include <errno.h>
 #include <limits.h>
 #include <math.h>
@@ -4758,33 +4752,7 @@ int myman_setenv(const char *name, const char *value)
 {
     int ret = 1;
 
-#if HAVE_SETENV
     ret = setenv(name, value, 1);
-#else /* ! HAVE_SETENV */
-#if HAVE_PUTENV || defined(WIN32)
-    {
-        char *pair;
-        size_t name_len, value_len;
-
-        name_len = strlen(name);
-        value_len = strlen(value);
-        pair = (char *) malloc(name_len + 1 + value_len + 1);
-        if (pair)
-        {
-            memcpy((void *) pair, (void *) name, name_len);
-            pair[name_len] = '=';
-            memcpy((void *) (pair + name_len + 1), (void *) value, value_len);
-            pair[name_len + 1 + value_len] = '\0';
-#if HAVE_PUTENV
-            ret = putenv(pair);
-#else /* ! HAVE_PUTENV */
-            ret = _putenv(pair);
-#endif /* ! HAVE_PUTENV */
-            free((void *) pair);
-        }
-    }
-#endif /* HAVE_PUTENV || defined(WIN32) */
-#endif /* ! HAVE_SETENV */
     if (! ret)
     {
         const char *value_check;

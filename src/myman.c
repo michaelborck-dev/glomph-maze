@@ -30,10 +30,6 @@
 #endif
 #endif
 
-/* feature guessing */
-#ifndef MYMAN_GUESS_H_INCLUDED
-#include "guess.h"
-#endif
 
 
 #ifndef LIT64
@@ -77,29 +73,21 @@
 #endif
 
 #include <limits.h>
-#if HAVE_LOCALE_H
 #include <locale.h>
-#endif
 #include <math.h>
 #include <ctype.h>
-#if HAVE_UNISTD_H
 #include <unistd.h>
-#endif
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#if HAVE_SYS_TIME_H
 #include <sys/time.h>
-#endif
 #include <time.h>
 
 #ifndef MYMAN_UTILS_H_INCLUDED
 #include "utils.h"
 #endif
 
-#if HAVE_LANGINFO_H
 #include <langinfo.h>
-#endif
 
 #ifndef F_OK
 #define F_OK 0
@@ -153,9 +141,7 @@
 #if HAVE_IOCTL_H
 #include <ioctl.h>
 #else
-#if HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
-#endif
 #endif
 #ifdef TIOCGWINSZ
 #include <termios.h>
@@ -181,16 +167,12 @@
 #if USE_ICONV
 #include <iconv.h>
 #ifndef wcwidth
-#if HAVE_WCHAR_H
 #include <wchar.h>
-#endif
 #endif
 #ifdef LC_CTYPE
 #ifndef uint32_t
 /* for uint32_t */
-#if HAVE_STDINT_H
 #include <stdint.h>
-#endif
 #endif
 #endif
 
@@ -3382,7 +3364,7 @@ doubletime(void)
 
     tval.tv_sec = 0;
     tval.tv_usec = 0;
-    if (myman_gettimeofday(&tval, 0))
+    if (gettimeofday(&tval, 0))
     {
         return -1.0L;
     }
