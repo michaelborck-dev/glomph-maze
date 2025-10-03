@@ -28,3 +28,11 @@
  */
 
 #include "screen.h"
+#include "globals.h"
+
+/* Extracted from myman.c line 3366 */
+void
+snapshot_attrset(chtype attrs)
+{
+    snapshot_attrs = attrs;
+}

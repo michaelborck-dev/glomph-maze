@@ -307,6 +307,14 @@
 #include "optcurs.h"
 #endif
 
+/* Global state declarations for Phase 2 refactoring */
+#include "globals.h"
+
+/* New modular screen functions */
+#ifdef USE_NEW_SCREEN
+#include "render/screen.h"
+#endif
+
 /* work-arounds for old VMS curses */
 #if defined(_VMS_CURSES) || defined(__VMS_CURSES)
 
@@ -2620,15 +2628,15 @@ init_trans(int use_bullet_for_dots)
         'P';
 }
 
-static int use_raw = USE_RAW;
+int use_raw = USE_RAW;
 
-static int use_raw_ucs = USE_RAW_UCS;
+int use_raw_ucs = USE_RAW_UCS;
 
 int use_underline = USE_UNDERLINE;
 
 static int use_idlok = 1;
 
-static int use_acs = 1;
+int use_acs = 1;
 static int use_acs_p = 0;
 
 static int use_dim_and_bright = 0;
@@ -2723,11 +2731,11 @@ direction not blocked by an appropriate wall
 
 */
 
-static chtype
+chtype
 pen[NPENS];
 
 /* color palette for USE_PALETTE and HTML snapshots */
-static const short
+const short
 pen_pal[16][3] =
 {
 /*  {  red,green, blue } */
@@ -3244,11 +3252,11 @@ init_pen(void)
 
 FILE *snapshot = NULL;
 FILE *snapshot_txt = NULL;
-static int snapshot_x = 0;
-static int snapshot_y = 0;
-static chtype snapshot_attrs = 0;
-static chtype snapshot_attrs_active = 0;
-static int snapshot_use_color = 0;
+int snapshot_x = 0;
+int snapshot_y = 0;
+chtype snapshot_attrs = 0;
+chtype snapshot_attrs_active = 0;
+int snapshot_use_color = 0;
 
 /* simulate a subset of curses attributes in HTML; note that this
  * generates presentational markup (<font color="...">, <u>, <b>,
@@ -3359,15 +3367,17 @@ snapshot_attrset_active(chtype attrs)
 }
 
 /* non-outputting version of snapshot_attrset */
+#ifndef USE_NEW_SCREEN
 static void
 snapshot_attrset(chtype attrs)
 {
     snapshot_attrs = attrs;
 }
+#endif /* USE_NEW_SCREEN */
 
-static int location_is_suspect = 0;
-static int last_valid_line = 0;
-static int last_valid_col = -1;
+int location_is_suspect = 0;
+int last_valid_line = 0;
+int last_valid_col = -1;
 
 static int
 my_erase(void)

@@ -42,4 +42,11 @@ chtype cp437_to_ascii(unsigned char ch);
 #include <wchar.h>
 wchar_t ucs_to_wchar(unsigned long ucs);
 
+/* Function to get width of wide character */
+int my_wcwidth(wchar_t wc);
+
+/* Signal handling state */
+extern volatile int got_sigwinch;
+extern void (*old_sigwinch_handler)(int);
+
 #endif

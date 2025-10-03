@@ -30,4 +30,9 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+#include <curses.h>
+
+/* Snapshot attribute functions */
+void snapshot_attrset(chtype attrs);
+
 #endif

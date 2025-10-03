@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <wchar.h>
+#include <signal.h>
 
 #ifdef CODESET
 #include <langinfo.h>
@@ -236,4 +237,56 @@ wchar_t ucs_to_wchar(unsigned long ucs)
 #else
 /* No iconv support - use simple macro */
 #define ucs_to_wchar(ucs) ((((unsigned long) (wchar_t) (unsigned long) (ucs)) == ((unsigned long) (ucs))) ? ((wchar_t) (unsigned long) (ucs)) : ((wchar_t) 0))
+#endif
+
+/* Extracted from myman.c line 1946 */
+static int wcwidth_is_suspect = -1;
+
+int my_wcwidth(wchar_t wc)
+{
+    int len;
+
+    len = wcwidth(wc);
+    if ((len == 1) && (wc & ~0xff))
+    {
+        if (wcwidth_is_suspect == -1)
+        {
+            wchar_t twc;
+
+            wcwidth_is_suspect = 0;
+            twc = ucs_to_wchar(0xff21); /* U+FF21 FULLWIDTH LATIN CAPITAL LETTER A */
+            if (twc
+                &&
+                (twc != 0xff21)
+                &&
+                (twc & ~0xff)
+                &&
+                wcwidth(twc) == 1)
+            {
+                wcwidth_is_suspect = 1;
+            }
+        }
+        if (wcwidth_is_suspect)
+        {
+            len = 2;
+        }
+    }
+    return len;
+}
+
+/* Extracted from myman.c line 726 */
+volatile int got_sigwinch = 0;
+
+#if USE_SIGWINCH
+
+void (*old_sigwinch_handler)(int);
+
+static void sigwinch_handler(int signum)
+{
+    if (signum == SIGWINCH)
+    {
+        got_sigwinch = 1;
+    }
+}
+
 #endif
