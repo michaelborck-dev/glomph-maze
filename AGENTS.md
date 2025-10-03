@@ -7,7 +7,7 @@ First, install CMake: `brew install cmake`
 
 - **Configure**: `cmake -B build -DCMAKE_BUILD_TYPE=Debug`
 - **Build**: `cmake --build build` (first: ~30s, incremental: 1-2s)
-- **Test**: `./build/bigman --help`
+- **Test**: `./build/glomph --help`
 - **Clean**: `rm -rf build`
 - **Format**: `cmake --build build --target format`
 - **Lint**: `cmake --build build --target lint`
@@ -20,7 +20,7 @@ See `CMAKE_SETUP.md` for details.
 - **Format fix**: `clang-format -i src/*.c inc/*.h`
 - **Lint**: `clang-tidy --fix --quiet src/*.c inc/*.h`
 - **Static analysis**: `cppcheck --enable=all --inconclusive --suppress=missingInclude src/ inc/`
-- **Test**: `./build/bigman --help` or `./build/hugeman --help` (basic smoke test)
+- **Test**: `./build/glomph --help` or `./build/glomph-xlarge --help` (basic smoke test)
 
 ## Changelog Commands
 - **Generate changelog**: `./scripts/generate_changelog.sh` (regenerates CHANGELOG.md from git history)

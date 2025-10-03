@@ -5,13 +5,13 @@
 ```bash
 # Fast builds RIGHT NOW (no setup)
 make -f simple.mk
-./bigman
+./glomph
 
 # Better builds (30 min setup, worth it)
 brew install cmake
 cmake -B build
 cmake --build build
-./build/bigman
+./build/glomph
 ```
 
 ## The Situation
@@ -25,7 +25,7 @@ cmake --build build
 ```bash
 cd /Users/michael/Projects/glomph-maze
 make -f simple.mk
-./bigman
+./glomph
 # Arrow keys to move, Q to quit, ? for help
 ```
 
@@ -38,7 +38,7 @@ make -f simple.mk
 make -f simple.mk
 
 # Test
-./bigman --help
+./glomph --help
 
 # Edit code
 vim src/myman.c
@@ -65,7 +65,7 @@ cmake -B build
 cmake --build build
 
 # Test
-./build/bigman --help
+./build/glomph --help
 
 # Edit code
 vim src/myman.c
@@ -82,7 +82,7 @@ cmake --build build --target format
 # Find bugs with sanitizer
 cmake -B build-asan -DENABLE_ASAN=ON
 cmake --build build-asan
-./build-asan/bigman
+./build-asan/glomph
 ```
 
 **Pros:** Fast incremental builds, testing, IDE support, sanitizers  
@@ -106,10 +106,10 @@ cmake --build build-asan
 
 All three options create these binaries:
 
-- `hugeman` - Huge ASCII art tiles
-- `bigman` - Big ASCII art tiles (default)
-- `smallman` - Small 2x2 character tiles
-- `squareman` - Tiny 1x1 character tiles
+- `glomph-xlarge` - Huge ASCII art tiles
+- `glomph` - Big ASCII art tiles (default)
+- `glomph-small` - Small 2x2 character tiles
+- `glomph-tiny` - Tiny 1x1 character tiles
 
 ## Next Steps
 

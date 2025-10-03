@@ -53,7 +53,7 @@ Original project last updated in 2009; this fork adds modern maintenance while p
 
 4. Run:
    ```bash
-   ./build/bigman
+   ./build/glomph
    ```
 
 See [CMAKE_SETUP.md](CMAKE_SETUP.md) for detailed build instructions and options.
@@ -78,7 +78,14 @@ Environment variables for fine-tuning rendering (see original README notes).
 
 ## Building and Renaming Note
 
-This fork renames binaries/docs from \"MyMan\" to \"Glomph Maze\". The CMake build produces multiple variants: `bigman`, `hugeman`, `smallman`, and `squareman`.
+This fork renames binaries/docs from \"MyMan\" to \"Glomph Maze\". The CMake build produces four size variants:
+
+- **`glomph`** (default) - 4×4 filled bitmap characters, best balance of detail and compatibility
+- **`glomph-xlarge`** - 5×3 ASCII-art outlined characters, largest and most detailed
+- **`glomph-small`** - 2×1 Unicode symbols, compact display fits more on screen
+- **`glomph-tiny`** - 1×1 single characters, minimal display for small terminals
+
+All variants play identically; only the visual rendering differs.
 
 ## Future Plans
 

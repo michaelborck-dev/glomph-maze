@@ -64,17 +64,16 @@ macro(add_size_variant name size tiles sprites)
     install(TARGETS ${name} DESTINATION bin)
 endmacro()
 
-# Create the four size variants (matches simple.mk)
-add_size_variant(hugeman "huge" ${SIZE_HUGE_TILES} ${SIZE_HUGE_SPRITES})
-add_size_variant(bigman "big" ${SIZE_BIG_TILES} ${SIZE_BIG_SPRITES})
-add_size_variant(smallman "small" ${SIZE_SMALL_TILES} ${SIZE_SMALL_SPRITES})
-add_size_variant(squareman "square" ${SIZE_SQUARE_TILES} ${SIZE_SQUARE_SPRITES})
+# Create the four size variants
+add_size_variant(glomph-xlarge "xlarge" ${SIZE_HUGE_TILES} ${SIZE_HUGE_SPRITES})
+add_size_variant(glomph "standard" ${SIZE_BIG_TILES} ${SIZE_BIG_SPRITES})
+add_size_variant(glomph-small "small" ${SIZE_SMALL_TILES} ${SIZE_SMALL_SPRITES})
+add_size_variant(glomph-tiny "tiny" ${SIZE_SQUARE_TILES} ${SIZE_SQUARE_SPRITES})
 
-# Default target is bigman (symlink as glomph-maze)
+# Default target (glomph is the main binary)
 add_custom_target(glomph-maze ALL
-    COMMAND ${CMAKE_COMMAND} -E create_symlink bigman glomph-maze
-    DEPENDS bigman
-    COMMENT "Creating glomph-maze symlink to bigman"
+    DEPENDS glomph
+    COMMENT "Building glomph-maze (glomph is the default variant)"
 )
 
 # Install data files
@@ -120,17 +119,17 @@ endif()
 enable_testing()
 
 # Basic smoke test
-add_test(NAME smoke_test_bigman
-    COMMAND bigman --help
+add_test(NAME smoke_test_glomph
+    COMMAND glomph --help
 )
-set_tests_properties(smoke_test_bigman PROPERTIES
+set_tests_properties(smoke_test_glomph PROPERTIES
     PASS_REGULAR_EXPRESSION "Usage:"
 )
 
 # Test all variants
-add_test(NAME smoke_test_hugeman COMMAND hugeman --help)
-add_test(NAME smoke_test_smallman COMMAND smallman --help)
-add_test(NAME smoke_test_squareman COMMAND squareman --help)
+add_test(NAME smoke_test_glomph_xlarge COMMAND glomph-xlarge --help)
+add_test(NAME smoke_test_glomph_small COMMAND glomph-small --help)
+add_test(NAME smoke_test_glomph_tiny COMMAND glomph-tiny --help)
 
 # Sanitizer build option
 option(ENABLE_ASAN "Enable AddressSanitizer" OFF)

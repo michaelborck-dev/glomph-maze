@@ -11,11 +11,11 @@
 cmake --build build --clean-first
 ```
 
-- ✅ **hugeman** - 350KB executable
-- ✅ **bigman** - 350KB executable  
-- ✅ **smallman** - 350KB executable
-- ✅ **squareman** - 350KB executable
-- ✅ **glomph-maze** - symlink to bigman
+- ✅ **glomph-xlarge** - 350KB executable
+- ✅ **glomph** - 350KB executable  
+- ✅ **glomph-small** - 350KB executable
+- ✅ **glomph-tiny** - 350KB executable
+- ✅ **glomph-maze** - symlink to glomph
 
 **Warnings:** Only 3 minor compiler warnings (pre-existing, not from our changes)
 
@@ -23,16 +23,16 @@ cmake --build build --clean-first
 
 ### Help System
 ```bash
-./build/bigman --help
-./build/hugeman --help
-./build/smallman --help
-./build/squareman --help
+./build/glomph --help
+./build/glomph-xlarge --help
+./build/glomph-small --help
+./build/glomph-tiny --help
 ```
 ✅ All display correct usage information
 
 ### Game Execution
 ```bash
-./build/bigman -q -n  # Quiet mode, no color
+./build/glomph -q -n  # Quiet mode, no color
 ```
 ✅ Game launches and renders correctly
 ✅ Maze displays with proper box-drawing characters
