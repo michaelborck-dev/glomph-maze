@@ -55,14 +55,10 @@
 
 
 
-/* MyMan utilities; also defines cruft like __MSDOS__ under some circumstances */
 #ifndef MYMAN_UTILS_H_INCLUDED
 #include "utils.h"
 #endif
 
-#if defined(WIN32)
-#include <windows.h>
-#endif
 
 /* command-line argument parser */
 #ifndef MYGETOPT_H
@@ -1544,12 +1540,6 @@ static FILE *fopen_datafile(const char *path, const char *mode)
             {
                 sep = buf;
             }
-#if defined(WIN32) || defined(__MSDOS__)
-            if (strrchr(sep, '\\'))
-            {
-                sep = strrchr(sep, '\\');
-            }
-#endif
             if (sep && (sep != buf))
             {
                 sep += 1;
@@ -1565,14 +1555,6 @@ static FILE *fopen_datafile(const char *path, const char *mode)
                         sep += strlen(".app");
                         sep[0] = '\0';
                     }
-#if defined(WIN32) || defined(__MSDOS__)
-                    if (strstr(buf, ".app\\"))
-                    {
-                        sep = strstr(buf, ".app\\");
-                        sep += strlen(".app");
-                        sep[0] = '\0';
-                    }
-#endif
                     if (sep)
                     {
                         sep = strrchr(buf, '/');
@@ -1580,12 +1562,6 @@ static FILE *fopen_datafile(const char *path, const char *mode)
                         {
                             sep = buf;
                         }
-#if defined(WIN32) || defined(__MSDOS__)
-                        if (strrchr(sep, '\\'))
-                        {
-                            sep = strrchr(sep, '\\');
-                        }
-#endif
                         if (sep && (sep != buf))
                         {
                             sep += 1;
@@ -4806,9 +4782,6 @@ int myman_setenv(const char *name, const char *value)
 #endif /* ! HAVE_PUTENV */
             free((void *) pair);
         }
-#ifdef WIN32
-        ret = SetEnvironmentVariableA(name, value) ? ret : 1;
-#endif /* ! defined(WIN32) */
     }
 #endif /* HAVE_PUTENV || defined(WIN32) */
 #endif /* ! HAVE_SETENV */

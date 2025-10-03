@@ -35,12 +35,6 @@
 #include "guess.h"
 #endif
 
-/* used in various WIN32 workaround functions */
-#ifdef __BORLANDC__
-#ifndef LIT64
-#define LIT64(lit) lit##L
-#endif
-#endif
 
 #ifndef LIT64
 #define LIT64(lit) lit##LL
@@ -99,7 +93,6 @@
 #endif
 #include <time.h>
 
-/* MyMan utilities; also defines cruft like __MSDOS__ under some circumstances */
 #ifndef MYMAN_UTILS_H_INCLUDED
 #include "utils.h"
 #endif

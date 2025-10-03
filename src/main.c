@@ -82,7 +82,6 @@
 #endif
 #endif
 
-/* MyMan utilities; also defines cruft like __MSDOS__ under some circumstances */
 #include "utils.h"
 
 #ifdef XCURSES
