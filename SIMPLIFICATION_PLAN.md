@@ -29,6 +29,13 @@ Removed all `#if 0` blocks for legacy platforms:
 - [x] Test build: ✅ All 4 variants working
 - **Result:** 7,957 → 7,860 lines (removed 97 lines)
 
+### ✅ Step 4: Simplify Curses Header Includes (DONE)
+Replaced complex MY_CURSES_H conditional chain with simple `#include <curses.h>`:
+- [x] Removed alternate curses header blocks (AACURSES, NEWTCURSES, DISPCURSES, EFICURSES, CONIOCURSES, GRAPHCURSES, RAWCURSES, MACCURSES, TWCURSES, GGICURSES)
+- [x] Simplified to direct ncurses include
+- [x] Test build: ✅ All 4 variants working
+- **Result:** 7,860 → 7,785 lines (removed 75 lines)
+
 ### Step 4: Remove Remaining Platform Conditionals (Next)
 For each platform, remove conditionals and test:
 
@@ -64,8 +71,11 @@ After each round:
 - **Starting point:** 7,999 lines (before any simplification)
 - **After header removal:** 7,957 lines (42 lines from disabled graphics blocks)
 - **After #if 0 deletion:** 7,860 lines (97 lines of dead platform code)
+- **After curses simplification:** 7,785 lines (75 lines of header conditionals)
+- **Total removed:** 214 lines
 - **Target:** ~4,000-5,000 lines (estimated)
-- **Remaining:** ~3,860 lines to remove
+- **Remaining:** ~3,785 lines to remove
+- **Current complexity:** 828 conditional blocks (#if/#ifdef) - major source of complexity!
 
 ---
 
@@ -88,10 +98,11 @@ After simplification complete:
 - ✅ mygetopt: 710 lines
 - ✅ Disabled graphics blocks: 42 lines
 - ✅ #if 0 dead code: 97 lines (XCURSES, CACA, GTK, FLTK, ALLEGRO, SLANG)
-- [ ] DOS/Windows 95 code in myman.c
-- [ ] VMS code in myman.c
-- [ ] Obscure Unix code in myman.c
-- [ ] Alternate graphics code in myman.c
+- ✅ Curses header conditionals: 75 lines (10 alternate curses includes)
+- [ ] DOS/Windows 95 code in myman.c (Not found - may have been removed already)
+- [ ] VMS code in myman.c (Contains critical macro definitions - careful!)
+- [ ] Obscure Unix code in myman.c (Not found - may have been removed already)
+- [ ] More conditional blocks - 828 remaining!
 
 ### Builds Status:
 - ✅ hugeman compiles & runs
