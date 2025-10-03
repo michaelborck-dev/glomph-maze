@@ -3692,6 +3692,7 @@ my_move(int y, int x)
 
 #if USE_ATTR || USE_COLOR
 
+#ifndef USE_NEW_SCREEN
 static int
 my_real_attrset(chtype attrs)
 {
@@ -3750,10 +3751,13 @@ my_real_attrset(chtype attrs)
 #endif
     return 1;
 }
+#endif /* USE_NEW_SCREEN */
 
+#ifndef USE_NEW_SCREEN
 #if DANGEROUS_ATTRS
 static chtype my_attrs = 0;
 #endif
+#endif /* USE_NEW_SCREEN */
 
 #endif /* USE_ATTR || USE_COLOR */
 

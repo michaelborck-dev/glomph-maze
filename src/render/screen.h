@@ -36,4 +36,7 @@
 void snapshot_attrset(chtype attrs);
 void snapshot_attrset_active(chtype attrs);
 
+/* Attribute setting functions */
+int my_real_attrset(chtype attrs);
+
 #endif

@@ -27,6 +27,11 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+/* Need feature detection first */
+#ifndef MYMAN_GUESS_H_INCLUDED
+#include "guess.h"
+#endif
+
 #include "screen.h"
 #include "globals.h"
 
@@ -144,4 +149,73 @@ snapshot_attrset_active(chtype attrs)
 #endif
     }
     fflush(snapshot);
+}
+
+/* Extracted from myman.c line 3696 */
+/* Note: Always compiled in screen.c, guards remain in myman.c */
+#ifndef DANGEROUS_ATTRS
+#define DANGEROUS_ATTRS 0
+#endif
+
+#if DANGEROUS_ATTRS
+static chtype my_attrs = 0;
+#endif
+
+int
+my_real_attrset(chtype attrs)
+{
+#if DANGEROUS_ATTRS
+    if (attrs)
+    {
+        int cur_x, cur_y;
+
+        getyx(stdscr, cur_y, cur_x);
+        /* classic BSD curses has an annoying bug which causes it to
+         * hang if attributes are used in the last writable screen
+         * cell */
+        if ((cur_x >= (COLS - (CJK_MODE ? 1 : 0) - 2 * (cur_y == (LINES - 1)))))
+        {
+            return 1;
+        }
+    }
+#endif
+#if HAVE_ATTRSET
+    attrset(attrs);
+#else
+    {
+#ifdef MY_A_STANDOUT
+        if (attrs & MY_A_STANDOUT) standout();
+        else standend();
+#endif
+#if HAVE_SETATTR
+        {
+#ifdef MY_A_BLINK
+#ifdef _BLINK
+            if (attrs & MY_A_BLINK) setattr(_BLINK);
+            else clrattr(_BLINK);
+#endif
+#endif
+#ifdef MY_A_BOLD
+#ifdef _BOLD
+            if (attrs & MY_A_BOLD) setattr(_BOLD);
+            else clrattr(_BOLD);
+#endif
+#endif
+#ifdef MY_A_REVERSE
+#ifdef _REVERSE
+            if (attrs & MY_A_REVERSE) setattr(_REVERSE);
+            else clrattr(_REVERSE);
+#endif
+#endif
+#ifdef MY_A_UNDERLINE
+#ifdef _UNDERLINE
+            if (attrs & MY_A_UNDERLINE) setattr(_UNDERLINE);
+            else clrattr(_UNDERLINE);
+#endif
+#endif
+        }
+#endif
+    }
+#endif
+    return 1;
 }
