@@ -3537,6 +3537,7 @@ my_erase(void)
     }
 }
 
+#ifndef USE_NEW_SCREEN
 int
 my_clear(void)
 {
@@ -3586,6 +3587,7 @@ my_refresh(void)
     }
     return refresh();
 }
+#endif /* USE_NEW_SCREEN */
 
 #ifndef USE_NEW_SCREEN
 static void

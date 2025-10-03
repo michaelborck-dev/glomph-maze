@@ -43,6 +43,9 @@ int my_attrset(chtype attrs);
 
 /* Window management functions */
 void my_move(int y, int x);
+int my_clear(void);
+void my_clearok(int ok);
+int my_refresh(void);
 
 /* Character output functions */
 int my_addch(unsigned long b, chtype attrs);

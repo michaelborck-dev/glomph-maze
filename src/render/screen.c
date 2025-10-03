@@ -1308,3 +1308,53 @@ my_getch(void)
     k = getch();
     return k;
 }
+
+int
+my_clear(void)
+{
+    location_is_suspect = 0;
+    return clear();
+}
+
+void
+my_clearok(int ok)
+{
+    clearok(curscr, (ok ? TRUE : FALSE));
+}
+
+int
+my_refresh(void)
+{
+    if (snapshot)
+    {
+        snapshot_attrset_active(0);
+        fprintf(snapshot,
+                CRLF
+                "</font></pre></body></html>"
+                CRLF);
+        fflush(snapshot);
+        fclose(snapshot);
+        snapshot = (FILE *) 0;
+    }
+    if (snapshot_txt)
+    {
+        fprintf(snapshot_txt,
+                CRLF);
+        fflush(snapshot_txt);
+        fclose(snapshot_txt);
+        snapshot_txt = (FILE *) 0;
+    }
+    if (location_is_suspect)
+    {
+        if (((last_valid_col + 1) < COLS)
+            ||
+            ((last_valid_line + 1) < LINES))
+        {
+            move((last_valid_line + (last_valid_col + 1) / COLS), (last_valid_col + 1) % COLS);
+            clrtobot();
+        }
+        last_valid_col = COLS - 1;
+        last_valid_line = LINES - 1;
+    }
+    return refresh();
+}
