@@ -27,7 +27,7 @@ find_package(Curses REQUIRED)
 
 # Include directories
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CURSES_INCLUDE_DIR}
 )
 
@@ -95,7 +95,7 @@ if(CLANG_FORMAT)
     add_custom_target(format
         COMMAND ${CLANG_FORMAT} -i
             ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
-            ${CMAKE_CURRENT_SOURCE_DIR}/inc/*.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Running clang-format"
     )
@@ -106,7 +106,7 @@ if(CLANG_TIDY)
     add_custom_target(lint
         COMMAND ${CLANG_TIDY}
             ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
-            ${CMAKE_CURRENT_SOURCE_DIR}/inc/*.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h
             --
             -I${CMAKE_CURRENT_SOURCE_DIR}/inc
             -I${CMAKE_CURRENT_SOURCE_DIR}/mygetopt
