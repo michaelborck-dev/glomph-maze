@@ -156,27 +156,27 @@
 #endif
 
 #ifndef MY_CURSES_H
-#ifdef XCURSES
+#if 0 // OLD_XCURSES
 #define MY_CURSES_H <xcurses.h>
 #endif
 #endif
 
 #ifndef MY_CURSES_H
-#ifdef CACACURSES
+#if 0 // OLD_CACACURSES
 #include "cacacurs.h"
 #define MY_CURSES_H "optcurs.h"
 #endif
 #endif
 
 #ifndef MY_CURSES_H
-#ifdef GTKCURSES
+#if 0 // OLD_GTKCURSES
 #include "gtkcurs.h"
 #define MY_CURSES_H "optcurs.h"
 #endif
 #endif
 
 #ifndef MY_CURSES_H
-#ifdef FLTKCURSES
+#if 0 // OLD_FLTKCURSES
 #include "fltkcurs.h"
 #define MY_CURSES_H "optcurs.h"
 #endif
@@ -238,7 +238,7 @@
 #endif
 
 #ifndef MY_CURSES_H
-#ifdef ALLEGROCURSES
+#if 0 // OLD_ALLEGROCURSES
 #include "allegcur.h"
 #define MY_CURSES_H "optcurs.h"
 #endif
@@ -975,7 +975,7 @@ static int locale_is_utf8(void)
 #endif
 
 #ifndef USE_RAW_UCS
-#ifdef SLANG_VERSION
+#if 0 // OLD_SLANG_VERSION
 #if SLANG_VERSION >= 20000
 #define USE_RAW_UCS 1
 #else
@@ -4673,7 +4673,7 @@ my_addstr(const char *s, chtype attrs)
     return ret;
 }
 
-#ifdef XCURSES
+#if 0 // OLD_XCURSES
 #define XCURSES_USAGE \
 " [ -- toolkit-options]"
 #else
@@ -5577,7 +5577,7 @@ static int sdl_audio_open = 0;
 void
 gamesfx(void)
 {
-#ifdef ALLEGROCURSES
+#if 0 // OLD_ALLEGROCURSES
 #define handle_sfx(n) \
             do { if (myman_sfx & myman_sfx_ ## n) \
             { \
@@ -7042,7 +7042,7 @@ gameinput(void)
 static void
 myman(void)
 {
-#ifdef SLANG_VERSION
+#if 0 // OLD_SLANG_VERSION
 #if SLANG_VERSION >= 20000
     SLutf8_enable(-1);
     SLtt_utf8_enable(1);
@@ -7062,7 +7062,7 @@ myman(void)
 #endif
         if (! myman_lines) myman_lines = (reflect ? (maze_w * gfx_w) : (maze_h * gfx_h)) + (3 * tile_h + sprite_h);
         if (! myman_columns) myman_columns = (reflect ? (maze_h * gfx_h) : (maze_w * gfx_w)) * (use_fullwidth ? 2 : 1);
-#ifdef GTKCURSES
+#if 0 // OLD_GTKCURSES
         if (((! myman_getenv("GTKCURSES_ICON")) || ! *(myman_getenv("GTKCURSES_ICON"))) && MYMANICONPNG && *MYMANICONPNG)
         {
             myman_setenv("GTKCURSES_ICON", MYMANICONPNG);
@@ -7078,7 +7078,7 @@ myman(void)
         if (! reinit_requested)
 #endif
         {
-#ifdef XCURSES
+#if 0 // OLD_XCURSES
             if (! Xinitscr(argc, argv))
             {
                 perror("Xinitscr");
@@ -7260,7 +7260,7 @@ myman(void)
     } while (reinit_requested);
     fprintf(stderr, "%s: scored %d points\n",
             progname, score);
-#ifdef XCURSES
+#if 0 // OLD_XCURSES
     XCursesExit();
 #endif
 #if USE_ICONV
@@ -7648,7 +7648,7 @@ parse_myman_args(int argc, char **argv)
         debug = atoi(myman_getenv("MYMAN_DEBUG"));
         debug = debug ? debug : 1;
     }
-#ifdef XCURSES
+#if 0 // OLD_XCURSES
     argv[optind - 1] = progname;
     argc -= optind;
     argc ++;
