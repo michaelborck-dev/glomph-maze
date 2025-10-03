@@ -460,7 +460,7 @@ static int locale_is_utf8(void)
 #endif
 
 #ifndef HAVE_CURS_SET
-#define HAVE_CURS_SET USE_ATTR
+#define HAVE_CURS_SET 1
 #endif
 
 
