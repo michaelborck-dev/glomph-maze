@@ -3414,6 +3414,8 @@ pager(void)
         }
         if (loop_iter > 1000) { 
             if (debug_pager) fprintf(debug_pager, "  SAFETY BREAK: infinite loop detected!\n");
+            pager_notice = 0;
+            pager_remaining = 0;
             break; 
         }
 
@@ -3917,7 +3919,7 @@ pager(void)
 #ifdef KEY_RESIZE
             if (k == KEY_RESIZE)
             {
-                reinit_requested = 1;
+                pager_remaining = pager_notice;
             }
             else
 #endif
@@ -4015,9 +4017,13 @@ pager(void)
                     if (got_sigwinch)
                     {
                         use_env(FALSE);
+                        got_sigwinch = 0;
+                        pager_remaining = pager_notice;
                     }
-                    got_sigwinch = 0;
-                    reinit_requested = 1;
+                    else
+                    {
+                        reinit_requested = 1;
+                    }
                 }
                 else if ((k == MYMANCTRL('@')) && (k != ERR))
                 {
@@ -5214,11 +5220,10 @@ gameinput(void)
             gameinfo();
             return 0;
         }
-        else if ((k == '\?') || (k == MYMANCTRL('H')))
+        else if ((k == '?') || (k == MYMANCTRL('H')))
         {
-            /* Temporarily disabled - help system under refactoring */
             gamehelp();
-            return 1; /* Trigger screen refresh */
+            return 1;
         } else if ((k == '@') || (got_sigwinch && (k == ERR)))
         {
             if (got_sigwinch)
@@ -5549,6 +5554,10 @@ myman(void)
 #endif
         reinit_requested = 0;
         pager();
+        if (! pager_notice)
+        {
+            reinit_requested = 0;
+        }
         old_lines = 0;
         old_cols = 0;
         old_score = 0;

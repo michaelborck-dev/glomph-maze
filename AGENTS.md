@@ -26,7 +26,7 @@ See `CMAKE_SETUP.md` for details.
 - **Generate changelog**: `./scripts/generate_changelog.sh` (regenerates CHANGELOG.md from git history)
 
 ## Known Issues
-None currently. The help system has been re-enabled and is working correctly.
+None currently. Help system is working correctly.
 
 ## Code Style Guidelines
 
