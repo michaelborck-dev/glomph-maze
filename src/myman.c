@@ -98,13 +98,7 @@
 #endif
 #include <stdlib.h>
 #include <string.h>
-#if HAVE_IO_H
-#include <io.h>
-#endif
 #include <stdio.h>
-#if HAVE_UNIXIO_H
-#include <unixio.h>
-#endif
 #if HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
@@ -179,9 +173,7 @@
 #endif
 #endif
 #ifdef TIOCGWINSZ
-#ifndef VMS
 #include <termios.h>
-#endif
 #endif
 #endif
 

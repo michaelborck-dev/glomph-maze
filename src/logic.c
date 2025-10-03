@@ -66,9 +66,6 @@
 #endif /* ! defined(TARGET_API_MAC_CARBON) */
 #endif /* ! defined(macintosh) */
 
-#ifdef VMS
-#include <unixlib.h>
-#endif /* defined(VMS) */
 
 /* MyMan utilities; also defines cruft like __MSDOS__ under some circumstances */
 #ifndef MYMAN_UTILS_H_INCLUDED
