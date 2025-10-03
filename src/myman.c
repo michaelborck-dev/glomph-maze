@@ -505,13 +505,6 @@ static int locale_is_utf8(void)
 #define USE_UNDERLINE 0
 #endif
 
-#ifndef USE_ATTR
-#ifdef A_BOLD
-#define USE_ATTR 1
-#else
-#define USE_ATTR 0
-#endif
-#endif
 
 #ifndef DANGEROUS_ATTRS
 #define DANGEROUS_ATTRS 0
@@ -521,11 +514,6 @@ static int locale_is_utf8(void)
 #define HAVE_CURS_SET USE_ATTR
 #endif
 
-#if ! USE_ATTR
-#ifndef USE_COLOR
-#define USE_COLOR 0
-#endif
-#endif
 
 #ifndef USE_BEEP
 #define USE_BEEP 1
@@ -877,7 +865,6 @@ init_trans(int use_bullet_for_dots)
     altcharset_cp437[223] =
         ascii_cp437[223] = '\"';
     
-#if USE_ATTR
 #ifdef A_REVERSE
     if (! isprint(8))
     {
@@ -890,7 +877,6 @@ init_trans(int use_bullet_for_dots)
             ascii_cp437[8] |= A_REVERSE;
         }
     }
-#endif
 #endif
     altcharset_cp437[201] =
 #ifdef ACS_BDDB
@@ -1227,7 +1213,6 @@ init_trans(int use_bullet_for_dots)
         ascii_cp437[9] =
         ascii_cp437[254] =
         'o';
-#if USE_ATTR
 #ifdef A_REVERSE
     if (! (A_REVERSE & 0xff))
     {
@@ -1237,7 +1222,6 @@ init_trans(int use_bullet_for_dots)
     {
         ascii_cp437[8] |= A_REVERSE;
     }
-#endif
 #endif
     altcharset_cp437[25] =
         altcharset_cp437[31] =
@@ -1508,7 +1492,6 @@ pen_pal[16][3] =
 : ((i) == 6) ? COLOR_YELLOW \
 : COLOR_WHITE)
 
-#if USE_ATTR
 #ifndef PEN_BRIGHT
 #ifdef A_BOLD
 #define PEN_BRIGHT A_BOLD
@@ -1517,7 +1500,6 @@ pen_pal[16][3] =
 #ifndef PEN_DIM
 #ifdef A_DIM
 #define PEN_DIM A_DIM
-#endif
 #endif
 #endif
 
@@ -2417,7 +2399,6 @@ my_move(int y, int x)
     while(0);
 }
 
-#if USE_ATTR || USE_COLOR
 
 static int
 my_real_attrset(chtype attrs)
@@ -2482,13 +2463,11 @@ my_real_attrset(chtype attrs)
 static chtype my_attrs = 0;
 #endif
 
-#endif /* USE_ATTR || USE_COLOR */
 
 static int
 my_attrset(chtype attrs)
 {
     snapshot_attrset(attrs);
-#if USE_ATTR || USE_COLOR
     attrs ^= (snapshot || snapshot_txt) ?
 #ifdef A_REVERSE
       A_REVERSE
@@ -2501,7 +2480,6 @@ my_attrset(chtype attrs)
 #else
     my_real_attrset(attrs);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
     return 1;
 }
 
@@ -2989,7 +2967,6 @@ snapshot_addch(short inbyte)
         }
         if (snapshot_txt)
         {
-#if USE_ATTR
 #ifdef A_BOLD
             if (snapshot_attrs_active & A_BOLD)
             {
@@ -3008,7 +2985,6 @@ snapshot_addch(short inbyte)
             {
                 fputs("_\b", snapshot_txt);
             }
-#endif
 #endif
             fputc_utf8(codepoint, snapshot_txt);
             fflush(snapshot_txt);
@@ -3069,11 +3045,9 @@ my_addch(unsigned long b, chtype attrs)
             snapshot_addch(rhs);
         }
     }
-#if USE_ATTR || USE_COLOR
 #if DANGEROUS_ATTRS
     my_real_attrset(my_attrs);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
     do
     {
         if (use_acs && use_raw && ! use_raw_ucs)
@@ -3141,11 +3115,9 @@ my_addch(unsigned long b, chtype attrs)
                                     if (c & ~A_CHARTEXT)
                                     {
                                         my_attrset(attrs);
-#if USE_ATTR || USE_COLOR
 #if DANGEROUS_ATTRS
                                         my_real_attrset(my_attrs);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
                                     }
 #endif
 #endif
@@ -3155,11 +3127,9 @@ my_addch(unsigned long b, chtype attrs)
                                     if (c & ~A_CHARTEXT)
                                     {
                                         my_attrset(attrs);
-#if USE_ATTR || USE_COLOR
 #if DANGEROUS_ATTRS
                                         my_real_attrset(my_attrs);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
                                     }
 #endif
 #endif
@@ -3182,11 +3152,9 @@ my_addch(unsigned long b, chtype attrs)
                 if (c & ~A_CHARTEXT)
                 {
                     my_attrset(attrs | (c & ~A_CHARTEXT));
-#if USE_ATTR || USE_COLOR
 #if DANGEROUS_ATTRS
                     my_real_attrset(my_attrs);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
                 }
 #endif
 #endif
@@ -3196,11 +3164,9 @@ my_addch(unsigned long b, chtype attrs)
                 if (c & ~A_CHARTEXT)
                 {
                     my_attrset(attrs);
-#if USE_ATTR || USE_COLOR
 #if DANGEROUS_ATTRS
                     my_real_attrset(my_attrs);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
                 }
 #endif
 #endif
@@ -3220,11 +3186,9 @@ my_addch(unsigned long b, chtype attrs)
                             if (c & ~A_CHARTEXT)
                             {
                                 my_attrset(attrs | (c & ~A_CHARTEXT));
-#if USE_ATTR || USE_COLOR
 #if DANGEROUS_ATTRS
                                 my_real_attrset(my_attrs);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
                             }
 #endif
 #endif
@@ -3234,11 +3198,9 @@ my_addch(unsigned long b, chtype attrs)
                             if (c & ~A_CHARTEXT)
                             {
                                 my_attrset(attrs);
-#if USE_ATTR || USE_COLOR
 #if DANGEROUS_ATTRS
                                 my_real_attrset(my_attrs);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
                             }
 #endif
 #endif
@@ -3264,11 +3226,9 @@ my_addch(unsigned long b, chtype attrs)
         }
     }
     while (0);
-#if USE_ATTR || USE_COLOR
 #if DANGEROUS_ATTRS
     if (my_attrs) my_real_attrset(0);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
     return ret;
 }
 
@@ -3313,11 +3273,9 @@ int pager_arrow_magic = 0;
 #define PAGER_COLS (pager_big ? (MY_COLS / tile_w) : MY_COLS)
 #define PAGER_LINES (pager_big ? (LINES / pager_tile_h) : LINES)
 
-#if USE_ATTR
 #ifdef A_REVERSE
 #ifndef PAGER_A_REVERSE
 #define PAGER_A_REVERSE A_REVERSE
-#endif
 #endif
 #endif
 
@@ -3490,9 +3448,7 @@ pager(void)
         fflush(debug_pager);
     }
 
-#if USE_ATTR || USE_COLOR
     my_attrset(0);
-#endif
     my_erase();
 #if USE_COLOR
     if (use_color)
@@ -4305,11 +4261,9 @@ gamerender(void)
     else if (gfx_w * maze_w <= VCOLS)
         c_off = (VCOLS - gfx_w * maze_w + 1) / 2;
     if (c_off < 0) c_off = 0;
-#if USE_ATTR || USE_COLOR
     standend();
 #if HAVE_ATTRSET
     attrset(0);
-#endif
 #endif
     for (vline = -(3 * tile_h); (vline < LINES) && (vline < (sprite_h + ((reflect ? (gfx_w * maze_w) : (gfx_h * maze_h))))); vline++)
     {
@@ -4557,10 +4511,8 @@ gamerender(void)
                         else
 #endif
                         {
-#if USE_ATTR
 #ifdef A_BOLD
                             a |= use_dim_and_bright ? A_BOLD : 0;
-#endif
 #endif
                         }
                         if ((col + (reflect ? r_off : c_off) - hud_life_anchor) >= 0)
@@ -4664,10 +4616,8 @@ gamerender(void)
 #endif
                     {
                         a = 0;
-#if USE_ATTR
 #ifdef A_REVERSE
                         a |= A_REVERSE;
-#endif
 #endif
                     }
                 }
@@ -4714,7 +4664,6 @@ gamerender(void)
                             else
 #endif
                             {
-#if USE_ATTR
 #ifdef A_BOLD
                                 if ((s == HERO) || (((unsigned) sprite_register[s]) == SPRITE_WHITE) || iseyes)
                                 {
@@ -4728,7 +4677,6 @@ gamerender(void)
                                     a |= use_underline ? A_UNDERLINE : 0;
                                     break;
                                 }
-#endif
 #endif
                             }
                             break;
@@ -4749,7 +4697,6 @@ gamerender(void)
                             else
 #endif
                             {
-#if USE_ATTR
 #ifdef A_BOLD
                                 if ((s == HERO) || (((unsigned) sprite_register[s]) == SPRITE_WHITE) || iseyes)
                                 {
@@ -4763,7 +4710,6 @@ gamerender(void)
                                     a |= use_underline ? A_UNDERLINE : 0;
                                     break;
                                 }
-#endif
 #endif
                             }
                             break;
@@ -4788,7 +4734,6 @@ gamerender(void)
                             else
 #endif
                             {
-#if USE_ATTR
 #ifdef A_BOLD
                                 if ((s == HERO) || (((unsigned) sprite_register[s]) == SPRITE_WHITE) || iseyes)
                                 {
@@ -4802,7 +4747,6 @@ gamerender(void)
                                     a |= use_underline ? A_UNDERLINE : 0;
                                     break;
                                 }
-#endif
 #endif
                             }
                             break;
@@ -4876,7 +4820,6 @@ gamerender(void)
                             else
 #endif
                             {
-#if USE_ATTR
 #ifdef A_BOLD
                                 if (ISPELLET(c))
                                     a |= use_dim_and_bright ? A_BOLD : 0;
@@ -4885,7 +4828,6 @@ gamerender(void)
                                 if (use_underline)
                                     if (ISWALL(c) && (! ISDOOR(c)))
                                         a |= A_UNDERLINE;
-#endif
 #endif
                             }
                             if (debug) {
@@ -4967,7 +4909,6 @@ gamerender(void)
                                         else
 #endif
                                         {
-#if USE_ATTR
 #ifdef A_REVERSE
                                             if (SOLID_WALLS_BGCOLOR)
                                             {
@@ -4977,7 +4918,6 @@ gamerender(void)
 #ifdef A_UNDERLINE
                                             if (use_underline)
                                                 a |= A_UNDERLINE;
-#endif
 #endif
                                         }
                                     }
@@ -5004,7 +4944,6 @@ gamerender(void)
                                         else
 #endif
                                         {
-#if USE_ATTR
 #ifdef A_REVERSE
                                             if (SOLID_WALLS_BGCOLOR)
                                             {
@@ -5014,7 +4953,6 @@ gamerender(void)
 #ifdef A_UNDERLINE
                                             if (use_underline)
                                                 a |= A_UNDERLINE;
-#endif
 #endif
                                         }
                                     }
@@ -5031,7 +4969,6 @@ gamerender(void)
             if (c)
             {
                 vmove(line + r_off, c_off + col);
-#if USE_ATTR
 #ifdef A_UNDERLINE
 #if USE_COLOR
                 if (! use_color)
@@ -5048,7 +4985,6 @@ gamerender(void)
                     {
                         a &= ~A_UNDERLINE;
                     }
-#endif
 #endif
                 my_addch((unsigned long) (unsigned char) c, a);
             }
@@ -5166,10 +5102,8 @@ gamerender(void)
                             else
 #endif
                             {
-#if USE_ATTR
 #ifdef A_BOLD
                                 a |= use_dim_and_bright ? A_BOLD : 0;
-#endif
 #endif
                             }
                             my_addch((unsigned long) (unsigned char) c, a);
@@ -5457,7 +5391,6 @@ gameinput(void)
             ignore_delay = 1;
             frameskip = 0;
             return 1;
-#if USE_ATTR
         } else if ((k == 'u') || (k == 'U')) {
             use_underline = ! use_underline;
             my_clear();
@@ -5466,7 +5399,6 @@ gameinput(void)
             ignore_delay = 1;
             frameskip = 0;
             return 1;
-#endif
         } else if ((k == 's') || (k == 'S')) {
             use_sound = ! use_sound;
             return 1;
@@ -5861,11 +5793,7 @@ usage(const char *mazefile, const char *spritefile, const char *tilefile)
     puts("-D NAME=VALUE \tdefine environment variable NAME with value VALUE");
     puts("-g NUM \tplay against NUM monsters");
     puts("-l NUM \tstart with NUM lives");
-#if USE_ATTR
     puts("-u \tuse the underline attribute for maze walls");
-#else
-    puts("-u \tuse the underline attribute for maze walls (must recompile first)");
-#endif
     puts("-U \tdon't use the underline attribute for maze walls");
     puts("-r \tuse raw tile characters (CP437 or UCS/Unicode character graphics)");
     puts("-R \tuse altcharset translations (VT100-style graphics)");
@@ -6228,15 +6156,6 @@ parse_myman_args(int argc, char **argv)
         exit(2);
     }
 
-#if ! USE_ATTR
-    if (use_underline)
-    {
-        fprintf(stderr,
-                "%s: compile with -DUSE_ATTR=1 to enable the -u option.\n",
-                progname);
-        fflush(stderr), exit(1);
-    }
-#endif
 #if ! USE_COLOR
     if (use_color)
     {
