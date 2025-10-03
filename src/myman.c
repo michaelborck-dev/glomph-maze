@@ -3263,6 +3263,7 @@ int snapshot_use_color = 0;
  * etc.) which is considered deprecated in modern HTML; however there
  * is really no acceptable alternative since this markup needs to look
  * colorful even in older browsers */
+#ifndef USE_NEW_SCREEN
 static void
 snapshot_attrset_active(chtype attrs)
 {
@@ -3365,6 +3366,7 @@ snapshot_attrset_active(chtype attrs)
     }
     fflush(snapshot);
 }
+#endif /* USE_NEW_SCREEN */
 
 /* non-outputting version of snapshot_attrset */
 #ifndef USE_NEW_SCREEN

@@ -34,5 +34,6 @@
 
 /* Snapshot attribute functions */
 void snapshot_attrset(chtype attrs);
+void snapshot_attrset_active(chtype attrs);
 
 #endif
