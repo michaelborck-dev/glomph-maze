@@ -523,20 +523,13 @@ static int locale_is_utf8(void)
 #define SOUND 0
 #endif
 
-#ifndef USE_COLOR
-#ifdef COLOR_BLACK
-#define USE_COLOR 1
-#else
-#define USE_COLOR 0
-#endif
-#endif
 
 #ifndef COLORIZE
 #define COLORIZE 1
 #endif
 
 #ifndef USE_PALETTE
-#define USE_PALETTE USE_COLOR
+#define USE_PALETTE 1
 #endif
 
 #ifndef USE_RAW_UCS
@@ -1472,7 +1465,6 @@ pen_pal[16][3] =
     {  867,  867,  867 }  /* F: light grey (text, eye, apple/cherry shine, key, bell) */
 };
 
-#if USE_COLOR
 
 #ifndef COLORS
 #define COLORS 8
@@ -1957,7 +1949,6 @@ init_pen(void)
     pen[0] = pen[7];
 }
 
-#endif
 
 /* wrappers around some curses functions to allow raw CP437-mode and
  * snapshots; note that these wrappers support only a small subset of
@@ -3284,7 +3275,7 @@ int pager_arrow_magic = 0;
 #endif
 
 #ifndef PAGER_A_STANDOUT
-#define PAGER_A_STANDOUT (((USE_COLOR) && use_color) ? pen[PAUSE_COLOR] : PAGER_A_REVERSE)
+#define PAGER_A_STANDOUT ((use_color) ? pen[PAUSE_COLOR] : PAGER_A_REVERSE)
 #endif
 
 static void
@@ -3358,7 +3349,7 @@ pager_addch(unsigned long c, chtype a)
                              ?
                              pager_addch__a
                              :
-                             ((USE_COLOR && use_color)
+                             ((use_color)
                               ?
                               pen[TEXT_COLOR]
                               :
@@ -3371,7 +3362,7 @@ pager_addch(unsigned long c, chtype a)
                         my_move(pager_addch__y * pager_tile_h + pager_addch__j,
                                 pager_addch__i * (use_fullwidth ? 2 : 1));
                         my_addch((unsigned long) (unsigned char) ' ',
-                                 (USE_COLOR && use_color)
+                                 (use_color)
                                  ?
                                  pen[TEXT_COLOR]
                                  :
@@ -3450,12 +3441,10 @@ pager(void)
 
     my_attrset(0);
     my_erase();
-#if USE_COLOR
     if (use_color)
     {
         my_attrset(pen[TEXT_COLOR]);
     }
-#endif
     if (! pager_remaining)
     {
         if (pager_notice)
@@ -3481,12 +3470,10 @@ pager(void)
 
 
         pager_move(0, 0);
-#if USE_COLOR
         if (use_color)
         {
             my_attrset(pen[TEXT_COLOR]);
         }
-#endif
         pager = pager_remaining;
         while (*pager)
         {
@@ -3597,7 +3584,7 @@ pager(void)
                 if (c == '\n')
                 {
                     pager_addch((unsigned long) (unsigned char) *(pager - 1),
-                                (USE_COLOR && use_color)
+                                (use_color)
                                 ?
                                 pen[TEXT_COLOR]
                                 :
@@ -3626,7 +3613,7 @@ pager(void)
                  * adequate for English. Fortunately, we almost
                  * never actually use it. */
                 pager_addch((unsigned long) (unsigned char) c,
-                            (USE_COLOR && use_color)
+                            (use_color)
                             ?
                             pen[TEXT_COLOR]
                             :
@@ -3634,7 +3621,7 @@ pager(void)
                     );
                 x ++;
                 pager_addch((unsigned long) (unsigned char) '-',
-                            (USE_COLOR && use_color)
+                            (use_color)
                             ?
                             pen[TEXT_COLOR]
                             :
@@ -3647,7 +3634,7 @@ pager(void)
             {
                 pager_getyx(stdscr, y, x);
                 pager_addch((unsigned long) (unsigned char) c,
-                            (USE_COLOR && use_color)
+                            (use_color)
                             ?
                             pen[TEXT_COLOR]
                             :
@@ -3681,7 +3668,7 @@ pager(void)
                 while ((x ++) < PAGER_COLS)
                 {
                     pager_addch((unsigned long) (unsigned char) ' ',
-                                (USE_COLOR && use_color)
+                                (use_color)
                                 ?
                                 pen[TEXT_COLOR]
                                 :
@@ -3738,12 +3725,10 @@ pager(void)
                     while (1);
                     my_attrset(0);
                     my_erase();
-#if USE_COLOR
                     if (use_color)
                     {
                         my_attrset(pen[TEXT_COLOR]);
                     }
-#endif
                     y = 0;
                     x = 0;
                     pager_move(y, x);
@@ -3797,7 +3782,6 @@ pager(void)
                             pager = pager_remaining;
                             break;
                         }
-#if USE_COLOR
                         else if ((k == 'c') || (k == 'C'))
                         {
                             use_color = ! use_color;
@@ -3812,19 +3796,16 @@ pager(void)
                             pager = pager_remaining;
                             continue;
                         }
-#endif
                         else if ((k == 'b') || (k == 'B'))
                         {
                             use_dim_and_bright =
                                 ! use_dim_and_bright;
                             use_dim_and_bright_p = 1;
-#if USE_COLOR
                             if (use_color)
                             {
                                 destroy_pen();
                                 init_pen();
                             }
-#endif
                             my_attrset(0);
                             my_clear();
                             clearok(curscr, TRUE);
@@ -3936,7 +3917,7 @@ pager(void)
                     {
                         pager_move(y, x);
                         pager_addch((unsigned long) (unsigned char) '~',
-                                    (USE_COLOR && use_color)
+                                    (use_color)
                                     ?
                                     pen[TEXT_COLOR]
                                     :
@@ -3946,7 +3927,7 @@ pager(void)
                         while ((x ++) < PAGER_COLS)
                         {
                             pager_addch((unsigned long) (unsigned char) ' ',
-                                        (USE_COLOR && use_color)
+                                        (use_color)
                                         ?
                                         pen[TEXT_COLOR]
                                         :
@@ -4008,7 +3989,6 @@ pager(void)
                     my_clear();
                     clearok(curscr, TRUE);
                 }
-#if USE_COLOR
                 else if ((k == 'c') || (k == 'C'))
                 {
                     use_color = ! use_color;
@@ -4021,19 +4001,16 @@ pager(void)
                     my_clear();
                     clearok(curscr, TRUE);
                 }
-#endif
                 else if ((k == 'b') || (k == 'B'))
                 {
                     use_dim_and_bright =
                         ! use_dim_and_bright;
                     use_dim_and_bright_p = 1;
-#if USE_COLOR
                     if (use_color)
                     {
                         destroy_pen();
                         init_pen();
                     }
-#endif
                     my_attrset(0);
                     my_clear();
                     clearok(curscr, TRUE);
@@ -4124,12 +4101,10 @@ pager(void)
         }
         my_attrset(0);
         my_erase();
-#if USE_COLOR
         if (use_color)
         {
             my_attrset(pen[TEXT_COLOR]);
         }
-#endif
         my_move(0, 0);
     }
     if (debug_pager) {
@@ -4401,13 +4376,11 @@ gamerender(void)
                 }
                 if (filler_tile && tile_used[filler_tile])
                 {
-#if USE_COLOR
                     if (use_color) {
                         a = tile_color[filler_tile];
                         if (! a) a = TEXT_COLOR;
                         a = pen[a];
                     }
-#endif
                     my_move(vline + (reflect ? c_off : r_off), (vcol + (reflect ? r_off : c_off)) * (use_fullwidth ? 2 : 1));
                     my_addch((unsigned long) (unsigned char) tile[filler_tile][((vline + (3 * tile_h)) % tile_h) * tile_w + (vcol % tile_w)], a);
                 }
@@ -4451,13 +4424,11 @@ gamerender(void)
                         chtype a;
 
                         a = 0;
-#if USE_COLOR
                         if (use_color) {
                             a = tile_color[(unsigned) score_tile];
                             if (! a) a = TEXT_COLOR;
                             a = pen[a];
                         }
-#endif
                         my_move(vline + (reflect ? c_off : r_off), col * (use_fullwidth ? 2 : 1));
                         my_addch((unsigned long) (unsigned char) tile[(unsigned) score_tile][vline * tile_w + tile_w - 1 - (score_x % tile_w)], a);
 
@@ -4499,7 +4470,6 @@ gamerender(void)
                     if (c)
                     {
                         a = 0;
-#if USE_COLOR
                         if (use_color) {
                             a = sprite_color[life_sprite];
                             if (! a)
@@ -4509,7 +4479,6 @@ gamerender(void)
                             a = pen[a];
                         }
                         else
-#endif
                         {
 #ifdef A_BOLD
                             a |= use_dim_and_bright ? A_BOLD : 0;
@@ -4607,13 +4576,11 @@ gamerender(void)
                     {
                         c = ' ';
                     }
-#if USE_COLOR
                     if (use_color)
                     {
                         a = pen[PAUSE_COLOR];
                     }
                     else
-#endif
                     {
                         a = 0;
 #ifdef A_REVERSE
@@ -4654,7 +4621,6 @@ gamerender(void)
                             {
                                 c = '.';
                             }
-#if USE_COLOR
                             if (use_color) {
                                 a = sprite_color[t];
                                 if (! a)
@@ -4662,7 +4628,6 @@ gamerender(void)
                                 a = pen[a];
                             }
                             else
-#endif
                             {
 #ifdef A_BOLD
                                 if ((s == HERO) || (((unsigned) sprite_register[s]) == SPRITE_WHITE) || iseyes)
@@ -4687,7 +4652,6 @@ gamerender(void)
                                    && ((y = sprite_register_y[s] - sgfx_h / 2) <= j)
                                    && ((y_off = j - y) < sgfx_h)
                                    && ((c = sgfx(t, y_off, x_off)) != 0)) {
-#if USE_COLOR
                             if (use_color) {
                                 a = sprite_color[t];
                                 if (! a)
@@ -4695,7 +4659,6 @@ gamerender(void)
                                 a = pen[a];
                             }
                             else
-#endif
                             {
 #ifdef A_BOLD
                                 if ((s == HERO) || (((unsigned) sprite_register[s]) == SPRITE_WHITE) || iseyes)
@@ -4723,7 +4686,6 @@ gamerender(void)
                                    && ((y_off = j - y) < gfx_h)
                                    && ((c = gfx((unsigned long) (unsigned char) cp437_sprite[t], y_off, x_off)) != 0))
                         {
-#if USE_COLOR
                             if (use_color)
                             {
                                 a = tile_color[t];
@@ -4732,7 +4694,6 @@ gamerender(void)
                                 a = pen[a];
                             }
                             else
-#endif
                             {
 #ifdef A_BOLD
                                 if ((s == HERO) || (((unsigned) sprite_register[s]) == SPRITE_WHITE) || iseyes)
@@ -4788,7 +4749,6 @@ gamerender(void)
                             {
                                 is_wall = 1;
                             }
-#if USE_COLOR
                             if (use_color)
                             {
                                 a = (int) (unsigned char) maze_color[(maze_level*maze_h+ytile) * (maze_w + 1)+xtile];
@@ -4818,7 +4778,6 @@ gamerender(void)
                                 a = pen[a];
                             }
                             else
-#endif
                             {
 #ifdef A_BOLD
                                 if (ISPELLET(c))
@@ -4844,14 +4803,12 @@ gamerender(void)
                                     : ISOPEN(c) ? ' '
                                     : ISDOOR(c) ? 'X'
                                     : '@';
-#if USE_COLOR
                                 if (use_color && ((unsigned) d)) {
                                     a = sprite_color[((unsigned) sprite_register[MEANGHOST(s)]) + sprite_register_frame[MEANGHOST(s)]];
                                     if (! a)
                                         a = sprite_register_color[MEANGHOST(s)];
                                     a = pen[a];
                                 }
-#endif
                             }
                             else
                             {
@@ -4866,11 +4823,9 @@ gamerender(void)
                                 else if ((winning < (2 * TWOSECS)) && ((winning / MYMANFIFTH) & 4) && ! ghost_eaten_timer)
                                 {
                                     is_wall = 0;
-#if USE_COLOR
                                     if (use_color)
                                         a = pen[0xF];
                                     else
-#endif
                                         c_mapped = ' ';
                                 }
                                 c = gfx(c_mapped, j, i);
@@ -4898,7 +4853,6 @@ gamerender(void)
                                         {
                                             c = ' ';
                                         }
-#if USE_COLOR
                                         if (use_color)
                                         {
                                             if (TRANSLATED_WALL_COLOR)
@@ -4907,7 +4861,6 @@ gamerender(void)
                                             }
                                         }
                                         else
-#endif
                                         {
 #ifdef A_REVERSE
                                             if (SOLID_WALLS_BGCOLOR)
@@ -4931,7 +4884,6 @@ gamerender(void)
                                               ||
                                               ((c != ' ') && (IS_FULLY_INVERTED(xtile, ytile) || IS_INVERTED(xtile, ytile)))))
                                     {
-#if USE_COLOR
                                         if (use_color)
                                         {
                                             if (TRANSLATED_WALL_COLOR)
@@ -4942,7 +4894,6 @@ gamerender(void)
                                             }
                                         }
                                         else
-#endif
                                         {
 #ifdef A_REVERSE
                                             if (SOLID_WALLS_BGCOLOR)
@@ -4970,9 +4921,7 @@ gamerender(void)
             {
                 vmove(line + r_off, c_off + col);
 #ifdef A_UNDERLINE
-#if USE_COLOR
                 if (! use_color)
-#endif
                     if (use_underline
                         &&
                         (a & A_UNDERLINE)
@@ -5025,7 +4974,6 @@ gamerender(void)
                     if (c)
                     {
                         a = 0;
-#if USE_COLOR
                         if (use_color) {
                             a = sprite_color[level_sprite];
                             if (! a)
@@ -5034,7 +4982,6 @@ gamerender(void)
                             }
                             a = pen[a];
                         }
-#endif
                         my_move(vline + (reflect ? c_off : r_off), col * (use_fullwidth ? 2 : 1));
                         my_addch((unsigned long) (unsigned char) c, a);
                         continue;
@@ -5090,7 +5037,6 @@ gamerender(void)
                         if (c)
                         {
                             a = 0;
-#if USE_COLOR
                             if (use_color) {
                                 a = sprite_color[life_sprite];
                                 if (! a)
@@ -5100,7 +5046,6 @@ gamerender(void)
                                 a = pen[a];
                             }
                             else
-#endif
                             {
 #ifdef A_BOLD
                                 a |= use_dim_and_bright ? A_BOLD : 0;
@@ -5128,7 +5073,6 @@ gamerender(void)
                         if (c)
                         {
                             a = 0;
-#if USE_COLOR
                             if (use_color) {
                                 a = sprite_color[level_sprite];
                                 if (! a)
@@ -5137,7 +5081,6 @@ gamerender(void)
                                 }
                                 a = pen[a];
                             }
-#endif
                             my_addch((unsigned long) (unsigned char) c, a);
                             continue;
                         }
@@ -5357,7 +5300,6 @@ gameinput(void)
                 idlok(stdscr, FALSE);
             }
 #endif
-#if USE_COLOR
         } else if ((k == 'c') || (k == 'C')) {
             use_color = ! use_color;
             use_color_p = 1;
@@ -5372,18 +5314,15 @@ gameinput(void)
             ignore_delay = 1;
             frameskip = 0;
             return 1;
-#endif
         } else if ((k == 'b') || (k == 'B')) {
             use_dim_and_bright =
                 ! use_dim_and_bright;
             use_dim_and_bright_p = 1;
-#if USE_COLOR
             if (use_color)
             {
                 destroy_pen();
                 init_pen();
             }
-#endif
             my_attrset(0);
             my_clear();
             clearok(curscr, TRUE);
@@ -5645,7 +5584,6 @@ myman(void)
             use_acs = USE_ACS;
         }
         init_trans(use_bullet_for_dots);
-#if USE_COLOR
 #if COLORIZE
         if (! use_color_p) {
             use_color = has_colors();
@@ -5657,7 +5595,6 @@ myman(void)
         }
         if (use_color)
             init_pen();
-#endif
 #if USE_SIGWINCH
         old_sigwinch_handler = signal(SIGWINCH, sigwinch_handler);
 #endif
@@ -5684,7 +5621,6 @@ myman(void)
         curs_set(1); /* slcurses doesn't do this in endwin() */
 #endif
         my_clear();
-#if USE_COLOR
         if (use_color)
         {
             standout();
@@ -5695,7 +5631,6 @@ myman(void)
             mvprintw(LINES ? 1 : 0, 0, " ");
             addch('\n');
         }
-#endif
         refresh();
         echo();
         endwin();
@@ -5774,11 +5709,7 @@ usage(const char *mazefile, const char *spritefile, const char *tilefile)
     puts("-h \tdisplay this help and exit");
     puts("-b \tenable sounds");
     puts("-q \tdisable sounds");
-#if USE_COLOR
     puts("-c \tenable color support");
-#else
-    puts("-c \tenable color support (must recompile first)");
-#endif
     puts("-n \tdisable color support");
     puts("-B \tuse dim and bright attributes for missing colors");
     puts("-N \tdon't use dim and bold attributes for extra colors");
@@ -6156,15 +6087,6 @@ parse_myman_args(int argc, char **argv)
         exit(2);
     }
 
-#if ! USE_COLOR
-    if (use_color)
-    {
-        fprintf(stderr,
-                "%s: compile with -DUSE_COLOR=1 to enable color support.\n",
-                progname);
-        fflush(stderr), exit(1);
-    }
-#endif
     if ((tilefile && readfont(tilefile, &tile_w, &tile_h, tile, tile_used, &tile_flags, tile_color, &tile_args)) ||
         (spritefile && readfont(spritefile, &sprite_w, &sprite_h, sprite, sprite_used, &sprite_flags, sprite_color, &sprite_args)))
         exit(1);
