@@ -93,3 +93,28 @@ After simplification complete:
 **Base:** v0.8.0
 **Date:** 2025-10-03
 **Strategy:** Incremental simplification, keep builds working
+
+---
+
+## REVISION: Sound System Strategy
+
+**Discovery:** SDL_MIXER is the MODERN sound system, not legacy!
+
+### Sound System Architecture:
+1. **SDL_MIXER** (2013+) - Modern, cross-platform ✅ **KEEP**
+2. **ALLEGRO** (1990s) - DOS-era library ❌ **DELETE** 
+3. **USE_BEEP** (ancient) - Terminal beep ⚠️ **KEEP as fallback**
+4. **Silent** - No sound fallback ✅ **KEEP**
+
+### Revised Approach:
+- ✅ Keep SDL_MIXER blocks (modern sound system)
+- ❌ Remove ALLEGRO blocks (already disabled with #if 0)
+- ✅ Keep USE_BEEP as simple fallback
+- 📦 Later: Extract sound code to `src/audio/sound.c`
+
+**Modern Linux/Mac:** Use SDL_MIXER  
+**Minimal systems:** Fall back to beep()  
+**No audio lib:** Silent mode
+
+This means SDL_MIXER should be **extracted to an audio module**, not deleted!
+
