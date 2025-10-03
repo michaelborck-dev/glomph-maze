@@ -1059,9 +1059,4 @@ extern int myman_setenv(const char *name, const char *value);
 
 extern char *myman_getenv(const char *name);
 
-
-void my_usleep(long usecs);
-
-double doubletime(void);
-
 #endif /* ! defined(MYMAN_UTILS_H_INCLUDED) */

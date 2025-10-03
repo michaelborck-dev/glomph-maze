@@ -4926,25 +4926,7 @@ pager_addstr(const char *s, chtype a)
     }
 }
 
-void
-my_usleep(long usecs)
-{
-    usleep(usecs);
-}
 
-double
-doubletime(void)
-{
-    struct timeval tval;
-
-    tval.tv_sec = 0;
-    tval.tv_usec = 0;
-    if (myman_gettimeofday(&tval, 0))
-    {
-        return -1.0L;
-    }
-    return 1.0L * tval.tv_sec + 1e-6L * tval.tv_usec;
-}
 
 static void
 pager(void)
