@@ -35,6 +35,7 @@
 /* Snapshot attribute functions */
 void snapshot_attrset(chtype attrs);
 void snapshot_attrset_active(chtype attrs);
+void snapshot_addch(short inbyte);
 
 /* Attribute setting functions */
 int my_real_attrset(chtype attrs);
@@ -42,5 +43,8 @@ int my_attrset(chtype attrs);
 
 /* Window management functions */
 void my_move(int y, int x);
+
+/* Character output functions */
+int my_addch(unsigned long b, chtype attrs);
 
 #endif

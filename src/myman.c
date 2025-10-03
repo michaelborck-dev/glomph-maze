@@ -1905,18 +1905,14 @@ static const char SPRITEFILE_str[] = SPRITEFILE;
 #define MY_WACS_REF
 #endif
 #endif
-static cchar_t MY_WACS_REF
+cchar_t MY_WACS_REF
 #else
-static chtype
+chtype
 #endif
 altcharset_cp437[256];
 
 /* mapping from CP437 to ASCII */
-#ifdef USE_NEW_CONFIG
-chtype  /* Non-static so config.c can access it */
-#else
-static chtype
-#endif
+chtype
 ascii_cp437[256];
 
 #ifdef NEED_CP437_TO_ASCII
@@ -3787,6 +3783,7 @@ my_attrset(chtype attrs)
 #endif /* USE_NEW_SCREEN */
 
 /* add a cp437 string to the HTML snapshot */
+#ifndef USE_NEW_SCREEN
 static void
 snapshot_addch(short inbyte)
 {
@@ -4301,6 +4298,7 @@ snapshot_addch(short inbyte)
         snapshot_x ++;
     }
 }
+#endif /* USE_NEW_SCREEN */
 
 /* non-blocking version of getch(); return a single character if it is
  * available, ERR otherwise */
@@ -4325,6 +4323,7 @@ my_getch(void)
     return k;
 }
 
+#ifndef USE_NEW_SCREEN
 /* add CP437 byte b with attributes attrs */
 static int
 my_addch(unsigned long b, chtype attrs)
@@ -4731,6 +4730,7 @@ my_addch(unsigned long b, chtype attrs)
 #endif /* USE_ATTR || USE_COLOR */
     return ret;
 }
+#endif /* USE_NEW_SCREEN */
 
 /* add CP437 string s with attributes attrs */
 static int

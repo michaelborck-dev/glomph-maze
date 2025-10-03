@@ -43,6 +43,30 @@
 #define NPENS 256
 #endif
 
+/* Character text attribute mask (curses compatibility) */
+#ifndef MY_A_CHARTEXT
+#ifdef A_CHARTEXT
+#define MY_A_CHARTEXT A_CHARTEXT
+#endif
+#endif
+
+#ifndef MY_A_CHARTEXT
+#ifdef MY_A_ATTRIBUTES
+#define MY_A_CHARTEXT ~MY_A_ATTRIBUTES
+#else
+#define MY_A_CHARTEXT 0xFF
+#endif
+#endif
+
+/*
+ * Character Set Arrays
+ * Used by: render/screen.c for character rendering and snapshots
+ */
+
+/* Note: Type varies based on USE_WIDEC_SUPPORT */
+extern chtype altcharset_cp437[256];
+extern chtype ascii_cp437[256];
+
 /*
  * Color and Rendering Globals
  * Used by: render/screen.c, render/pager.c, main rendering loop
