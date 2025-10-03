@@ -67,3 +67,39 @@ Since we only target **modern ncurses systems**:
 6. ⏳ Assume ncurses features throughout
 
 **Goal:** Reduce from 7,701 → ~4,000-5,000 lines
+
+## guess.h Analysis
+
+**File:** `include/guess.h` (409 lines)
+**Purpose:** Platform/feature detection for DOS, Windows, VMS, Mac Classic, etc.
+
+### Symbols Defined (29 total)
+- WIN32, WIN16, __MSDOS__ - Platform markers
+- HAVE_FCNTL_H, HAVE_IO_H, HAVE_IOCTL_H, etc. - Feature availability
+- MAIN_NO_ENVP - main() signature variation
+
+### Usage in Current Code
+Only 4 symbols actually used:
+1. `MYMAN_GUESS_H_INCLUDED` - include guard (not functional)
+2. `WIN32` - Used 5 times in utils.c (path separator handling)
+3. `__MSDOS__` - Used 4 times in utils.c (path separator handling)  
+4. `MAIN_NO_ENVP` - Used in myman.c (envp parameter)
+
+### Platform Test Results
+On our ncurses system (Mac/Linux):
+- ✅ WIN32: **NOT defined** (Windows-only)
+- ✅ __MSDOS__: **NOT defined** (DOS-only)
+- ✅ MAIN_NO_ENVP: **NOT defined** (Pelles C only)
+
+### Conclusion
+**guess.h is 99% dead code** on Unix/Mac systems!
+
+**Removal Plan:**
+1. Remove WIN32/__MSDOS__ conditionals from utils.c (keep Unix code)
+2. Remove MAIN_NO_ENVP from myman.c (keep envp parameter)
+3. Remove #include "guess.h" from all source files
+4. Delete include/guess.h
+
+**Estimated savings:** ~430 lines (guess.h itself + dead conditionals)
+
+**Status:** ⏳ To be implemented in future cleanup
