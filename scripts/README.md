@@ -139,3 +139,31 @@ When adding new scripts:
 3. Update this README with usage instructions
 4. Add appropriate shebang line (`#!/usr/bin/env python3` or `#!/bin/bash`)
 5. Make scripts executable: `chmod +x scripts/your_script.sh`
+
+## C Utilities (Font Tools)
+
+### fnt2bdf.c
+**Purpose**: Convert 8x8 .fnt console font files to BDF (Bitmap Distribution Format)
+
+**Compilation**:
+```bash
+gcc -o fnt2bdf scripts/fnt2bdf.c
+```
+
+**Usage**:
+```bash
+./fnt2bdf fontfile.fnt > output.bdf
+
+# Or from stdin
+cat fontfile.fnt | ./fnt2bdf - > output.bdf
+```
+
+**How it works**:
+- Reads binary .fnt console font files (8x8 character bitmaps)
+- Converts to BDF format for use with X11 and other systems
+- Useful for font development and conversion
+
+**When to use**:
+- Converting console fonts to X11-compatible format
+- Creating custom font assets for the game
+- Font development and testing

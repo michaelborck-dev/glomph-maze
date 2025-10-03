@@ -27,8 +27,7 @@ find_package(Curses REQUIRED)
 
 # Include directories
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/inc
-    ${CMAKE_CURRENT_SOURCE_DIR}/mygetopt
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CURSES_INCLUDE_DIR}
 )
 
@@ -37,7 +36,6 @@ set(COMMON_SOURCES
     src/myman.c
     src/utils.c
     src/logic.c
-    mygetopt/mygetopt.c
 )
 
 # Define size variants with their tile/sprite files
@@ -55,10 +53,13 @@ macro(add_size_variant name size tiles sprites)
     add_executable(${name} ${COMMON_SOURCES})
     
     target_compile_definitions(${name} PRIVATE
-        MYGETOPT=1
         MYMANSIZE="${size}"
-        TILEFILE="chr/${tiles}"
-        SPRITEFILE="spr/${sprites}"
+        TILEDIR="tiles"
+        SPRITEDIR="sprites"
+        MAZEDIR="mazes"
+        SOUNDDIR="sounds"
+        TILEFILE="tiles/${tiles}"
+        SPRITEFILE="sprites/${sprites}"
     )
     
     target_link_libraries(${name} ${CURSES_LIBRARIES})
@@ -67,17 +68,16 @@ macro(add_size_variant name size tiles sprites)
     install(TARGETS ${name} DESTINATION bin)
 endmacro()
 
-# Create the four size variants (matches simple.mk)
-add_size_variant(hugeman "huge" ${SIZE_HUGE_TILES} ${SIZE_HUGE_SPRITES})
-add_size_variant(bigman "big" ${SIZE_BIG_TILES} ${SIZE_BIG_SPRITES})
-add_size_variant(smallman "small" ${SIZE_SMALL_TILES} ${SIZE_SMALL_SPRITES})
-add_size_variant(squareman "square" ${SIZE_SQUARE_TILES} ${SIZE_SQUARE_SPRITES})
+# Create the four size variants
+add_size_variant(glomph-xlarge "xlarge" ${SIZE_HUGE_TILES} ${SIZE_HUGE_SPRITES})
+add_size_variant(glomph "standard" ${SIZE_BIG_TILES} ${SIZE_BIG_SPRITES})
+add_size_variant(glomph-small "small" ${SIZE_SMALL_TILES} ${SIZE_SMALL_SPRITES})
+add_size_variant(glomph-tiny "tiny" ${SIZE_SQUARE_TILES} ${SIZE_SQUARE_SPRITES})
 
-# Default target is bigman (symlink as glomph-maze)
+# Default target (glomph is the main binary)
 add_custom_target(glomph-maze ALL
-    COMMAND ${CMAKE_COMMAND} -E create_symlink bigman glomph-maze
-    DEPENDS bigman
-    COMMENT "Creating glomph-maze symlink to bigman"
+    DEPENDS glomph
+    COMMENT "Building glomph-maze (glomph is the default variant)"
 )
 
 # Install data files
@@ -98,7 +98,7 @@ if(CLANG_FORMAT)
     add_custom_target(format
         COMMAND ${CLANG_FORMAT} -i
             ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
-            ${CMAKE_CURRENT_SOURCE_DIR}/inc/*.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Running clang-format"
     )
@@ -109,7 +109,7 @@ if(CLANG_TIDY)
     add_custom_target(lint
         COMMAND ${CLANG_TIDY}
             ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
-            ${CMAKE_CURRENT_SOURCE_DIR}/inc/*.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h
             --
             -I${CMAKE_CURRENT_SOURCE_DIR}/inc
             -I${CMAKE_CURRENT_SOURCE_DIR}/mygetopt
@@ -123,17 +123,17 @@ endif()
 enable_testing()
 
 # Basic smoke test
-add_test(NAME smoke_test_bigman
-    COMMAND bigman --help
+add_test(NAME smoke_test_glomph
+    COMMAND glomph --help
 )
-set_tests_properties(smoke_test_bigman PROPERTIES
+set_tests_properties(smoke_test_glomph PROPERTIES
     PASS_REGULAR_EXPRESSION "Usage:"
 )
 
 # Test all variants
-add_test(NAME smoke_test_hugeman COMMAND hugeman --help)
-add_test(NAME smoke_test_smallman COMMAND smallman --help)
-add_test(NAME smoke_test_squareman COMMAND squareman --help)
+add_test(NAME smoke_test_glomph_xlarge COMMAND glomph-xlarge --help)
+add_test(NAME smoke_test_glomph_small COMMAND glomph-small --help)
+add_test(NAME smoke_test_glomph_tiny COMMAND glomph-tiny --help)
 
 # Sanitizer build option
 option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
@@ -158,9 +158,9 @@ message(STATUS "Curses library: ${CURSES_LIBRARIES}")
 
 # Create symlinks to asset directories in build folder for development
 add_custom_target(data_symlinks ALL
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/tiles ${CMAKE_BINARY_DIR}/chr
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/mazes ${CMAKE_BINARY_DIR}/lvl
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/sprites ${CMAKE_BINARY_DIR}/spr
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/sounds ${CMAKE_BINARY_DIR}/sfx
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/tiles ${CMAKE_BINARY_DIR}/tiles
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/mazes ${CMAKE_BINARY_DIR}/mazes
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/sprites ${CMAKE_BINARY_DIR}/sprites
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets/sounds ${CMAKE_BINARY_DIR}/sounds
     COMMENT "Creating symlinks to asset directories"
 )

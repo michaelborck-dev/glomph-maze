@@ -30,24 +30,14 @@
 #endif
 #endif
 
-/* feature guessing */
-#ifndef MYMAN_GUESS_H_INCLUDED
-#include "guess.h"
-#endif
 
 #include <ctype.h>
 #include <string.h>
-#if HAVE_FCNTL_H
 #include <fcntl.h>
-#endif
 #include <stdio.h>
-#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#endif
 #include <time.h>
-#if HAVE_UNISTD_H
 #include <unistd.h>
-#endif
 #include <stdlib.h>
 
 /* command-line argument parser */
@@ -82,7 +72,6 @@
 #endif
 #endif
 
-/* MyMan utilities; also defines cruft like __MSDOS__ under some circumstances */
 #include "utils.h"
 
 #ifdef XCURSES

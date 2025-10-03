@@ -29,10 +29,6 @@
 #endif
 #endif
 
-/* feature guessing */
-#ifndef MYMAN_GUESS_H_INCLUDED
-#include "guess.h"
-#endif
 
 #include <ctype.h>
 #include <errno.h>
@@ -50,27 +46,8 @@
 #endif
 #endif
 
-#ifdef macintosh
-#if TARGET_API_MAC_CARBON
-/* Case 1: flat Carbon headers */
-#include <Carbon.h>
-#else /* ! defined(TARGET_API_MAC_CARBON) */
-/* Case 2: Toolbox */
-#include <ConditionalMacros.h>
-#if defined(UNIVERSAL_INTERFACES_VERSION) && (UNIVERSAL_INTERFACES_VERSION >= 0x0300)
-#include <MacTypes.h>
-#else
-#include <Types.h>
-#endif
-#include <Files.h>
-#endif /* ! defined(TARGET_API_MAC_CARBON) */
-#endif /* ! defined(macintosh) */
 
-#ifdef VMS
-#include <unixlib.h>
-#endif /* defined(VMS) */
 
-/* MyMan utilities; also defines cruft like __MSDOS__ under some circumstances */
 #ifndef MYMAN_UTILS_H_INCLUDED
 #include "utils.h"
 #endif

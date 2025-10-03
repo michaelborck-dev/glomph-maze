@@ -66,10 +66,10 @@ cmake -B build -DCMAKE_BUILD_TYPE=Debug
 cmake --build build
 
 # Test
-./build/bigman --help
-./build/hugeman
-./build/smallman
-./build/squareman
+./build/glomph --help
+./build/glomph-xlarge
+./build/glomph-small
+./build/glomph-tiny
 ```
 
 ### Development Workflow
@@ -81,7 +81,7 @@ vim src/myman.c
 cmake --build build
 
 # Test
-./build/bigman
+./build/glomph
 ```
 
 ### Code Quality
@@ -100,14 +100,14 @@ cd build && ctest
 ```bash
 cmake -B build-release -DCMAKE_BUILD_TYPE=Release
 cmake --build build-release
-./build-release/bigman  # Optimized
+./build-release/glomph  # Optimized
 ```
 
 ### With Sanitizers (Find Bugs)
 ```bash
 cmake -B build-asan -DCMAKE_BUILD_TYPE=Debug -DENABLE_ASAN=ON
 cmake --build build-asan
-./build-asan/bigman  # Will crash on memory errors
+./build-asan/glomph  # Will crash on memory errors
 ```
 
 ## Comparison: simple.mk vs CMake
@@ -152,36 +152,36 @@ $ cmake -B build
 
 # Build
 $ cmake --build build
-[ 10%] Building C object CMakeFiles/hugeman.dir/src/myman.c.o
-[ 20%] Building C object CMakeFiles/hugeman.dir/src/utils.c.o
-[ 30%] Building C object CMakeFiles/hugeman.dir/src/logic.c.o
-[ 40%] Building C object CMakeFiles/hugeman.dir/mygetopt/mygetopt.c.o
-[ 50%] Linking C executable hugeman
-[ 60%] Building C object CMakeFiles/bigman.dir/src/myman.c.o
-[ 70%] Linking C executable bigman
-[ 80%] Building C object CMakeFiles/smallman.dir/src/myman.c.o
-[ 90%] Linking C executable smallman
-[100%] Building C object CMakeFiles/squareman.dir/src/myman.c.o
-[100%] Linking C executable squareman
-[100%] Creating glomph-maze symlink to bigman
+[ 10%] Building C object CMakeFiles/glomph-xlarge.dir/src/myman.c.o
+[ 20%] Building C object CMakeFiles/glomph-xlarge.dir/src/utils.c.o
+[ 30%] Building C object CMakeFiles/glomph-xlarge.dir/src/logic.c.o
+[ 40%] Building C object CMakeFiles/glomph-xlarge.dir/mygetopt/mygetopt.c.o
+[ 50%] Linking C executable glomph-xlarge
+[ 60%] Building C object CMakeFiles/glomph.dir/src/myman.c.o
+[ 70%] Linking C executable glomph
+[ 80%] Building C object CMakeFiles/glomph-small.dir/src/myman.c.o
+[ 90%] Linking C executable glomph-small
+[100%] Building C object CMakeFiles/glomph-tiny.dir/src/myman.c.o
+[100%] Linking C executable glomph-tiny
+[100%] Creating glomph-maze symlink to glomph
 
 # Test
-$ ./build/bigman --help
-Usage: bigman [OPTIONS]...
+$ ./build/glomph --help
+Usage: glomph [OPTIONS]...
 
 # Edit file
 $ vim src/utils.c
 
 # Rebuild (only utils.c!)
 $ cmake --build build
-[ 16%] Building C object CMakeFiles/hugeman.dir/src/utils.c.o
-[ 33%] Linking C executable hugeman
-[ 50%] Building C object CMakeFiles/bigman.dir/src/utils.c.o
-[ 66%] Linking C executable bigman
-[ 83%] Building C object CMakeFiles/smallman.dir/src/utils.c.o
-[100%] Linking C executable smallman
-[100%] Building C object CMakeFiles/squareman.dir/src/utils.c.o
-[100%] Linking C executable squareman
+[ 16%] Building C object CMakeFiles/glomph-xlarge.dir/src/utils.c.o
+[ 33%] Linking C executable glomph-xlarge
+[ 50%] Building C object CMakeFiles/glomph.dir/src/utils.c.o
+[ 66%] Linking C executable glomph
+[ 83%] Building C object CMakeFiles/glomph-small.dir/src/utils.c.o
+[100%] Linking C executable glomph-small
+[100%] Building C object CMakeFiles/glomph-tiny.dir/src/utils.c.o
+[100%] Linking C executable glomph-tiny
 
 # Under 2 seconds!
 ```
@@ -233,7 +233,7 @@ brew install cmake
 # Try it
 cmake -B build
 cmake --build build
-./build/bigman
+./build/glomph
 
 # If it works, commit
 git add CMakeLists.txt CMAKE_SETUP.md CMAKE_VS_MAKEFILE.md

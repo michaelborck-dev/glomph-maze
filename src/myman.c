@@ -30,22 +30,7 @@
 #endif
 #endif
 
-/* feature guessing */
-#ifndef MYMAN_GUESS_H_INCLUDED
-#include "guess.h"
-#endif
 
-/* used in macbuild.txt to avoid 8bit chars */
-#ifndef CHAR_SOLIDUS
-#define CHAR_SOLIDUS "/"
-#endif
-
-/* used in various WIN32 workaround functions */
-#ifdef __BORLANDC__
-#ifndef LIT64
-#define LIT64(lit) lit##L
-#endif
-#endif
 
 #ifndef LIT64
 #define LIT64(lit) lit##LL
@@ -63,20 +48,6 @@
 #define UNICODE _UNICODE
 #endif /* ! defined(UNICODE) */
 #endif /* ! defined(_UNICODE) */
-
-#ifdef MACCURSES
-/* needed for the argv[0] trick */
-#ifdef macintosh
-#if TARGET_API_MAC_CARBON
-#include <Carbon.h>
-#else
-#include <Files.h>
-#include <Processes.h>
-#endif
-#else
-#include <Carbon/Carbon.h>
-#endif
-#endif
 
 #include <errno.h>
 
@@ -102,69 +73,26 @@
 #endif
 
 #include <limits.h>
-#if HAVE_LOCALE_H
 #include <locale.h>
-#endif
 #include <math.h>
 #include <ctype.h>
-#if HAVE_UNISTD_H
 #include <unistd.h>
-#endif
 #include <stdlib.h>
 #include <string.h>
-#if HAVE_IO_H
-#include <io.h>
-#endif
 #include <stdio.h>
-#if HAVE_UNIXIO_H
-#include <unixio.h>
-#endif
-#if HAVE_SYS_TIME_H
 #include <sys/time.h>
-#endif
 #include <time.h>
 
-/* MyMan utilities; also defines cruft like __MSDOS__ under some circumstances */
 #ifndef MYMAN_UTILS_H_INCLUDED
 #include "utils.h"
 #endif
 
-#if HAVE_LANGINFO_H
 #include <langinfo.h>
-#endif
 
 #ifndef F_OK
 #define F_OK 0
 #endif
 
-#ifndef USE_SDL_MIXER
-#define USE_SDL_MIXER 0
-#endif
-
-#ifndef USE_SDL
-#undef USE_SDL_MIXER
-#define USE_SDL_MIXER 0
-#else
-#if ! USE_SDL
-#undef USE_SDL_MIXER
-#define USE_SDL_MIXER 0
-#endif
-#endif
-
-/* SDL sometimes redefines main */
-#ifdef USE_SDL
-#if USE_SDL
-#ifdef main
-#define _SDL_main_h
-#else
-#define MAIN_NO_ENVP
-#endif
-#include <SDL.h>
-#if USE_SDL_MIXER
-#include <SDL_mixer.h>
-#endif
-#endif
-#endif
 
 /* terminal-screen handling library */
 
@@ -178,366 +106,18 @@
 #endif
 
 #ifndef MY_CURSES_H
-#ifdef SLCURSES
-#define MY_CURSES_H <slcurses.h>
-#endif
 #endif
 
-#ifndef MY_CURSES_H
-#ifdef XCURSES
-#define MY_CURSES_H <xcurses.h>
-#endif
-#endif
 
-#ifndef MY_CURSES_H
-#ifdef CACACURSES
-#include "cacacurs.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
 
-#ifndef MY_CURSES_H
-#ifdef GTKCURSES
-#include "gtkcurs.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#ifdef FLTKCURSES
-#include "fltkcurs.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#ifdef AACURSES
-#define MY_CURSES_H "aacurses.h"
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#ifdef NEWTCURSES
-#include "newtcurs.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#ifdef DISPCURSES
-#include "dispcurs.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#ifdef EFICURSES
-#include "eficurs.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#ifdef CONIOCURSES
-#include "coniocur.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#ifdef GRAPHCURSES
-#include "graphcur.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#ifdef RAWCURSES
-#include "rawcurs.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#ifdef MACCURSES
-#include "maccurs.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#ifdef ALLEGROCURSES
-#include "allegcur.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#ifdef TWCURSES
-#define MY_CURSES_H "twcurses.h"
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#ifdef GGICURSES
-#include "ggicurs.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#ifdef SDLCURSES
-#include "sdlcurs.h"
-#define MY_CURSES_H "optcurs.h"
-#endif
-#endif
-
-#ifdef MY_CURSES_H
-#include MY_CURSES_H
-#else
 #include <curses.h>
-#endif
 
-#ifdef OPTCURSES
-#include "optcurs.h"
-#endif
 
-/* work-arounds for old VMS curses */
-#if defined(_VMS_CURSES) || defined(__VMS_CURSES)
 
-#include <smg$routines.h>
-#include <ssdef.h>
-
-#pragma __nostandard
-
-#ifndef OLDCURSES
-#define OLDCURSES 1
-#endif
-
-#ifdef _BOLD
-#ifndef HAVE_SETATTR
-#define HAVE_SETATTR 1
-#endif
-#endif
-
-#ifndef cbreak
-#define cbreak() crmode()
-#endif
-
-#ifndef idlok
-#define idlok(s,f)
-#endif
-
-#ifndef mvprintw
-#define mvprintw mvaddstr
-#endif
-
-static int
-vmscurses_getch(void)
-{
-    int res;
-    unsigned long kbdid;
-    unsigned short keycode = ERR;
-    int timeout;
-
-    kbdid = stdkb->_id;
-    timeout = 0;
-    res = smg$read_keystroke(&kbdid, &keycode, 0, &timeout);
-    if (res == SS$_TIMEOUT) return ERR;
-    if (res & 1) return keycode;
-    return getch();
-}
-
-#undef getch
-#define getch vmscurses_getch
-
-#ifndef KEY_UP
-#define KEY_UP SMG$K_TRM_UP
-#endif
-
-#ifndef KEY_DOWN
-#define KEY_DOWN SMG$K_TRM_DOWN
-#endif
-
-#ifndef KEY_LEFT
-#define KEY_LEFT SMG$K_TRM_LEFT
-#endif
-
-#ifndef KEY_RIGHT
-#define KEY_RIGHT SMG$K_TRM_RIGHT
-#endif
-
-#ifndef keypad
-#define keypad(s,f) OK
-#endif
-
-#ifndef curs_set
-#define curs_set(f) ((smg$set_cursor_mode(&(stdkb->_id),(f)?SMG$M_CURSOR_ON:SMG$M_CURSOR_OFF)&1)?1:-1)
-#endif
-
-#pragma __standard
-
-#endif
-
-/* work-arounds for BSD 4.4 curses as seen on OpenVMS */
-#if defined(_BSD44_CURSES) || defined(__BSD44_CURSES)
-
-#ifndef OLDCURSES
-#define OLDCURSES 1
-#endif
-
-#endif
 
 /* work-arounds for old BSD curses */
-#ifdef OLDCURSES
-
-#ifndef DANGEROUS_ATTRS
-#define DANGEROUS_ATTRS 1
-#endif
-
-#ifndef intrflush
-#define intrflush(win, x)
-#endif
-
-#ifndef use_env
-#define use_env(x)
-#endif
-
-#ifndef HAVE_NODELAY
-#ifndef nodelay
-#define HAVE_NODELAY 0
-#endif
-#endif
-
-#ifndef HAVE_CURS_SET
-#ifndef curs_set
-#define HAVE_CURS_SET 0
-#endif
-#endif
-
-#ifndef A_STANDOUT
-#ifndef HAVE_ATTRSET
-#ifndef attrset
-#define HAVE_ATTRSET 0
-#endif
-#endif
-#endif
-
-#ifndef USE_ATTR
-#define USE_ATTR 1
-#endif
-
-#if USE_ATTR
-#ifndef A_STANDOUT
-#ifdef _STANDOUT
-#define A_STANDOUT _STANDOUT
-#else
-#ifdef __STANDOUT
-#define A_STANDOUT ((__STANDOUT) << 8)
-#else
-#ifdef _REVERSE
-#ifdef _BOLD
-#define A_STANDOUT ((_BOLD | _REVERSE) << 8)
-#else
-#define A_STANDOUT ((_REVERSE) << 8)
-#endif
-#else
-#define A_STANDOUT 0x100
-#endif
-#endif
-#endif
-#endif
-#ifndef A_BLINK
-#ifdef _BLINK
-#define A_BLINK ((_BLINK) << 8)
-#endif
-#endif
-#ifndef A_BOLD
-#ifdef _BOLD
-#define A_BOLD ((_BOLD) << 8)
-#endif
-#endif
-#ifndef A_REVERSE
-#ifdef _REVERSE
-#define A_REVERSE ((_REVERSE) << 8)
-#endif
-#ifndef A_UNDERLINE
-#ifdef _UNDERLINE
-#define A_UNDERLINE ((_UNDERLINE) << 8)
-#endif
-#endif
-#endif
-
-#endif
-
-#ifndef beep
-#define beep() do{fputc('\a', stdout);fflush(stdout);}while(0)
-#endif
-
-#ifndef HAVE_CHTYPE
-#ifndef chtype
-#define HAVE_CHTYPE 0
-#endif
-#endif
-
-#ifdef A_STANDOUT
-#if A_STANDOUT == 0x80
-#ifndef A_CHARTEXT
-#define A_CHARTEXT 0x7f
-#endif
-#endif
-#endif
-
-#ifndef A_CHARTEXT
-#define A_CHARTEXT 0xff
-#endif
-
-#ifndef USE_A_CHARTEXT
-#define USE_A_CHARTEXT 1
-#endif
-
-#endif
 
 /* work-arounds for slcurses */
-#ifdef SLCURSES
-
-#ifndef use_env
-#define use_env(x)
-#endif
-
-#ifndef USE_A_CHARTEXT
-#define USE_A_CHARTEXT 1
-#endif
-
-#ifndef curscr
-#define curscr stdscr
-#endif
-
-#ifndef MY_INIT_PAIR_RET
-#define MY_INIT_PAIR_RET , ~ERR
-#endif
-
-#ifndef USE_PALETTE
-#define USE_PALETTE 0
-#endif
-
-#ifndef intrflush
-#define intrflush(win, x)
-#endif
-
-#ifndef DISABLE_IDLOK
-#ifndef idlok
-#define DISABLE_IDLOK
-#endif
-#endif
-
-#ifndef pair_content
-#define pair_content(p,f,b) \
-((*(f) = (p) ? ((SLtt_get_color_object ((p))) >> 16) : 7), \
- (*(b) = (p) ? (((SLtt_get_color_object ((p))) >> 8) & 0xff) : 0))
-#endif
-
-#endif
 
 /* HAVE_SETATTR: does our curses implementation include setattr()/clrattr()? */
 
@@ -554,52 +134,30 @@ vmscurses_getch(void)
 /* for resizing */
 
 #ifndef USE_IOCTL
-#ifdef __PDCURSES__
-#define USE_IOCTL 0
-#else
 #define USE_IOCTL 1
-#endif
 #endif
 
 #if USE_IOCTL
 #if HAVE_IOCTL_H
 #include <ioctl.h>
 #else
-#if HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
-#endif
 #ifdef TIOCGWINSZ
-#ifndef VMS
 #include <termios.h>
-#endif
 #endif
 #endif
 
 #ifndef USE_SIGWINCH
-#ifdef __PDCURSES__
-#define USE_SIGWINCH 0
-#else
 #ifdef SIGWINCH
 #define USE_SIGWINCH 1
 #else
 #define USE_SIGWINCH 0
 #endif
 #endif
-#endif
 
 /* command-line argument parser */
-#ifndef MYGETOPT_H
-#ifdef MYGETOPT
-#define MYGETOPT_H "getopt.h"
-#endif
-#endif
-
-#ifdef MYGETOPT_H
-#include MYGETOPT_H
-#else
 #include <getopt.h>
-#endif
 
 /* character set conversion library */
 #ifndef USE_ICONV
@@ -609,16 +167,12 @@ vmscurses_getch(void)
 #if USE_ICONV
 #include <iconv.h>
 #ifndef wcwidth
-#if HAVE_WCHAR_H
 #include <wchar.h>
-#endif
 #endif
 #ifdef LC_CTYPE
 #ifndef uint32_t
 /* for uint32_t */
-#if HAVE_STDINT_H
 #include <stdint.h>
-#endif
 #endif
 #endif
 
@@ -732,38 +286,7 @@ static void sigwinch_handler(int signum)
 #define CRLF "\r\n"
 #endif
 
-#ifdef __PDCURSES__
-#ifdef USE_SDL
-#if USE_SDL
-#ifndef USE_RAW
-#define USE_RAW 1
-#endif
-#ifndef USE_RAW_UCS
-#define USE_RAW_UCS 0
-#endif /* ! defined(USE_RAW_UCS) */
-#endif
-#endif
-#ifdef PDC_BUILD
-#if PDC_BUILD >= 3300
-/* PDCurses does implement init_color as of release 3.3 */
-#ifndef USE_PALETTE
-#define USE_PALETTE 1
-#endif
-#endif
-#endif
-/* PDCurses doesn't implement init_color as of release 2.2 */
-#ifndef USE_PALETTE
-#define USE_PALETTE 0
-#endif
-#endif
 
-#ifndef USE_WIDEC_SUPPORT
-#ifdef WACS_ULCORNER
-#define USE_WIDEC_SUPPORT 1
-#else
-#define USE_WIDEC_SUPPORT 0
-#endif
-#endif
 
 #ifndef CCHARW_MAX
 #define CCHARW_MAX 6
@@ -811,18 +334,7 @@ static void sigwinch_handler(int signum)
 #endif
 
 #ifndef SWAPDOTS
-#ifdef __PDCURSES__
-#ifndef XCURSES
-#define SWAPDOTS 1
-#endif
-#endif
-#endif
-
-#ifndef SWAPDOTS
-#define SWAPDOTS ((USE_WIDEC_SUPPORT) ? locale_is_utf8() : 0)
-#ifndef NEED_LOCALE_IS_UTF8
-#define NEED_LOCALE_IS_UTF8 1
-#endif
+#define SWAPDOTS 0
 #endif
 
 #ifdef NEED_LOCALE_IS_UTF8
@@ -910,87 +422,47 @@ static int locale_is_utf8(void)
 }
 #endif
 
-#ifndef MY_A_BOLD
 #ifdef A_BOLD
-#define MY_A_BOLD A_BOLD
-#endif
 #endif
 
-#ifndef MY_A_UNDERLINE
 #ifdef A_UNDERLINE
-#define MY_A_UNDERLINE A_UNDERLINE
-#endif
 #endif
 
-#ifndef MY_A_STANDOUT
 #ifdef A_STANDOUT
-#define MY_A_STANDOUT A_STANDOUT
-#endif
 #endif
 
-#ifndef MY_A_REVERSE
 #ifdef A_REVERSE
-#define MY_A_REVERSE A_REVERSE
-#endif
 #endif
 
-#ifndef MY_A_DIM
 #ifdef A_DIM
-#define MY_A_DIM A_DIM
-#endif
 #endif
 
-#ifndef MY_A_ATTRIBUTES
 #ifdef A_ATTRIBUTES
-#define MY_A_ATTRIBUTES A_ATTRIBUTES
-#endif
 #endif
 
-#ifndef MY_A_CHARTEXT
 #ifdef A_CHARTEXT
-#define MY_A_CHARTEXT A_CHARTEXT
-#endif
 #endif
 
-#ifndef MY_A_REVERSE
-#ifdef MY_A_STANDOUT
-#define MY_A_REVERSE MY_A_STANDOUT
-#endif
+#ifdef A_STANDOUT
 #endif
 
-#ifndef MY_A_CHARTEXT
-#ifdef MY_A_ATTRIBUTES
-#define MY_A_CHARTEXT ~MY_A_ATTRIBUTES
+#ifdef A_ATTRIBUTES
 #else
-#define MY_A_CHARTEXT 0xFF
-#endif
 #endif
 
 #ifndef USE_UNDERLINE
 #define USE_UNDERLINE 0
 #endif
 
-#ifndef USE_ATTR
-#ifdef MY_A_BOLD
-#define USE_ATTR 1
-#else
-#define USE_ATTR 0
-#endif
-#endif
 
 #ifndef DANGEROUS_ATTRS
 #define DANGEROUS_ATTRS 0
 #endif
 
 #ifndef HAVE_CURS_SET
-#define HAVE_CURS_SET USE_ATTR
+#define HAVE_CURS_SET 1
 #endif
 
-#if ! USE_ATTR
-#ifndef USE_COLOR
-#define USE_COLOR 0
-#endif
-#endif
 
 #ifndef USE_BEEP
 #define USE_BEEP 1
@@ -1000,42 +472,20 @@ static int locale_is_utf8(void)
 #define SOUND 0
 #endif
 
-#ifndef USE_COLOR
-#ifdef COLOR_BLACK
-#define USE_COLOR 1
-#else
-#define USE_COLOR 0
-#endif
-#endif
 
 #ifndef COLORIZE
 #define COLORIZE 1
 #endif
 
 #ifndef USE_PALETTE
-#define USE_PALETTE USE_COLOR
+#define USE_PALETTE 1
 #endif
 
 #ifndef USE_RAW_UCS
-#ifdef SLANG_VERSION
-#if SLANG_VERSION >= 20000
-#define USE_RAW_UCS 1
-#else
-#ifdef SLCURSES
-#ifdef UTF8
-#define USE_RAW_UCS 1
-#endif
-#endif
-#endif
-#endif
 #endif
 
 #ifndef USE_RAW_UCS
-#if USE_WIDEC_SUPPORT
-#define USE_RAW_UCS 1
-#else
 #define USE_RAW_UCS 0
-#endif
 #endif
 
 #ifndef USE_RAW
@@ -1046,763 +496,158 @@ static int locale_is_utf8(void)
 #define USE_ACS 1
 #endif
 
-#if USE_WIDEC_SUPPORT
 
-#ifndef MY_ACS_BDDB
-#ifdef WACS_BDDB
-#define MY_ACS_BDDB WACS_BDDB
-#endif
-#endif
-#ifndef MY_ACS_BSSB
-#ifdef WACS_BSSB
-#define MY_ACS_BSSB WACS_BSSB
-#endif
-#endif
-#ifndef MY_ACS_ULCORNER
-#ifdef WACS_ULCORNER
-#define MY_ACS_ULCORNER WACS_ULCORNER
-#endif
-#endif
-#ifndef MY_ACS_DDBB
-#ifdef WACS_DDBB
-#define MY_ACS_DDBB WACS_DDBB
-#endif
-#endif
-#ifndef MY_ACS_SSBB
-#ifdef WACS_SSBB
-#define MY_ACS_SSBB WACS_SSBB
-#endif
-#endif
-#ifndef MY_ACS_LLCORNER
-#ifdef WACS_LLCORNER
-#define MY_ACS_LLCORNER WACS_LLCORNER
-#endif
-#endif
-#ifndef MY_ACS_BBDD
-#ifdef WACS_BBDD
-#define MY_ACS_BBDD WACS_BBDD
-#endif
-#endif
-#ifndef MY_ACS_BBSS
-#ifdef WACS_BBSS
-#define MY_ACS_BBSS WACS_BBSS
-#endif
-#endif
-#ifndef MY_ACS_URCORNER
-#ifdef WACS_URCORNER
-#define MY_ACS_URCORNER WACS_URCORNER
-#endif
-#endif
-#ifndef MY_ACS_DBBD
-#ifdef WACS_DBBD
-#define MY_ACS_DBBD WACS_DBBD
-#endif
-#endif
-#ifndef MY_ACS_SBBS
-#ifdef WACS_SBBS
-#define MY_ACS_SBBS WACS_SBBS
-#endif
-#endif
-#ifndef MY_ACS_LRCORNER
-#ifdef WACS_LRCORNER
-#define MY_ACS_LRCORNER WACS_LRCORNER
-#endif
-#endif
-#ifndef MY_ACS_DBDD
-#ifdef WACS_DBDD
-#define MY_ACS_DBDD WACS_DBDD
-#endif
-#endif
-#ifndef MY_ACS_SBSD
-#ifdef WACS_SBSD
-#define MY_ACS_SBSD WACS_SBSD
-#endif
-#endif
-#ifndef MY_ACS_DBDS
-#ifdef WACS_DBDS
-#define MY_ACS_DBDS WACS_DBDS
-#endif
-#endif
-#ifndef MY_ACS_SBSS
-#ifdef WACS_SBSS
-#define MY_ACS_SBSS WACS_SBSS
-#endif
-#endif
-#ifndef MY_ACS_RTEE
-#ifdef WACS_RTEE
-#define MY_ACS_RTEE WACS_RTEE
-#endif
-#endif
-#ifndef MY_ACS_DDDB
-#ifdef WACS_DDDB
-#define MY_ACS_DDDB WACS_DDDB
-#endif
-#endif
-#ifndef MY_ACS_SDSB
-#ifdef WACS_SDSB
-#define MY_ACS_SDSB WACS_SDSB
-#endif
-#endif
-#ifndef MY_ACS_DSDB
-#ifdef WACS_DSDB
-#define MY_ACS_DSDB WACS_DSDB
-#endif
-#endif
-#ifndef MY_ACS_SSSB
-#ifdef WACS_SSSB
-#define MY_ACS_SSSB WACS_SSSB
-#endif
-#endif
-#ifndef MY_ACS_LTEE
-#ifdef WACS_LTEE
-#define MY_ACS_LTEE WACS_LTEE
-#endif
-#endif
-#ifndef MY_ACS_DDBD
-#ifdef WACS_DDBD
-#define MY_ACS_DDBD WACS_DDBD
-#endif
-#endif
-#ifndef MY_ACS_SDBD
-#ifdef WACS_SDBD
-#define MY_ACS_SDBD WACS_SDBD
-#endif
-#endif
-#ifndef MY_ACS_DSBS
-#ifdef WACS_DSBS
-#define MY_ACS_DSBS WACS_DSBS
-#endif
-#endif
-#ifndef MY_ACS_SSBS
-#ifdef WACS_SSBS
-#define MY_ACS_SSBS WACS_SSBS
-#endif
-#endif
-#ifndef MY_ACS_BTEE
-#ifdef WACS_BTEE
-#define MY_ACS_BTEE WACS_BTEE
-#endif
-#endif
-#ifndef MY_ACS_BDDD
-#ifdef WACS_BDDD
-#define MY_ACS_BDDD WACS_BDDD
-#endif
-#endif
-#ifndef MY_ACS_BDSD
-#ifdef WACS_BDSD
-#define MY_ACS_BDSD WACS_BDSD
-#endif
-#endif
-#ifndef MY_ACS_BSDS
-#ifdef WACS_BSDS
-#define MY_ACS_BSDS WACS_BSDS
-#endif
-#endif
-#ifndef MY_ACS_BSSS
-#ifdef WACS_BSSS
-#define MY_ACS_BSSS WACS_BSSS
-#endif
-#endif
-#ifndef MY_ACS_TTEE
-#ifdef WACS_TTEE
-#define MY_ACS_TTEE WACS_TTEE
-#endif
-#endif
-#ifndef MY_ACS_BDSS
-#ifdef WACS_BDSS
-#define MY_ACS_BDSS WACS_BDSS
-#endif
-#endif
-#ifndef MY_ACS_BDSB
-#ifdef WACS_BDSB
-#define MY_ACS_BDSB WACS_BDSB
-#endif
-#endif
-#ifndef MY_ACS_SSDB
-#ifdef WACS_SSDB
-#define MY_ACS_SSDB WACS_SSDB
-#endif
-#endif
-#ifndef MY_ACS_BSDB
-#ifdef WACS_BSDB
-#define MY_ACS_BSDB WACS_BSDB
-#endif
-#endif
-#ifndef MY_ACS_SDBS
-#ifdef WACS_SDBS
-#define MY_ACS_SDBS WACS_SDBS
-#endif
-#endif
-#ifndef MY_ACS_SDBB
-#ifdef WACS_SDBB
-#define MY_ACS_SDBB WACS_SDBB
-#endif
-#endif
-#ifndef MY_ACS_DSSB
-#ifdef WACS_DSSB
-#define MY_ACS_DSSB WACS_DSSB
-#endif
-#endif
-#ifndef MY_ACS_DSBB
-#ifdef WACS_DSBB
-#define MY_ACS_DSBB WACS_DSBB
-#endif
-#endif
-#ifndef MY_ACS_BSSD
-#ifdef WACS_BSSD
-#define MY_ACS_BSSD WACS_BSSD
-#endif
-#endif
-#ifndef MY_ACS_BBSD
-#ifdef WACS_BBSD
-#define MY_ACS_BBSD WACS_BBSD
-#endif
-#endif
-#ifndef MY_ACS_SBDS
-#ifdef WACS_SBDS
-#define MY_ACS_SBDS WACS_SBDS
-#endif
-#endif
-#ifndef MY_ACS_BBDS
-#ifdef WACS_BBDS
-#define MY_ACS_BBDS WACS_BBDS
-#endif
-#endif
-#ifndef MY_ACS_SSBD
-#ifdef WACS_SSBD
-#define MY_ACS_SSBD WACS_SSBD
-#endif
-#endif
-#ifndef MY_ACS_SBBD
-#ifdef WACS_SBBD
-#define MY_ACS_SBBD WACS_SBBD
-#endif
-#endif
-#ifndef MY_ACS_DBSS
-#ifdef WACS_DBSS
-#define MY_ACS_DBSS WACS_DBSS
-#endif
-#endif
-#ifndef MY_ACS_DBBS
-#ifdef WACS_DBBS
-#define MY_ACS_DBBS WACS_DBBS
-#endif
-#endif
-#ifndef MY_ACS_BDBD
-#ifdef WACS_BDBD
-#define MY_ACS_BDBD WACS_BDBD
-#endif
-#endif
-#ifndef MY_ACS_BSBS
-#ifdef WACS_BSBS
-#define MY_ACS_BSBS WACS_BSBS
-#endif
-#endif
-#ifndef MY_ACS_HLINE
-#ifdef WACS_HLINE
-#define MY_ACS_HLINE WACS_HLINE
-#endif
-#endif
-#ifndef MY_ACS_DBDB
-#ifdef WACS_DBDB
-#define MY_ACS_DBDB WACS_DBDB
-#endif
-#endif
-#ifndef MY_ACS_SBSB
-#ifdef WACS_SBSB
-#define MY_ACS_SBSB WACS_SBSB
-#endif
-#endif
-#ifndef MY_ACS_VLINE
-#ifdef WACS_VLINE
-#define MY_ACS_VLINE WACS_VLINE
-#endif
-#endif
-#ifndef MY_ACS_DDDD
-#ifdef WACS_DDDD
-#define MY_ACS_DDDD WACS_DDDD
-#endif
-#endif
-#ifndef MY_ACS_SDSD
-#ifdef WACS_SDSD
-#define MY_ACS_SDSD WACS_SDSD
-#endif
-#endif
-#ifndef MY_ACS_DSDS
-#ifdef WACS_DSDS
-#define MY_ACS_DSDS WACS_DSDS
-#endif
-#endif
-#ifndef MY_ACS_SSSS
-#ifdef WACS_SSSS
-#define MY_ACS_SSSS WACS_SSSS
-#endif
-#endif
-#ifndef MY_ACS_PLUS
-#ifdef WACS_PLUS
-#define MY_ACS_PLUS WACS_PLUS
-#endif
-#endif
-#ifndef MY_ACS_DIAMOND
-#ifdef WACS_DIAMOND
-#define MY_ACS_DIAMOND WACS_DIAMOND
-#endif
-#endif
-#ifndef MY_ACS_DEGREE
-#ifdef WACS_DEGREE
-#define MY_ACS_DEGREE WACS_DEGREE
-#endif
-#endif
-#ifndef MY_ACS_BBBB
-#ifdef WACS_BBBB
-#define MY_ACS_BBBB WACS_BBBB
-#endif
-#endif
-#ifndef MY_ACS_BULLET
-#ifdef WACS_BULLET
-#define MY_ACS_BULLET WACS_BULLET
-#endif
-#endif
-#ifndef MY_ACS_DARROW
-#ifdef WACS_DARROW
-#define MY_ACS_DARROW WACS_DARROW
-#endif
-#endif
-#ifndef MY_ACS_UARROW
-#ifdef WACS_UARROW
-#define MY_ACS_UARROW WACS_UARROW
-#endif
-#endif
-#ifndef MY_ACS_LANTERN
-#ifdef WACS_LANTERN
-#define MY_ACS_LANTERN WACS_LANTERN
-#endif
-#endif
-#ifndef MY_ACS_BOARD
-#ifdef WACS_BOARD
-#define MY_ACS_BOARD WACS_BOARD
-#endif
-#endif
-#ifndef MY_ACS_CKBOARD
-#ifdef WACS_CKBOARD
-#define MY_ACS_CKBOARD WACS_CKBOARD
-#endif
-#endif
-#ifndef MY_ACS_BLOCK
-#ifdef WACS_BLOCK
-#define MY_ACS_BLOCK WACS_BLOCK
-#endif
-#endif
-#ifndef MY_ACS_LARROW
-#ifdef WACS_LARROW
-#define MY_ACS_LARROW WACS_LARROW
-#endif
-#endif
-#ifndef MY_ACS_LEQUAL
-#ifdef WACS_LEQUAL
-#define MY_ACS_LEQUAL WACS_LEQUAL
-#endif
-#endif
-#ifndef MY_ACS_RARROW
-#ifdef WACS_RARROW
-#define MY_ACS_RARROW WACS_RARROW
-#endif
-#endif
-#ifndef MY_ACS_GEQUAL
-#ifdef WACS_GEQUAL
-#define MY_ACS_GEQUAL WACS_GEQUAL
-#endif
-#endif
-#ifndef MY_ACS_PI
-#ifdef WACS_PI
-#define MY_ACS_PI WACS_PI
-#endif
-#endif
-#ifndef MY_ACS_STERLING
-#ifdef WACS_STERLING
-#define MY_ACS_STERLING WACS_STERLING
-#endif
-#endif
-
-#else /* ! USE_WIDEC_SUPPORT */
-
-#ifndef MY_ACS_BDDB
 #ifdef ACS_BDDB
-#define MY_ACS_BDDB ACS_BDDB
 #endif
-#endif
-#ifndef MY_ACS_BSSB
 #ifdef ACS_BSSB
-#define MY_ACS_BSSB ACS_BSSB
 #endif
-#endif
-#ifndef MY_ACS_ULCORNER
 #ifdef ACS_ULCORNER
-#define MY_ACS_ULCORNER ACS_ULCORNER
 #endif
-#endif
-#ifndef MY_ACS_DDBB
 #ifdef ACS_DDBB
-#define MY_ACS_DDBB ACS_DDBB
 #endif
-#endif
-#ifndef MY_ACS_SSBB
 #ifdef ACS_SSBB
-#define MY_ACS_SSBB ACS_SSBB
 #endif
-#endif
-#ifndef MY_ACS_LLCORNER
 #ifdef ACS_LLCORNER
-#define MY_ACS_LLCORNER ACS_LLCORNER
 #endif
-#endif
-#ifndef MY_ACS_BBDD
 #ifdef ACS_BBDD
-#define MY_ACS_BBDD ACS_BBDD
 #endif
-#endif
-#ifndef MY_ACS_BBSS
 #ifdef ACS_BBSS
-#define MY_ACS_BBSS ACS_BBSS
 #endif
-#endif
-#ifndef MY_ACS_URCORNER
 #ifdef ACS_URCORNER
-#define MY_ACS_URCORNER ACS_URCORNER
 #endif
-#endif
-#ifndef MY_ACS_DBBD
 #ifdef ACS_DBBD
-#define MY_ACS_DBBD ACS_DBBD
 #endif
-#endif
-#ifndef MY_ACS_SBBS
 #ifdef ACS_SBBS
-#define MY_ACS_SBBS ACS_SBBS
 #endif
-#endif
-#ifndef MY_ACS_LRCORNER
 #ifdef ACS_LRCORNER
-#define MY_ACS_LRCORNER ACS_LRCORNER
 #endif
-#endif
-#ifndef MY_ACS_DBDD
 #ifdef ACS_DBDD
-#define MY_ACS_DBDD ACS_DBDD
 #endif
-#endif
-#ifndef MY_ACS_SBSD
 #ifdef ACS_SBSD
-#define MY_ACS_SBSD ACS_SBSD
 #endif
-#endif
-#ifndef MY_ACS_DBDS
 #ifdef ACS_DBDS
-#define MY_ACS_DBDS ACS_DBDS
 #endif
-#endif
-#ifndef MY_ACS_SBSS
 #ifdef ACS_SBSS
-#define MY_ACS_SBSS ACS_SBSS
 #endif
-#endif
-#ifndef MY_ACS_RTEE
 #ifdef ACS_RTEE
-#define MY_ACS_RTEE ACS_RTEE
 #endif
-#endif
-#ifndef MY_ACS_DDDB
 #ifdef ACS_DDDB
-#define MY_ACS_DDDB ACS_DDDB
 #endif
-#endif
-#ifndef MY_ACS_SDSB
 #ifdef ACS_SDSB
-#define MY_ACS_SDSB ACS_SDSB
 #endif
-#endif
-#ifndef MY_ACS_DSDB
 #ifdef ACS_DSDB
-#define MY_ACS_DSDB ACS_DSDB
 #endif
-#endif
-#ifndef MY_ACS_SSSB
 #ifdef ACS_SSSB
-#define MY_ACS_SSSB ACS_SSSB
 #endif
-#endif
-#ifndef MY_ACS_LTEE
 #ifdef ACS_LTEE
-#define MY_ACS_LTEE ACS_LTEE
 #endif
-#endif
-#ifndef MY_ACS_DDBD
 #ifdef ACS_DDBD
-#define MY_ACS_DDBD ACS_DDBD
 #endif
-#endif
-#ifndef MY_ACS_SDBD
 #ifdef ACS_SDBD
-#define MY_ACS_SDBD ACS_SDBD
 #endif
-#endif
-#ifndef MY_ACS_DSBS
 #ifdef ACS_DSBS
-#define MY_ACS_DSBS ACS_DSBS
 #endif
-#endif
-#ifndef MY_ACS_SSBS
 #ifdef ACS_SSBS
-#define MY_ACS_SSBS ACS_SSBS
 #endif
-#endif
-#ifndef MY_ACS_BTEE
 #ifdef ACS_BTEE
-#define MY_ACS_BTEE ACS_BTEE
 #endif
-#endif
-#ifndef MY_ACS_BDDD
 #ifdef ACS_BDDD
-#define MY_ACS_BDDD ACS_BDDD
 #endif
-#endif
-#ifndef MY_ACS_BDSD
 #ifdef ACS_BDSD
-#define MY_ACS_BDSD ACS_BDSD
 #endif
-#endif
-#ifndef MY_ACS_BSDS
 #ifdef ACS_BSDS
-#define MY_ACS_BSDS ACS_BSDS
 #endif
-#endif
-#ifndef MY_ACS_BSSS
 #ifdef ACS_BSSS
-#define MY_ACS_BSSS ACS_BSSS
 #endif
-#endif
-#ifndef MY_ACS_TTEE
 #ifdef ACS_TTEE
-#define MY_ACS_TTEE ACS_TTEE
 #endif
-#endif
-#ifndef MY_ACS_BDSS
 #ifdef ACS_BDSS
-#define MY_ACS_BDSS ACS_BDSS
 #endif
-#endif
-#ifndef MY_ACS_BDSB
 #ifdef ACS_BDSB
-#define MY_ACS_BDSB ACS_BDSB
 #endif
-#endif
-#ifndef MY_ACS_SSDB
 #ifdef ACS_SSDB
-#define MY_ACS_SSDB ACS_SSDB
 #endif
-#endif
-#ifndef MY_ACS_BSDB
 #ifdef ACS_BSDB
-#define MY_ACS_BSDB ACS_BSDB
 #endif
-#endif
-#ifndef MY_ACS_SDBS
 #ifdef ACS_SDBS
-#define MY_ACS_SDBS ACS_SDBS
 #endif
-#endif
-#ifndef MY_ACS_SDBB
 #ifdef ACS_SDBB
-#define MY_ACS_SDBB ACS_SDBB
 #endif
-#endif
-#ifndef MY_ACS_DSSB
 #ifdef ACS_DSSB
-#define MY_ACS_DSSB ACS_DSSB
 #endif
-#endif
-#ifndef MY_ACS_DSBB
 #ifdef ACS_DSBB
-#define MY_ACS_DSBB ACS_DSBB
 #endif
-#endif
-#ifndef MY_ACS_BSSD
 #ifdef ACS_BSSD
-#define MY_ACS_BSSD ACS_BSSD
 #endif
-#endif
-#ifndef MY_ACS_BBSD
 #ifdef ACS_BBSD
-#define MY_ACS_BBSD ACS_BBSD
 #endif
-#endif
-#ifndef MY_ACS_SBDS
 #ifdef ACS_SBDS
-#define MY_ACS_SBDS ACS_SBDS
 #endif
-#endif
-#ifndef MY_ACS_BBDS
 #ifdef ACS_BBDS
-#define MY_ACS_BBDS ACS_BBDS
 #endif
-#endif
-#ifndef MY_ACS_SSBD
 #ifdef ACS_SSBD
-#define MY_ACS_SSBD ACS_SSBD
 #endif
-#endif
-#ifndef MY_ACS_SBBD
 #ifdef ACS_SBBD
-#define MY_ACS_SBBD ACS_SBBD
 #endif
-#endif
-#ifndef MY_ACS_DBSS
 #ifdef ACS_DBSS
-#define MY_ACS_DBSS ACS_DBSS
 #endif
-#endif
-#ifndef MY_ACS_DBBS
 #ifdef ACS_DBBS
-#define MY_ACS_DBBS ACS_DBBS
 #endif
-#endif
-#ifndef MY_ACS_BDBD
 #ifdef ACS_BDBD
-#define MY_ACS_BDBD ACS_BDBD
 #endif
-#endif
-#ifndef MY_ACS_BSBS
 #ifdef ACS_BSBS
-#define MY_ACS_BSBS ACS_BSBS
 #endif
-#endif
-#ifndef MY_ACS_HLINE
 #ifdef ACS_HLINE
-#define MY_ACS_HLINE ACS_HLINE
 #endif
-#endif
-#ifndef MY_ACS_DBDB
 #ifdef ACS_DBDB
-#define MY_ACS_DBDB ACS_DBDB
 #endif
-#endif
-#ifndef MY_ACS_SBSB
 #ifdef ACS_SBSB
-#define MY_ACS_SBSB ACS_SBSB
 #endif
-#endif
-#ifndef MY_ACS_VLINE
 #ifdef ACS_VLINE
-#define MY_ACS_VLINE ACS_VLINE
 #endif
-#endif
-#ifndef MY_ACS_DDDD
 #ifdef ACS_DDDD
-#define MY_ACS_DDDD ACS_DDDD
 #endif
-#endif
-#ifndef MY_ACS_SDSD
 #ifdef ACS_SDSD
-#define MY_ACS_SDSD ACS_SDSD
 #endif
-#endif
-#ifndef MY_ACS_DSDS
 #ifdef ACS_DSDS
-#define MY_ACS_DSDS ACS_DSDS
 #endif
-#endif
-#ifndef MY_ACS_SSSS
 #ifdef ACS_SSSS
-#define MY_ACS_SSSS ACS_SSSS
 #endif
-#endif
-#ifndef MY_ACS_PLUS
 #ifdef ACS_PLUS
-#define MY_ACS_PLUS ACS_PLUS
 #endif
-#endif
-#ifndef MY_ACS_DIAMOND
 #ifdef ACS_DIAMOND
-#define MY_ACS_DIAMOND ACS_DIAMOND
 #endif
-#endif
-#ifndef MY_ACS_DEGREE
 #ifdef ACS_DEGREE
-#define MY_ACS_DEGREE ACS_DEGREE
 #endif
-#endif
-#ifndef MY_ACS_BBBB
 #ifdef ACS_BBBB
-#define MY_ACS_BBBB ACS_BBBB
 #endif
-#endif
-#ifndef MY_ACS_BULLET
 #ifdef ACS_BULLET
-#define MY_ACS_BULLET ACS_BULLET
 #endif
-#endif
-#ifndef MY_ACS_DARROW
 #ifdef ACS_DARROW
-#define MY_ACS_DARROW ACS_DARROW
 #endif
-#endif
-#ifndef MY_ACS_UARROW
 #ifdef ACS_UARROW
-#define MY_ACS_UARROW ACS_UARROW
 #endif
-#endif
-#ifndef MY_ACS_LANTERN
 #ifdef ACS_LANTERN
-#define MY_ACS_LANTERN ACS_LANTERN
 #endif
-#endif
-#ifndef MY_ACS_BOARD
 #ifdef ACS_BOARD
-#define MY_ACS_BOARD ACS_BOARD
 #endif
-#endif
-#ifndef MY_ACS_CKBOARD
 #ifdef ACS_CKBOARD
-#define MY_ACS_CKBOARD ACS_CKBOARD
 #endif
-#endif
-#ifndef MY_ACS_BLOCK
 #ifdef ACS_BLOCK
-#define MY_ACS_BLOCK ACS_BLOCK
 #endif
-#endif
-#ifndef MY_ACS_LARROW
 #ifdef ACS_LARROW
-#define MY_ACS_LARROW ACS_LARROW
 #endif
-#endif
-#ifndef MY_ACS_LEQUAL
 #ifdef ACS_LEQUAL
-#define MY_ACS_LEQUAL ACS_LEQUAL
 #endif
-#endif
-#ifndef MY_ACS_RARROW
 #ifdef ACS_RARROW
-#define MY_ACS_RARROW ACS_RARROW
 #endif
-#endif
-#ifndef MY_ACS_GEQUAL
 #ifdef ACS_GEQUAL
-#define MY_ACS_GEQUAL ACS_GEQUAL
 #endif
-#endif
-#ifndef MY_ACS_PI
 #ifdef ACS_PI
-#define MY_ACS_PI ACS_PI
 #endif
-#endif
-#ifndef MY_ACS_STERLING
 #ifdef ACS_STERLING
-#define MY_ACS_STERLING ACS_STERLING
-#endif
 #endif
 
-#endif /* ! USE_WIDEC_SUPPORT */
 
 #ifdef BUILTIN_SIZE
 extern const char *builtin_size;
@@ -1818,7 +663,7 @@ static const char *MYMANSIZE_str = MYMANSIZE;
 #endif
 
 #ifndef TILEFILE
-#define TILEFILE "chr/chr5x2.txt"
+#define TILEFILE TILEDIR "/chr5x2.txt"
 #endif
 
 #ifdef BUILTIN_TILE
@@ -1833,7 +678,7 @@ static const char TILEFILE_str[] = TILEFILE;
 #endif
 
 #ifndef SPRITEFILE
-#define SPRITEFILE "spr/spr7x3.txt"
+#define SPRITEFILE SPRITEDIR "/spr7x3.txt"
 #endif
 
 #ifdef BUILTIN_SPRITE
@@ -1865,28 +710,7 @@ static const char SPRITEFILE_str[] = SPRITEFILE;
 #endif
 
 /* mapping from CP437 to VT-100 altcharset */
-#if USE_WIDEC_SUPPORT
-/* ncurses defines WACS_* as cchar_t * whereas unix95 (at least
- * according to TenDRA) defines them as cchar_t */
-#ifdef NCURSES_VERSION
-#ifndef MY_WACS_PTR
-#define MY_WACS_PTR
-#endif
-#ifndef MY_WACS_REF
-#define MY_WACS_REF *
-#endif
-#else
-#ifndef MY_WACS_PTR
-#define MY_WACS_PTR &
-#endif
-#ifndef MY_WACS_REF
-#define MY_WACS_REF
-#endif
-#endif
-static cchar_t MY_WACS_REF
-#else
 static chtype
-#endif
 altcharset_cp437[256];
 
 /* mapping from CP437 to ASCII */
@@ -1902,14 +726,10 @@ static chtype cp437_to_ascii(unsigned char ch)
 
 
 #ifndef USE_WCWIDTH
-#if USE_WIDEC_SUPPORT
-#define USE_WCWIDTH 1
-#else
 #if USE_RAW_UCS
 #define USE_WCWIDTH 1
 #else
 #define USE_WCWIDTH 0
-#endif
 #endif
 #endif
 
@@ -1956,26 +776,6 @@ static int my_wcwidth(wchar_t wc)
     return len;
 }
 
-#if USE_WIDEC_SUPPORT
-
-static int
-my_wcswidth(const wchar_t *s, size_t n)
-{
-    int ret = 0;
-
-    while ((n --) && (*s != L'\0'))
-    {
-        int cret = my_wcwidth(*s);
-        if (cret != -1)
-        {
-            ret += cret;
-        }
-        s ++;
-    }
-    return ret;
-}
-
-#endif
 
 #endif
 
@@ -1988,157 +788,117 @@ init_trans(int use_bullet_for_dots)
         if (isprint(i))
         {
             altcharset_cp437[i] =
-#if USE_WIDEC_SUPPORT
-                NULL;
-#endif
             ascii_cp437[i] = i;
         }
         else
         {
             altcharset_cp437[i] =
-#if USE_WIDEC_SUPPORT
-                NULL;
-#endif
             ascii_cp437[i] =
                 '\?';
         }
     altcharset_cp437[19] =
-#if USE_WIDEC_SUPPORT
-                NULL;
-#endif
         ascii_cp437[19] = '!';
     altcharset_cp437[220] =
-#if USE_WIDEC_SUPPORT
-                NULL;
-#endif
         ascii_cp437[220] = ',';
     altcharset_cp437[221] =
-#if USE_WIDEC_SUPPORT
-                NULL;
-#endif
         ascii_cp437[221] = '#';
     altcharset_cp437[222] =
-#if USE_WIDEC_SUPPORT
-                NULL;
-#endif
         ascii_cp437[222] = '#';
     altcharset_cp437[223] =
-#if USE_WIDEC_SUPPORT
-                NULL;
-#endif
         ascii_cp437[223] = '\"';
     
-#if USE_ATTR
-#ifdef MY_A_REVERSE
+#ifdef A_REVERSE
     if (! isprint(8))
     {
-#if ! USE_WIDEC_SUPPORT
-        if (! (MY_A_REVERSE & 0xff))
+        if (! (A_REVERSE & 0xff))
         {
-            altcharset_cp437[8] |= MY_A_REVERSE;
+            altcharset_cp437[8] |= A_REVERSE;
         }
-#endif
-        if (! (MY_A_REVERSE & 0x7f))
+        if (! (A_REVERSE & 0x7f))
         {
-            ascii_cp437[8] |= MY_A_REVERSE;
+            ascii_cp437[8] |= A_REVERSE;
         }
     }
 #endif
-#endif
     altcharset_cp437[201] =
-#ifdef MY_ACS_BDDB
-        MY_ACS_BDDB;
+#ifdef ACS_BDDB
+        ACS_BDDB;
 #endif
     altcharset_cp437[218] =
-#ifdef MY_ACS_BSSB
-        MY_ACS_BSSB;
+#ifdef ACS_BSSB
+        ACS_BSSB;
 #else
-#ifdef MY_ACS_ULCORNER
-    MY_ACS_ULCORNER;
+#ifdef ACS_ULCORNER
+    ACS_ULCORNER;
 #endif
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[201] =
         ascii_cp437[218] =
         '+';
     altcharset_cp437[200] =
-#ifdef MY_ACS_DDBB
-        MY_ACS_DDBB;
+#ifdef ACS_DDBB
+        ACS_DDBB;
 #endif
     altcharset_cp437[192] =
-#ifdef MY_ACS_SSBB
-        MY_ACS_SSBB;
+#ifdef ACS_SSBB
+        ACS_SSBB;
 #else
-#ifdef MY_ACS_LLCORNER
-    MY_ACS_LLCORNER;
+#ifdef ACS_LLCORNER
+    ACS_LLCORNER;
 #endif
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[200] =
         ascii_cp437[192] =
         '+';
     altcharset_cp437[187] =
-#ifdef MY_ACS_BBDD
-        MY_ACS_BBDD;
+#ifdef ACS_BBDD
+        ACS_BBDD;
 #endif
     altcharset_cp437[191] =
-#ifdef MY_ACS_BBSS
-        MY_ACS_BBSS;
+#ifdef ACS_BBSS
+        ACS_BBSS;
 #else
-#ifdef MY_ACS_URCORNER
-    MY_ACS_URCORNER;
+#ifdef ACS_URCORNER
+    ACS_URCORNER;
 #endif
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[187] =
         ascii_cp437[191] =
         '+';
     altcharset_cp437[188] =
-#ifdef MY_ACS_DBBD
-        MY_ACS_DBBD;
+#ifdef ACS_DBBD
+        ACS_DBBD;
 #endif
     altcharset_cp437[217] =
-#ifdef MY_ACS_SBBS
-        MY_ACS_SBBS;
+#ifdef ACS_SBBS
+        ACS_SBBS;
 #else
-#ifdef MY_ACS_LRCORNER
-    MY_ACS_LRCORNER;
+#ifdef ACS_LRCORNER
+    ACS_LRCORNER;
 #endif
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[188] =
         ascii_cp437[217] =
         '+';
     altcharset_cp437[185] =
-#ifdef MY_ACS_DBDD
-        MY_ACS_DBDD;
+#ifdef ACS_DBDD
+        ACS_DBDD;
 #endif
     altcharset_cp437[181] =
-#ifdef MY_ACS_SBSD
-        MY_ACS_SBSD;
+#ifdef ACS_SBSD
+        ACS_SBSD;
 #endif
     altcharset_cp437[182] =
-#ifdef MY_ACS_DBDS
-        MY_ACS_DBDS;
+#ifdef ACS_DBDS
+        ACS_DBDS;
 #endif
     altcharset_cp437[180] =
-#ifdef MY_ACS_SBSS
-        MY_ACS_SBSS;
+#ifdef ACS_SBSS
+        ACS_SBSS;
 #else
-#ifdef MY_ACS_RTEE
-    MY_ACS_RTEE;
+#ifdef ACS_RTEE
+    ACS_RTEE;
 #endif
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[189] =
         ascii_cp437[183] =
@@ -2148,27 +908,24 @@ init_trans(int use_bullet_for_dots)
         ascii_cp437[180] =
         '+';
     altcharset_cp437[204] =
-#ifdef MY_ACS_DDDB
-        MY_ACS_DDDB;
+#ifdef ACS_DDDB
+        ACS_DDDB;
 #endif
     altcharset_cp437[198] =
-#ifdef MY_ACS_SDSB
-        MY_ACS_SDSB;
+#ifdef ACS_SDSB
+        ACS_SDSB;
 #endif
     altcharset_cp437[199] =
-#ifdef MY_ACS_DSDB
-        MY_ACS_DSDB;
+#ifdef ACS_DSDB
+        ACS_DSDB;
 #endif
     altcharset_cp437[195] =
-#ifdef MY_ACS_SSSB
-        MY_ACS_SSSB;
+#ifdef ACS_SSSB
+        ACS_SSSB;
 #else
-#ifdef MY_ACS_LTEE
-    MY_ACS_LTEE;
+#ifdef ACS_LTEE
+    ACS_LTEE;
 #endif
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[211] =
         ascii_cp437[214] =
@@ -2178,27 +935,24 @@ init_trans(int use_bullet_for_dots)
         ascii_cp437[195] =
         '+';
     altcharset_cp437[202] =
-#ifdef MY_ACS_DDBD
-        MY_ACS_DDBD;
+#ifdef ACS_DDBD
+        ACS_DDBD;
 #endif
     altcharset_cp437[207] =
-#ifdef MY_ACS_SDBD
-        MY_ACS_SDBD;
+#ifdef ACS_SDBD
+        ACS_SDBD;
 #endif
     altcharset_cp437[208] =
-#ifdef MY_ACS_DSBS
-        MY_ACS_DSBS;
+#ifdef ACS_DSBS
+        ACS_DSBS;
 #endif
     altcharset_cp437[193] =
-#ifdef MY_ACS_SSBS
-        MY_ACS_SSBS;
+#ifdef ACS_SSBS
+        ACS_SSBS;
 #else
-#ifdef MY_ACS_BTEE
-    MY_ACS_BTEE;
+#ifdef ACS_BTEE
+    ACS_BTEE;
 #endif
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[190] =
         ascii_cp437[212] =
@@ -2208,27 +962,24 @@ init_trans(int use_bullet_for_dots)
         ascii_cp437[193] =
         '+';
     altcharset_cp437[203] =
-#ifdef MY_ACS_BDDD
-        MY_ACS_BDDD;
+#ifdef ACS_BDDD
+        ACS_BDDD;
 #endif
     altcharset_cp437[209] =
-#ifdef MY_ACS_BDSD
-        MY_ACS_BDSD;
+#ifdef ACS_BDSD
+        ACS_BDSD;
 #endif
     altcharset_cp437[210] =
-#ifdef MY_ACS_BSDS
-        MY_ACS_BSDS;
+#ifdef ACS_BSDS
+        ACS_BSDS;
 #endif
     altcharset_cp437[194] =
-#ifdef MY_ACS_BSSS
-        MY_ACS_BSSS;
+#ifdef ACS_BSSS
+        ACS_BSSS;
 #else
-#ifdef MY_ACS_TTEE
-    MY_ACS_TTEE;
+#ifdef ACS_TTEE
+    ACS_TTEE;
 #endif
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[184] =
         ascii_cp437[213] =
@@ -2238,147 +989,138 @@ init_trans(int use_bullet_for_dots)
         ascii_cp437[194] =
         '+';
     altcharset_cp437[213] =
-#ifdef MY_ACS_BDSS
-        MY_ACS_BDSS;
+#ifdef ACS_BDSS
+        ACS_BDSS;
 #else
-#ifdef MY_ACS_BDSB
-    MY_ACS_BDSB;
+#ifdef ACS_BDSB
+    ACS_BDSB;
 #else
     altcharset_cp437[194];
 #endif
 #endif
     altcharset_cp437[214] =
-#ifdef MY_ACS_SSDB
-        MY_ACS_SSDB;
+#ifdef ACS_SSDB
+        ACS_SSDB;
 #else
-#ifdef MY_ACS_BSDB
-    MY_ACS_BSDB;
+#ifdef ACS_BSDB
+    ACS_BSDB;
 #else
     altcharset_cp437[195];
 #endif
 #endif
     altcharset_cp437[212] =
-#ifdef MY_ACS_SDBS
-        MY_ACS_SDBS;
+#ifdef ACS_SDBS
+        ACS_SDBS;
 #else
-#ifdef MY_ACS_SDBB
-    MY_ACS_SDBB;
+#ifdef ACS_SDBB
+    ACS_SDBB;
 #else
     altcharset_cp437[193];
 #endif
 #endif
     altcharset_cp437[211] =
-#ifdef MY_ACS_DSSB
-        MY_ACS_DSSB;
+#ifdef ACS_DSSB
+        ACS_DSSB;
 #else
-#ifdef MY_ACS_DSBB
-    MY_ACS_DSBB;
+#ifdef ACS_DSBB
+    ACS_DSBB;
 #else
     altcharset_cp437[195];
 #endif
 #endif
     altcharset_cp437[184] =
-#ifdef MY_ACS_BSSD
-        MY_ACS_BSSD;
+#ifdef ACS_BSSD
+        ACS_BSSD;
 #else
-#ifdef MY_ACS_BBSD
-    MY_ACS_BBSD;
+#ifdef ACS_BBSD
+    ACS_BBSD;
 #else
     altcharset_cp437[194];
 #endif
 #endif
     altcharset_cp437[183] =
-#ifdef MY_ACS_SBDS
-        MY_ACS_SBDS;
+#ifdef ACS_SBDS
+        ACS_SBDS;
 #else
-#ifdef MY_ACS_BBDS
-    MY_ACS_BBDS;
+#ifdef ACS_BBDS
+    ACS_BBDS;
 #else
     altcharset_cp437[180];
 #endif
 #endif
     altcharset_cp437[190] =
-#ifdef MY_ACS_SSBD
-        MY_ACS_SSBD;
+#ifdef ACS_SSBD
+        ACS_SSBD;
 #else
-#ifdef MY_ACS_SBBD
-    MY_ACS_SBBD;
+#ifdef ACS_SBBD
+    ACS_SBBD;
 #else
     altcharset_cp437[193];
 #endif
 #endif
     altcharset_cp437[189] =
-#ifdef MY_ACS_DBSS
-        MY_ACS_DBSS;
+#ifdef ACS_DBSS
+        ACS_DBSS;
 #else
-#ifdef MY_ACS_DBBS
-    MY_ACS_DBBS;
+#ifdef ACS_DBBS
+    ACS_DBBS;
 #else
     altcharset_cp437[180];
 #endif
 #endif
     altcharset_cp437[205] =
-#ifdef MY_ACS_BDBD
-        MY_ACS_BDBD;
+#ifdef ACS_BDBD
+        ACS_BDBD;
 #endif
     altcharset_cp437[196] =
-#ifdef MY_ACS_BSBS
-        MY_ACS_BSBS;
+#ifdef ACS_BSBS
+        ACS_BSBS;
 #else
-#ifdef MY_ACS_HLINE
-    MY_ACS_HLINE;
+#ifdef ACS_HLINE
+    ACS_HLINE;
 #endif
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[205] =
         ascii_cp437[196] =
         '-';
     altcharset_cp437[186] =
-#ifdef MY_ACS_DBDB
-        MY_ACS_DBDB;
+#ifdef ACS_DBDB
+        ACS_DBDB;
 #endif
     altcharset_cp437[179] =
-#ifdef MY_ACS_SBSB
-        MY_ACS_SBSB;
+#ifdef ACS_SBSB
+        ACS_SBSB;
 #else
-#ifdef MY_ACS_VLINE
-    MY_ACS_VLINE;
+#ifdef ACS_VLINE
+    ACS_VLINE;
 #endif
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
 #endif
     ascii_cp437[186] =
         ascii_cp437[179] =
         '|';
     altcharset_cp437[206] =
-#ifdef MY_ACS_DDDD
-        MY_ACS_DDDD;
+#ifdef ACS_DDDD
+        ACS_DDDD;
 #endif
     altcharset_cp437[215] =
-#ifdef MY_ACS_SDSD
-        MY_ACS_SDSD;
+#ifdef ACS_SDSD
+        ACS_SDSD;
 #endif
     altcharset_cp437[216] =
-#ifdef MY_ACS_DSDS
-        MY_ACS_DSDS;
+#ifdef ACS_DSDS
+        ACS_DSDS;
 #endif
     altcharset_cp437[197] =
-#ifdef MY_ACS_SSSS
-        MY_ACS_SSSS;
+#ifdef ACS_SSSS
+        ACS_SSSS;
 #else
-#ifdef MY_ACS_PLUS
-    MY_ACS_PLUS;
+#ifdef ACS_PLUS
+    ACS_PLUS;
 #endif
 #endif
     altcharset_cp437[4] =
-#ifdef MY_ACS_DIAMOND
-        MY_ACS_DIAMOND;
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
+#ifdef ACS_DIAMOND
+        ACS_DIAMOND;
 #endif
     ascii_cp437[206] =
         ascii_cp437[215] =
@@ -2387,101 +1129,77 @@ init_trans(int use_bullet_for_dots)
         ascii_cp437[4] =
         '+';
     altcharset_cp437[248] =
-#ifdef MY_ACS_DEGREE
-        MY_ACS_DEGREE;
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
+#ifdef ACS_DEGREE
+        ACS_DEGREE;
 #endif
     ascii_cp437[248] =
         '\'';
     altcharset_cp437[241] =
-#ifdef  MY_ACS_PLMINUS
-        MY_ACS_PLMINUS;
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
+#ifdef  ACS_PLMINUS
+        ACS_PLMINUS;
 #endif
     ascii_cp437[241] =
         '#';
     altcharset_cp437[7] =
-#ifdef MY_ACS_BBBB
-        MY_ACS_BBBB;
+#ifdef ACS_BBBB
+        ACS_BBBB;
 #endif
-#if ! USE_WIDEC_SUPPORT
     altcharset_cp437[8] =
-#endif
         altcharset_cp437[9] =
         altcharset_cp437[254] =
-#ifdef MY_ACS_BULLET
-        MY_ACS_BULLET;
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
+#ifdef ACS_BULLET
+        ACS_BULLET;
 #endif
     ascii_cp437[7] =
         ascii_cp437[8] =
         ascii_cp437[9] =
         ascii_cp437[254] =
         'o';
-#if USE_ATTR
-#ifdef MY_A_REVERSE
-#if ! USE_WIDEC_SUPPORT
-    if (! (MY_A_REVERSE & 0xff))
+#ifdef A_REVERSE
+    if (! (A_REVERSE & 0xff))
     {
-        altcharset_cp437[8] |= MY_A_REVERSE;
+        altcharset_cp437[8] |= A_REVERSE;
     }
-#endif
-    if (! (MY_A_REVERSE & 0x7f))
+    if (! (A_REVERSE & 0x7f))
     {
-        ascii_cp437[8] |= MY_A_REVERSE;
+        ascii_cp437[8] |= A_REVERSE;
     }
-#endif
 #endif
     altcharset_cp437[25] =
         altcharset_cp437[31] =
-#ifdef MY_ACS_DARROW
-        MY_ACS_DARROW;
+#ifdef ACS_DARROW
+        ACS_DARROW;
 #else
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
-#endif
     ascii_cp437[25] =
         ascii_cp437[31] =
         'v';
 #endif
     altcharset_cp437[24] =
         altcharset_cp437[30] =
-#ifdef MY_ACS_UARROW
-        MY_ACS_UARROW;
+#ifdef ACS_UARROW
+        ACS_UARROW;
 #else
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
-#endif
     ascii_cp437[24] =
         ascii_cp437[30] =
         '^';
 #endif
     altcharset_cp437[15] =
-#ifdef MY_ACS_LANTERN
-        MY_ACS_LANTERN;
+#ifdef ACS_LANTERN
+        ACS_LANTERN;
 #endif
     altcharset_cp437[176] =
-#ifdef MY_ACS_BOARD
-        MY_ACS_BOARD;
+#ifdef ACS_BOARD
+        ACS_BOARD;
 #endif
     altcharset_cp437[177] =
         altcharset_cp437[178] =
-#ifdef MY_ACS_CKBOARD
-        MY_ACS_CKBOARD;
+#ifdef ACS_CKBOARD
+        ACS_CKBOARD;
 #endif
     altcharset_cp437[10] =
         altcharset_cp437[219] =
-#ifdef MY_ACS_BLOCK
-        MY_ACS_BLOCK;
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
+#ifdef ACS_BLOCK
+        ACS_BLOCK;
 #endif
     ascii_cp437[15] =
         ascii_cp437[176] =
@@ -2492,16 +1210,13 @@ init_trans(int use_bullet_for_dots)
         '#';
     altcharset_cp437[27] =
         altcharset_cp437[17] =
-#ifdef MY_ACS_LARROW
-        MY_ACS_LARROW;
+#ifdef ACS_LARROW
+        ACS_LARROW;
 #endif
     altcharset_cp437[174] =
         altcharset_cp437[243] =
-#ifdef MY_ACS_LEQUAL
-        MY_ACS_LEQUAL;
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
+#ifdef ACS_LEQUAL
+        ACS_LEQUAL;
 #endif
     ascii_cp437[174] =
         ascii_cp437[243] =
@@ -2510,16 +1225,13 @@ init_trans(int use_bullet_for_dots)
         '<';
     altcharset_cp437[26] =
         altcharset_cp437[16] =
-#ifdef MY_ACS_RARROW
-        MY_ACS_RARROW;
+#ifdef ACS_RARROW
+        ACS_RARROW;
 #endif
     altcharset_cp437[175] =
         altcharset_cp437[242] =
-#ifdef MY_ACS_GEQUAL
-        MY_ACS_GEQUAL;
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
+#ifdef ACS_GEQUAL
+        ACS_GEQUAL;
 #endif
     ascii_cp437[175] =
         ascii_cp437[242] =
@@ -2527,36 +1239,24 @@ init_trans(int use_bullet_for_dots)
         ascii_cp437[16] =
         '>';
     altcharset_cp437[227] =
-#ifdef MY_ACS_PI
-        MY_ACS_PI;
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
+#ifdef ACS_PI
+        ACS_PI;
 #endif
     ascii_cp437[227] =
         '*';
     altcharset_cp437[156] =
-#ifdef MY_ACS_STERLING
-        MY_ACS_STERLING;
-#endif
-#if USE_WIDEC_SUPPORT
-    altcharset_cp437[0] = NULL;
+#ifdef ACS_STERLING
+        ACS_STERLING;
 #endif
     ascii_cp437[156] =
         'f';
-#if ! USE_WIDEC_SUPPORT
     altcharset_cp437[0] =
-#endif
         ascii_cp437[0] =
         ' ';
-#if ! USE_WIDEC_SUPPORT
     altcharset_cp437[240] =
-#endif
         ascii_cp437[240] =
         '=';
-#if ! USE_WIDEC_SUPPORT
     altcharset_cp437[247] =
-#endif
         ascii_cp437[247] =
         '=';
     ascii_cp437[249] =
@@ -2569,32 +1269,18 @@ init_trans(int use_bullet_for_dots)
         altcharset_cp437[249] =
             altcharset_cp437[250] = altcharset_cp437[254];
         altcharset_cp437[254] =
-#if USE_WIDEC_SUPPORT
-            NULL;
-#else
         'o';
-#endif
     }
     else
     {
         altcharset_cp437[249] =
             altcharset_cp437[250] =
-#if USE_WIDEC_SUPPORT
-            NULL;
-#else
         '.';
-#endif
     }
     altcharset_cp437[255] =
-#if USE_WIDEC_SUPPORT
-        NULL;
-#endif
     ascii_cp437[255] =
         ' ';
     altcharset_cp437[158] =
-#if USE_WIDEC_SUPPORT
-        NULL;
-#endif
     ascii_cp437[158] =
         'P';
 }
@@ -2646,7 +1332,7 @@ static const char *MYMANVARIANT_str = MYMANVARIANT;
 
 
 #ifndef MAZEFILE
-#define MAZEFILE "lvl/maze.txt"
+#define MAZEFILE MAZEDIR "/maze.txt"
 #endif
 
 #ifdef BUILTIN_MAZE
@@ -2728,7 +1414,6 @@ pen_pal[16][3] =
     {  867,  867,  867 }  /* F: light grey (text, eye, apple/cherry shine, key, bell) */
 };
 
-#if USE_COLOR
 
 #ifndef COLORS
 #define COLORS 8
@@ -2748,16 +1433,14 @@ pen_pal[16][3] =
 : ((i) == 6) ? COLOR_YELLOW \
 : COLOR_WHITE)
 
-#if USE_ATTR
 #ifndef PEN_BRIGHT
-#ifdef MY_A_BOLD
-#define PEN_BRIGHT MY_A_BOLD
+#ifdef A_BOLD
+#define PEN_BRIGHT A_BOLD
 #endif
 #endif
 #ifndef PEN_DIM
-#ifdef MY_A_DIM
-#define PEN_DIM MY_A_DIM
-#endif
+#ifdef A_DIM
+#define PEN_DIM A_DIM
 #endif
 #endif
 
@@ -2815,8 +1498,8 @@ init_pen(void)
 
         /* attempt to use similar colors for the dynamic palette in case
          * setting the dynamic palette does not actually work */
-#ifdef MY_A_BOLD
-#define trans_dynamic_pen_bright ((PEN_BRIGHT == MY_A_BOLD) ? 8 : (((PEN_BRIGHT > 0) && (PEN_BRIGHT < 16)) ? PEN_BRIGHT : 8))
+#ifdef A_BOLD
+#define trans_dynamic_pen_bright ((PEN_BRIGHT == A_BOLD) ? 8 : (((PEN_BRIGHT > 0) && (PEN_BRIGHT < 16)) ? PEN_BRIGHT : 8))
 #else
 #define trans_dynamic_pen_bright (((PEN_BRIGHT > 0) && (PEN_BRIGHT < 16)) ? PEN_BRIGHT : 8)
 #endif
@@ -3215,7 +1898,6 @@ init_pen(void)
     pen[0] = pen[7];
 }
 
-#endif
 
 /* wrappers around some curses functions to allow raw CP437-mode and
  * snapshots; note that these wrappers support only a small subset of
@@ -3258,20 +1940,20 @@ snapshot_attrset_active(chtype attrs)
                 }
             }
         }
-#ifdef MY_A_BOLD
+#ifdef A_BOLD
         if (i == 16)
         {
-            if (snapshot_attrs_active & MY_A_BOLD)
+            if (snapshot_attrs_active & A_BOLD)
             {
                 fprintf(snapshot,
                         "</b>");
             }
         }
 #endif
-#ifdef MY_A_UNDERLINE
+#ifdef A_UNDERLINE
         if (i == 16)
         {
-            if (snapshot_attrs_active & MY_A_UNDERLINE)
+            if (snapshot_attrs_active & A_UNDERLINE)
             {
                 fprintf(snapshot,
                         "</u>");
@@ -3313,20 +1995,20 @@ snapshot_attrset_active(chtype attrs)
                 }
             }
         }
-#ifdef MY_A_UNDERLINE
+#ifdef A_UNDERLINE
         if (i == 16)
         {
-            if (snapshot_attrs_active & MY_A_UNDERLINE)
+            if (snapshot_attrs_active & A_UNDERLINE)
             {
                 fprintf(snapshot,
                         "<u>");
             }
         }
 #endif
-#ifdef MY_A_BOLD
+#ifdef A_BOLD
         if (i == 16)
         {
-            if (snapshot_attrs_active & MY_A_BOLD)
+            if (snapshot_attrs_active & A_BOLD)
             {
                 fprintf(snapshot,
                         "<b>");
@@ -3657,7 +2339,6 @@ my_move(int y, int x)
     while(0);
 }
 
-#if USE_ATTR || USE_COLOR
 
 static int
 my_real_attrset(chtype attrs)
@@ -3681,8 +2362,8 @@ my_real_attrset(chtype attrs)
     attrset(attrs);
 #else
     {
-#ifdef MY_A_STANDOUT
-        if (attrs & MY_A_STANDOUT) standout();
+#ifdef A_STANDOUT
+        if (attrs & A_STANDOUT) standout();
         else standend();
 #endif
 #if HAVE_SETATTR
@@ -3693,21 +2374,21 @@ my_real_attrset(chtype attrs)
             else clrattr(_BLINK);
 #endif
 #endif
-#ifdef MY_A_BOLD
+#ifdef A_BOLD
 #ifdef _BOLD
-            if (attrs & MY_A_BOLD) setattr(_BOLD);
+            if (attrs & A_BOLD) setattr(_BOLD);
             else clrattr(_BOLD);
 #endif
 #endif
-#ifdef MY_A_REVERSE
+#ifdef A_REVERSE
 #ifdef _REVERSE
-            if (attrs & MY_A_REVERSE) setattr(_REVERSE);
+            if (attrs & A_REVERSE) setattr(_REVERSE);
             else clrattr(_REVERSE);
 #endif
 #endif
-#ifdef MY_A_UNDERLINE
+#ifdef A_UNDERLINE
 #ifdef _UNDERLINE
-            if (attrs & MY_A_UNDERLINE) setattr(_UNDERLINE);
+            if (attrs & A_UNDERLINE) setattr(_UNDERLINE);
             else clrattr(_UNDERLINE);
 #endif
 #endif
@@ -3722,16 +2403,14 @@ my_real_attrset(chtype attrs)
 static chtype my_attrs = 0;
 #endif
 
-#endif /* USE_ATTR || USE_COLOR */
 
 static int
 my_attrset(chtype attrs)
 {
     snapshot_attrset(attrs);
-#if USE_ATTR || USE_COLOR
     attrs ^= (snapshot || snapshot_txt) ?
-#ifdef MY_A_REVERSE
-      MY_A_REVERSE
+#ifdef A_REVERSE
+      A_REVERSE
 #else
       0
 #endif
@@ -3741,7 +2420,6 @@ my_attrset(chtype attrs)
 #else
     my_real_attrset(attrs);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
     return 1;
 }
 
@@ -3751,11 +2429,7 @@ snapshot_addch(short inbyte)
 {
 
 #undef SNAPSHOT_ADDCH__NARROWC
-#if USE_WIDEC_SUPPORT
-#define SNAPSHOT_ADDCH__NARROWC(c) NULL
-#else
 #define SNAPSHOT_ADDCH__NARROWC(c) (c)
-#endif
 
     if (snapshot || snapshot_txt)
     {
@@ -3777,59 +2451,59 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[201] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[201])
-                            ) ? uni_cp437_halfwidth[201] : (ascii_cp437[201] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[201] : (ascii_cp437[201] & 0xFF);
                         break;
                     }
                 case 218:
                     codepoint = (altcharset_cp437[218] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[218])
-                        ) ? uni_cp437_halfwidth[218] : (ascii_cp437[218] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[218] : (ascii_cp437[218] & 0xFF);
                     break;
                 case 200:
                     if (altcharset_cp437[200] != altcharset_cp437[192])
                     {
                         codepoint = (altcharset_cp437[200] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[200])
-                            ) ? uni_cp437_halfwidth[200] : (ascii_cp437[200] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[200] : (ascii_cp437[200] & 0xFF);
                         break;
                     }
                 case 192:
                     codepoint = (altcharset_cp437[192] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[192])
-                        ) ? uni_cp437_halfwidth[192] : (ascii_cp437[192] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[192] : (ascii_cp437[192] & 0xFF);
                     break;
                 case 187:
                     if (altcharset_cp437[187] != altcharset_cp437[191])
                     {
                         codepoint = (altcharset_cp437[187] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[187])
-                            ) ? uni_cp437_halfwidth[187] : (ascii_cp437[187] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[187] : (ascii_cp437[187] & 0xFF);
                         break;
                     }
                 case 191:
                     codepoint = (altcharset_cp437[191] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[191])
-                        ) ? uni_cp437_halfwidth[191] : (ascii_cp437[191] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[191] : (ascii_cp437[191] & 0xFF);
                     break;
                 case 188:
                     if (altcharset_cp437[188] != altcharset_cp437[217])
                     {
                         codepoint = (altcharset_cp437[188] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[188])
-                            ) ? uni_cp437_halfwidth[188] : (ascii_cp437[188] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[188] : (ascii_cp437[188] & 0xFF);
                         break;
                     }
                 case 217:
                     codepoint = (altcharset_cp437[217] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[217])
-                        ) ? uni_cp437_halfwidth[217] : (ascii_cp437[217] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[217] : (ascii_cp437[217] & 0xFF);
                     break;
                 case 185:
                     if (altcharset_cp437[185] != altcharset_cp437[181])
                     {
                         codepoint = (altcharset_cp437[185] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[185])
-                            ) ? uni_cp437_halfwidth[185] : (ascii_cp437[185] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[185] : (ascii_cp437[185] & 0xFF);
                         break;
                     }
                 case 181:
@@ -3837,7 +2511,7 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[181] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[181])
-                            ) ? uni_cp437_halfwidth[181] : (ascii_cp437[181] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[181] : (ascii_cp437[181] & 0xFF);
                         break;
                     }
                 case 182:
@@ -3845,20 +2519,20 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[182] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[182])
-                            ) ? uni_cp437_halfwidth[182] : (ascii_cp437[182] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[182] : (ascii_cp437[182] & 0xFF);
                         break;
                     }
                 case 180:
                     codepoint = (altcharset_cp437[180] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[180])
-                        ) ? uni_cp437_halfwidth[180] : (ascii_cp437[180] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[180] : (ascii_cp437[180] & 0xFF);
                     break;
                 case 204:
                     if (altcharset_cp437[204] != altcharset_cp437[198])
                     {
                         codepoint = (altcharset_cp437[204] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[204])
-                            ) ? uni_cp437_halfwidth[204] : (ascii_cp437[204] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[204] : (ascii_cp437[204] & 0xFF);
                         break;
                     }
                 case 198:
@@ -3866,7 +2540,7 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[198] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[198])
-                            ) ? uni_cp437_halfwidth[198] : (ascii_cp437[198] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[198] : (ascii_cp437[198] & 0xFF);
                         break;
                     }
                 case 199:
@@ -3874,20 +2548,20 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[199] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[199])
-                            ) ? uni_cp437_halfwidth[199] : (ascii_cp437[199] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[199] : (ascii_cp437[199] & 0xFF);
                         break;
                     }
                 case 195:
                     codepoint = (altcharset_cp437[195] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[195])
-                        ) ? uni_cp437_halfwidth[195] : (ascii_cp437[195] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[195] : (ascii_cp437[195] & 0xFF);
                     break;
                 case 202:
                     if (altcharset_cp437[202] != altcharset_cp437[207])
                     {
                         codepoint = (altcharset_cp437[202] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[202])
-                            ) ? uni_cp437_halfwidth[202] : (ascii_cp437[202] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[202] : (ascii_cp437[202] & 0xFF);
                         break;
                     }
                 case 207:
@@ -3895,7 +2569,7 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[207] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[207])
-                            ) ? uni_cp437_halfwidth[207] : (ascii_cp437[207] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[207] : (ascii_cp437[207] & 0xFF);
                         break;
                     }
                 case 208:
@@ -3903,20 +2577,20 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[208] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[208])
-                            ) ? uni_cp437_halfwidth[208] : (ascii_cp437[208] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[208] : (ascii_cp437[208] & 0xFF);
                         break;
                     }
                 case 193:
                     codepoint = (altcharset_cp437[193] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[193])
-                        ) ? uni_cp437_halfwidth[193] : (ascii_cp437[193] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[193] : (ascii_cp437[193] & 0xFF);
                     break;
                 case 203:
                     if (altcharset_cp437[203] != altcharset_cp437[209])
                     {
                         codepoint = (altcharset_cp437[203] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[203])
-                            ) ? uni_cp437_halfwidth[203] : (ascii_cp437[203] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[203] : (ascii_cp437[203] & 0xFF);
                         break;
                     }
                 case 209:
@@ -3924,7 +2598,7 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[209] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[209])
-                            ) ? uni_cp437_halfwidth[209] : (ascii_cp437[209] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[209] : (ascii_cp437[209] & 0xFF);
                         break;
                     }
                 case 210:
@@ -3932,86 +2606,86 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[210] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[210])
-                            ) ? uni_cp437_halfwidth[210] : (ascii_cp437[210] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[210] : (ascii_cp437[210] & 0xFF);
                         break;
                     }
                 case 194:
                     codepoint = (altcharset_cp437[194] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[194])
-                        ) ? uni_cp437_halfwidth[194] : (ascii_cp437[194] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[194] : (ascii_cp437[194] & 0xFF);
                     break;
                 case 213:
                     codepoint = (altcharset_cp437[194] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[194])
-                        ) ? uni_cp437_halfwidth[194] : (ascii_cp437[194] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[194] : (ascii_cp437[194] & 0xFF);
                     break;
                 case 214:
                     codepoint = (altcharset_cp437[195] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[195])
-                        ) ? uni_cp437_halfwidth[195] : (ascii_cp437[195] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[195] : (ascii_cp437[195] & 0xFF);
                     break;
                 case 212:
                     codepoint = (altcharset_cp437[193] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[193])
-                        ) ? uni_cp437_halfwidth[193] : (ascii_cp437[193] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[193] : (ascii_cp437[193] & 0xFF);
                     break;
                 case 211:
                     codepoint = (altcharset_cp437[195] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[195])
-                        ) ? uni_cp437_halfwidth[195] : (ascii_cp437[195] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[195] : (ascii_cp437[195] & 0xFF);
                     break;
                 case 184:
                     codepoint = (altcharset_cp437[194] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[194])
-                        ) ? uni_cp437_halfwidth[194] : (ascii_cp437[194] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[194] : (ascii_cp437[194] & 0xFF);
                     break;
                 case 183:
                     codepoint = (altcharset_cp437[180] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[180])
-                        ) ? uni_cp437_halfwidth[180] : (ascii_cp437[180] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[180] : (ascii_cp437[180] & 0xFF);
                     break;
                 case 190:
                     codepoint = (altcharset_cp437[193] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[193])
-                        ) ? uni_cp437_halfwidth[193] : (ascii_cp437[193] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[193] : (ascii_cp437[193] & 0xFF);
                     break;
                 case 189:
                     codepoint = (altcharset_cp437[180] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[180])
-                        ) ? uni_cp437_halfwidth[180] : (ascii_cp437[180] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[180] : (ascii_cp437[180] & 0xFF);
                     break;
                 case 205:
                     if (altcharset_cp437[205] != altcharset_cp437[196])
                     {
                         codepoint = (altcharset_cp437[205] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[205])
-                            ) ? uni_cp437_halfwidth[205] : (ascii_cp437[205] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[205] : (ascii_cp437[205] & 0xFF);
                         break;
                     }
                 case 196:
                     codepoint = (altcharset_cp437[196] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[196])
-                        ) ? uni_cp437_halfwidth[196] : (ascii_cp437[196] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[196] : (ascii_cp437[196] & 0xFF);
                     break;
                 case 186:
                     if (altcharset_cp437[186] != altcharset_cp437[179])
                     {
                         codepoint = (altcharset_cp437[186] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[186])
-                            ) ? uni_cp437_halfwidth[186] : (ascii_cp437[186] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[186] : (ascii_cp437[186] & 0xFF);
                         break;
                     }
                 case 179:
                     codepoint = (altcharset_cp437[179] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[179])
-                        ) ? uni_cp437_halfwidth[179] : (ascii_cp437[179] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[179] : (ascii_cp437[179] & 0xFF);
                     break;
                 case 206:
                     if (altcharset_cp437[206] != altcharset_cp437[215])
                     {
                         codepoint = (altcharset_cp437[206] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[206])
-                            ) ? uni_cp437_halfwidth[206] : (ascii_cp437[206] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[206] : (ascii_cp437[206] & 0xFF);
                         break;
                     }
                 case 215:
@@ -4019,7 +2693,7 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[215] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[215])
-                            ) ? uni_cp437_halfwidth[215] : (ascii_cp437[215] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[215] : (ascii_cp437[215] & 0xFF);
                         break;
                     }
                 case 216:
@@ -4027,20 +2701,20 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[216] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[216])
-                            ) ? uni_cp437_halfwidth[216] : (ascii_cp437[216] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[216] : (ascii_cp437[216] & 0xFF);
                         break;
                     }
                 case 197:
                     codepoint = (altcharset_cp437[197] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[197])
-                        ) ? uni_cp437_halfwidth[197] : (ascii_cp437[197] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[197] : (ascii_cp437[197] & 0xFF);
                     break;
                 case 15:
                     if (altcharset_cp437[15] != altcharset_cp437[176])
                     {
                         codepoint = (altcharset_cp437[15] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[15])
-                            ) ? uni_cp437_halfwidth[15] : (ascii_cp437[15] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[15] : (ascii_cp437[15] & 0xFF);
                         break;
                     }
                 case 176:
@@ -4048,7 +2722,7 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[176] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[176])
-                            ) ? uni_cp437_halfwidth[176] : (ascii_cp437[176] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[176] : (ascii_cp437[176] & 0xFF);
                         break;
                     }
                 case 177:
@@ -4056,7 +2730,7 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[177] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[177])
-                            ) ? uni_cp437_halfwidth[177] : (ascii_cp437[177] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[177] : (ascii_cp437[177] & 0xFF);
                         break;
                     }
                 case 178:
@@ -4064,7 +2738,7 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[178] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[178])
-                            ) ? uni_cp437_halfwidth[178] : (ascii_cp437[178] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[178] : (ascii_cp437[178] & 0xFF);
                         break;
                     }
                 case 10:
@@ -4072,20 +2746,20 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[10] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[10])
-                            ) ? uni_cp437_halfwidth[10] : (ascii_cp437[10] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[10] : (ascii_cp437[10] & 0xFF);
                         break;
                     }
                 case 219:
                     codepoint = (altcharset_cp437[219] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[219])
-                        ) ? uni_cp437_halfwidth[219] : (ascii_cp437[219] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[219] : (ascii_cp437[219] & 0xFF);
                     break;
                 case 27:
                     if (altcharset_cp437[27] != altcharset_cp437[17])
                     {
                         codepoint = (altcharset_cp437[27] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[27])
-                            ) ? uni_cp437_halfwidth[27] : (ascii_cp437[27] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[27] : (ascii_cp437[27] & 0xFF);
                         break;
                     }
                 case 17:
@@ -4093,7 +2767,7 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[17] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[17])
-                            ) ? uni_cp437_halfwidth[17] : (ascii_cp437[17] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[17] : (ascii_cp437[17] & 0xFF);
                         break;
                     }
                 case 174:
@@ -4101,20 +2775,20 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[174] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[174])
-                            ) ? uni_cp437_halfwidth[174] : (ascii_cp437[174] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[174] : (ascii_cp437[174] & 0xFF);
                         break;
                     }
                 case 243:
                     codepoint = (altcharset_cp437[243] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[243])
-                        ) ? uni_cp437_halfwidth[243] : (ascii_cp437[243] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[243] : (ascii_cp437[243] & 0xFF);
                     break;
                 case 26:
                     if (altcharset_cp437[26] != altcharset_cp437[16])
                     {
                         codepoint = (altcharset_cp437[26] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[26])
-                            ) ? uni_cp437_halfwidth[26] : (ascii_cp437[26] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[26] : (ascii_cp437[26] & 0xFF);
                         break;
                     }
                 case 16:
@@ -4122,7 +2796,7 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[16] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[16])
-                            ) ? uni_cp437_halfwidth[16] : (ascii_cp437[16] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[16] : (ascii_cp437[16] & 0xFF);
                         break;
                     }
                 case 175:
@@ -4130,20 +2804,20 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[175] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[175])
-                            ) ? uni_cp437_halfwidth[175] : (ascii_cp437[175] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[175] : (ascii_cp437[175] & 0xFF);
                         break;
                     }
                 case 242:
                     codepoint = (altcharset_cp437[242] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[242])
-                        ) ? uni_cp437_halfwidth[242] : (ascii_cp437[242] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[242] : (ascii_cp437[242] & 0xFF);
                     break;
                 case 7:
                     if (altcharset_cp437[7] != altcharset_cp437[9])
                     {
                         codepoint = (altcharset_cp437[7] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[7])
-                            ) ? uni_cp437_halfwidth[7] : (ascii_cp437[7] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[7] : (ascii_cp437[7] & 0xFF);
                         break;
                     }
                 case 9:
@@ -4151,13 +2825,13 @@ snapshot_addch(short inbyte)
                     {
                         codepoint = (altcharset_cp437[9] !=
                                      SNAPSHOT_ADDCH__NARROWC(ascii_cp437[9])
-                            ) ? uni_cp437_halfwidth[9] : (ascii_cp437[9] & MY_A_CHARTEXT);
+                            ) ? uni_cp437_halfwidth[9] : (ascii_cp437[9] & 0xFF);
                         break;
                     }
                 case 8:
                     codepoint = (altcharset_cp437[8] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[8])
-                        ) ? uni_cp437_halfwidth[8] : (ascii_cp437[8] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[8] : (ascii_cp437[8] & 0xFF);
                     break;
                 case 4:
                 case 25:
@@ -4173,11 +2847,11 @@ snapshot_addch(short inbyte)
                 case 254:
                     codepoint = (altcharset_cp437[inbyte] !=
                                  SNAPSHOT_ADDCH__NARROWC(ascii_cp437[inbyte])
-                        ) ? uni_cp437_halfwidth[inbyte] : (ascii_cp437[inbyte] & MY_A_CHARTEXT);
+                        ) ? uni_cp437_halfwidth[inbyte] : (ascii_cp437[inbyte] & 0xFF);
                     break;
                 default:
                     inbyte = (int) (unsigned char)
-                        (ascii_cp437[inbyte] & MY_A_CHARTEXT);
+                        (ascii_cp437[inbyte] & 0xFF);
                     codepoint = inbyte;
                 }
             }
@@ -4185,7 +2859,7 @@ snapshot_addch(short inbyte)
         else
         {
             inbyte = (int) (unsigned char)
-                (ascii_cp437[inbyte] & MY_A_CHARTEXT);
+                (ascii_cp437[inbyte] & 0xFF);
             codepoint = inbyte;
         }
         if (snapshot)
@@ -4233,12 +2907,11 @@ snapshot_addch(short inbyte)
         }
         if (snapshot_txt)
         {
-#if USE_ATTR
-#ifdef MY_A_BOLD
-            if (snapshot_attrs_active & MY_A_BOLD)
+#ifdef A_BOLD
+            if (snapshot_attrs_active & A_BOLD)
             {
-#ifdef MY_A_UNDERLINE
-                if (snapshot_attrs_active & MY_A_UNDERLINE)
+#ifdef A_UNDERLINE
+                if (snapshot_attrs_active & A_UNDERLINE)
                 {
                     fputs("_\b", snapshot_txt);
                 }
@@ -4247,12 +2920,11 @@ snapshot_addch(short inbyte)
                 fputc('\b', snapshot_txt);
             }
 #endif
-#ifdef MY_A_UNDERLINE
-            if (snapshot_attrs_active & MY_A_UNDERLINE)
+#ifdef A_UNDERLINE
+            if (snapshot_attrs_active & A_UNDERLINE)
             {
                 fputs("_\b", snapshot_txt);
             }
-#endif
 #endif
             fputc_utf8(codepoint, snapshot_txt);
             fflush(snapshot_txt);
@@ -4313,11 +2985,9 @@ my_addch(unsigned long b, chtype attrs)
             snapshot_addch(rhs);
         }
     }
-#if USE_ATTR || USE_COLOR
 #if DANGEROUS_ATTRS
     my_real_attrset(my_attrs);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
     do
     {
         if (use_acs && use_raw && ! use_raw_ucs)
@@ -4347,180 +3017,6 @@ my_addch(unsigned long b, chtype attrs)
         {
             if (use_acs)
             {
-#if USE_WIDEC_SUPPORT
-                if (use_raw && use_raw_ucs)
-                {
-                    unsigned long my_ucs;
-                    wchar_t my_wch;
-                    int my_wcw;
-
-                    my_ucs = uni_cp437[b];
-                    my_wch = ucs_to_wchar(my_ucs);
-                    my_wcw = my_wch ? my_wcwidth(my_wch) : 0;
-                    if ((my_wcw > 0) && (my_wcw <= ((CJK_MODE) ? 2 : 1)))
-                    {
-                        ret = addnwstr(&my_wch, 1);
-                        getyx(stdscr, new_y, new_x);
-                        if ((old_x != new_x) || (old_y != new_y))
-                        {
-                            if (CJK_MODE && (my_wcw == 1))
-                            {
-                                unsigned char rhs;
-
-                                rhs = cp437_fullwidth_rhs[b];
-                                if ((int) (unsigned char) rhs)
-                                {
-                                    wchar_t wrhs;
-
-                                    wrhs = ucs_to_wchar(uni_cp437_fullwidth[(int) (unsigned char) rhs]);
-                                    my_wcw += wrhs ? my_wcwidth(wrhs) : 0;
-                                    if (my_wcw == 2)
-                                    {
-                                        addnwstr(&wrhs, 1);
-                                    }
-                                }
-                            }
-                            else if (CJK_MODE && (my_wcw == 2)
-                                     &&
-                                     (((old_x + 1) % COLS) == (new_x % COLS)))
-                            {
-                                location_is_suspect = 1;
-                                leaveok(stdscr, FALSE);
-                                move(0, 0);
-                                refresh();
-                                leaveok(stdscr, TRUE);
-                                move((old_y + ((old_x + 2) / COLS)) % LINES, (old_x + 2) % COLS);
-                            }
-                            break;
-                        }
-                        /* U+30FB KATAKANA MIDDLE DOT -> 0xFF0E FULLWIDTH FULL STOP */
-                        if (my_ucs == 0x30fb)
-                        {
-                            my_wch = ucs_to_wchar(0xff0e);
-                            my_wcw = my_wch ? my_wcwidth(my_wch) : 0;
-                            ret = addnwstr(&my_wch, 1);
-                            getyx(stdscr, new_y, new_x);
-                            if ((old_x != new_x) || (old_y != new_y))
-                            {
-                                if (CJK_MODE && (my_wcw == 2)
-                                    &&
-                                    (((old_x + 1) % COLS) == (new_x % COLS)))
-                                {
-                                }
-                                break;
-                            }
-                        }
-                        /* U+301C WAVE DASH -> 0xFF5E FULLWIDTH TILDE */
-                        if (my_ucs == 0x301c)
-                        {
-                            my_wch = ucs_to_wchar(0xff5e);
-                            my_wcw = my_wch ? my_wcwidth(my_wch) : 0;
-                            ret = addnwstr(&my_wch, 1);
-                            getyx(stdscr, new_y, new_x);
-                            if ((old_x != new_x) || (old_y != new_y))
-                            {
-                                if (CJK_MODE && (my_wcw == 2)
-                                    &&
-                                    (((old_x + 1) % COLS) == (new_x % COLS)))
-                                {
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (altcharset_cp437[b])
-                {
-                    wchar_t my_wchbuf[CCHARW_MAX];
-                    attr_t my_acs_attrs;
-                    short my_color_pair;
-                    attr_t my_current_attrs;
-                    int my_len;
-
-                    my_len =
-                        getcchar(
-                            MY_WACS_PTR altcharset_cp437[b],
-                            NULL,
-                            &my_acs_attrs,
-                            &my_color_pair,
-                            NULL);
-                    if (my_len &&
-                        (getcchar(
-                            MY_WACS_PTR altcharset_cp437[b],
-                            my_wchbuf,
-                            &my_acs_attrs,
-                            &my_color_pair,
-                            NULL) != ERR) &&
-                        (my_wcswidth(my_wchbuf, my_len) == 1))
-                    {
-#ifdef _XOPEN_SOURCE_EXTENDED
-                        attr_get(
-                            & my_current_attrs,
-                            & my_color_pair,
-                            NULL);
-                        attr_set(
-                            my_current_attrs | my_acs_attrs,
-                            my_color_pair,
-                            NULL);
-#else
-                        my_current_attrs = attr_get();
-                        attr_set(my_current_attrs | my_acs_attrs);
-#endif
-                        ret = addnwstr(
-                            my_wchbuf,
-                            my_len);
-                        getyx(stdscr, new_y, new_x);
-                        if (CJK_MODE && ((old_x != new_x) || (old_y != new_y)))
-                        {
-                            unsigned char rhs;
-                        
-                            rhs = cp437_fullwidth_rhs[b];
-                            if ((int) (unsigned char) rhs)
-                            {
-                                if (altcharset_cp437[(int) (unsigned char) rhs])
-                                {
-                                    my_len =
-                                        getcchar(
-                                            MY_WACS_PTR altcharset_cp437[(int) (unsigned char) rhs],
-                                            NULL,
-                                            &my_acs_attrs,
-                                            &my_color_pair,
-                                            NULL);
-                                    if (my_len &&
-                                        (getcchar(
-                                            MY_WACS_PTR altcharset_cp437[(int) (unsigned char) rhs],
-                                            my_wchbuf,
-                                            &my_acs_attrs,
-                                            &my_color_pair,
-                                            NULL) != ERR) &&
-                                        (my_wcswidth(my_wchbuf, my_len) == 1))
-                                    {
-                                        addnwstr(
-                                            my_wchbuf,
-                                            my_len);
-                                    }
-                                }
-                                else
-                                {
-                                    addch(ascii_cp437[(int) (unsigned char) rhs]);
-                                }
-                            }
-                        }
-#ifdef _XOPEN_SOURCE_EXTENDED
-                        attr_set(
-                            my_current_attrs,
-                            my_color_pair,
-                            NULL);
-#else
-                        attr_set(my_current_attrs);
-#endif
-                        if ((old_x != new_x) || (old_y != new_y))
-                        {
-                            break;
-                        }
-                    }
-                }
-#else /* ! USE_WIDEC_SUPPORT */
                 if (use_raw && use_raw_ucs)
                 {
                     c = uni_cp437[b];
@@ -4559,11 +3055,9 @@ my_addch(unsigned long b, chtype attrs)
                                     if (c & ~A_CHARTEXT)
                                     {
                                         my_attrset(attrs);
-#if USE_ATTR || USE_COLOR
 #if DANGEROUS_ATTRS
                                         my_real_attrset(my_attrs);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
                                     }
 #endif
 #endif
@@ -4573,11 +3067,9 @@ my_addch(unsigned long b, chtype attrs)
                                     if (c & ~A_CHARTEXT)
                                     {
                                         my_attrset(attrs);
-#if USE_ATTR || USE_COLOR
 #if DANGEROUS_ATTRS
                                         my_real_attrset(my_attrs);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
                                     }
 #endif
 #endif
@@ -4600,11 +3092,9 @@ my_addch(unsigned long b, chtype attrs)
                 if (c & ~A_CHARTEXT)
                 {
                     my_attrset(attrs | (c & ~A_CHARTEXT));
-#if USE_ATTR || USE_COLOR
 #if DANGEROUS_ATTRS
                     my_real_attrset(my_attrs);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
                 }
 #endif
 #endif
@@ -4614,11 +3104,9 @@ my_addch(unsigned long b, chtype attrs)
                 if (c & ~A_CHARTEXT)
                 {
                     my_attrset(attrs);
-#if USE_ATTR || USE_COLOR
 #if DANGEROUS_ATTRS
                     my_real_attrset(my_attrs);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
                 }
 #endif
 #endif
@@ -4638,11 +3126,9 @@ my_addch(unsigned long b, chtype attrs)
                             if (c & ~A_CHARTEXT)
                             {
                                 my_attrset(attrs | (c & ~A_CHARTEXT));
-#if USE_ATTR || USE_COLOR
 #if DANGEROUS_ATTRS
                                 my_real_attrset(my_attrs);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
                             }
 #endif
 #endif
@@ -4652,11 +3138,9 @@ my_addch(unsigned long b, chtype attrs)
                             if (c & ~A_CHARTEXT)
                             {
                                 my_attrset(attrs);
-#if USE_ATTR || USE_COLOR
 #if DANGEROUS_ATTRS
                                 my_real_attrset(my_attrs);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
                             }
 #endif
 #endif
@@ -4664,7 +3148,6 @@ my_addch(unsigned long b, chtype attrs)
                     }
                     break;
                 }
-#endif /* ! USE_WIDEC_SUPPORT */
             }
         }
         c = ascii_cp437[b];
@@ -4683,11 +3166,9 @@ my_addch(unsigned long b, chtype attrs)
         }
     }
     while (0);
-#if USE_ATTR || USE_COLOR
 #if DANGEROUS_ATTRS
     if (my_attrs) my_real_attrset(0);
 #endif
-#endif /* USE_ATTR || USE_COLOR */
     return ret;
 }
 
@@ -4715,12 +3196,7 @@ my_addstr(const char *s, chtype attrs)
     return ret;
 }
 
-#ifdef XCURSES
-#define XCURSES_USAGE \
-" [ -- toolkit-options]"
-#else
 #define XCURSES_USAGE
-#endif
 
 #define SUMMARY(progname) \
 "Usage: %s [-h] [options]" \
@@ -4737,11 +3213,9 @@ int pager_arrow_magic = 0;
 #define PAGER_COLS (pager_big ? (MY_COLS / tile_w) : MY_COLS)
 #define PAGER_LINES (pager_big ? (LINES / pager_tile_h) : LINES)
 
-#if USE_ATTR
-#ifdef MY_A_REVERSE
+#ifdef A_REVERSE
 #ifndef PAGER_A_REVERSE
-#define PAGER_A_REVERSE MY_A_REVERSE
-#endif
+#define PAGER_A_REVERSE A_REVERSE
 #endif
 #endif
 
@@ -4750,7 +3224,7 @@ int pager_arrow_magic = 0;
 #endif
 
 #ifndef PAGER_A_STANDOUT
-#define PAGER_A_STANDOUT (((USE_COLOR) && use_color) ? pen[PAUSE_COLOR] : PAGER_A_REVERSE)
+#define PAGER_A_STANDOUT ((use_color) ? pen[PAUSE_COLOR] : PAGER_A_REVERSE)
 #endif
 
 static void
@@ -4824,7 +3298,7 @@ pager_addch(unsigned long c, chtype a)
                              ?
                              pager_addch__a
                              :
-                             ((USE_COLOR && use_color)
+                             ((use_color)
                               ?
                               pen[TEXT_COLOR]
                               :
@@ -4837,7 +3311,7 @@ pager_addch(unsigned long c, chtype a)
                         my_move(pager_addch__y * pager_tile_h + pager_addch__j,
                                 pager_addch__i * (use_fullwidth ? 2 : 1));
                         my_addch((unsigned long) (unsigned char) ' ',
-                                 (USE_COLOR && use_color)
+                                 (use_color)
                                  ?
                                  pen[TEXT_COLOR]
                                  :
@@ -4890,7 +3364,7 @@ doubletime(void)
 
     tval.tv_sec = 0;
     tval.tv_usec = 0;
-    if (myman_gettimeofday(&tval, 0))
+    if (gettimeofday(&tval, 0))
     {
         return -1.0L;
     }
@@ -4914,16 +3388,12 @@ pager(void)
         fflush(debug_pager);
     }
 
-#if USE_ATTR || USE_COLOR
     my_attrset(0);
-#endif
     my_erase();
-#if USE_COLOR
     if (use_color)
     {
         my_attrset(pen[TEXT_COLOR]);
     }
-#endif
     if (! pager_remaining)
     {
         if (pager_notice)
@@ -4944,17 +3414,17 @@ pager(void)
         }
         if (loop_iter > 1000) { 
             if (debug_pager) fprintf(debug_pager, "  SAFETY BREAK: infinite loop detected!\n");
+            pager_notice = 0;
+            pager_remaining = 0;
             break; 
         }
 
 
         pager_move(0, 0);
-#if USE_COLOR
         if (use_color)
         {
             my_attrset(pen[TEXT_COLOR]);
         }
-#endif
         pager = pager_remaining;
         while (*pager)
         {
@@ -5065,7 +3535,7 @@ pager(void)
                 if (c == '\n')
                 {
                     pager_addch((unsigned long) (unsigned char) *(pager - 1),
-                                (USE_COLOR && use_color)
+                                (use_color)
                                 ?
                                 pen[TEXT_COLOR]
                                 :
@@ -5094,7 +3564,7 @@ pager(void)
                  * adequate for English. Fortunately, we almost
                  * never actually use it. */
                 pager_addch((unsigned long) (unsigned char) c,
-                            (USE_COLOR && use_color)
+                            (use_color)
                             ?
                             pen[TEXT_COLOR]
                             :
@@ -5102,7 +3572,7 @@ pager(void)
                     );
                 x ++;
                 pager_addch((unsigned long) (unsigned char) '-',
-                            (USE_COLOR && use_color)
+                            (use_color)
                             ?
                             pen[TEXT_COLOR]
                             :
@@ -5115,7 +3585,7 @@ pager(void)
             {
                 pager_getyx(stdscr, y, x);
                 pager_addch((unsigned long) (unsigned char) c,
-                            (USE_COLOR && use_color)
+                            (use_color)
                             ?
                             pen[TEXT_COLOR]
                             :
@@ -5149,7 +3619,7 @@ pager(void)
                 while ((x ++) < PAGER_COLS)
                 {
                     pager_addch((unsigned long) (unsigned char) ' ',
-                                (USE_COLOR && use_color)
+                                (use_color)
                                 ?
                                 pen[TEXT_COLOR]
                                 :
@@ -5206,12 +3676,10 @@ pager(void)
                     while (1);
                     my_attrset(0);
                     my_erase();
-#if USE_COLOR
                     if (use_color)
                     {
                         my_attrset(pen[TEXT_COLOR]);
                     }
-#endif
                     y = 0;
                     x = 0;
                     pager_move(y, x);
@@ -5265,7 +3733,6 @@ pager(void)
                             pager = pager_remaining;
                             break;
                         }
-#if USE_COLOR
                         else if ((k == 'c') || (k == 'C'))
                         {
                             use_color = ! use_color;
@@ -5280,19 +3747,16 @@ pager(void)
                             pager = pager_remaining;
                             continue;
                         }
-#endif
                         else if ((k == 'b') || (k == 'B'))
                         {
                             use_dim_and_bright =
                                 ! use_dim_and_bright;
                             use_dim_and_bright_p = 1;
-#if USE_COLOR
                             if (use_color)
                             {
                                 destroy_pen();
                                 init_pen();
                             }
-#endif
                             my_attrset(0);
                             my_clear();
                             clearok(curscr, TRUE);
@@ -5404,7 +3868,7 @@ pager(void)
                     {
                         pager_move(y, x);
                         pager_addch((unsigned long) (unsigned char) '~',
-                                    (USE_COLOR && use_color)
+                                    (use_color)
                                     ?
                                     pen[TEXT_COLOR]
                                     :
@@ -5414,7 +3878,7 @@ pager(void)
                         while ((x ++) < PAGER_COLS)
                         {
                             pager_addch((unsigned long) (unsigned char) ' ',
-                                        (USE_COLOR && use_color)
+                                        (use_color)
                                         ?
                                         pen[TEXT_COLOR]
                                         :
@@ -5455,7 +3919,7 @@ pager(void)
 #ifdef KEY_RESIZE
             if (k == KEY_RESIZE)
             {
-                reinit_requested = 1;
+                pager_remaining = pager_notice;
             }
             else
 #endif
@@ -5476,7 +3940,6 @@ pager(void)
                     my_clear();
                     clearok(curscr, TRUE);
                 }
-#if USE_COLOR
                 else if ((k == 'c') || (k == 'C'))
                 {
                     use_color = ! use_color;
@@ -5489,19 +3952,16 @@ pager(void)
                     my_clear();
                     clearok(curscr, TRUE);
                 }
-#endif
                 else if ((k == 'b') || (k == 'B'))
                 {
                     use_dim_and_bright =
                         ! use_dim_and_bright;
                     use_dim_and_bright_p = 1;
-#if USE_COLOR
                     if (use_color)
                     {
                         destroy_pen();
                         init_pen();
                     }
-#endif
                     my_attrset(0);
                     my_clear();
                     clearok(curscr, TRUE);
@@ -5557,9 +4017,13 @@ pager(void)
                     if (got_sigwinch)
                     {
                         use_env(FALSE);
+                        got_sigwinch = 0;
+                        pager_remaining = pager_notice;
                     }
-                    got_sigwinch = 0;
-                    reinit_requested = 1;
+                    else
+                    {
+                        reinit_requested = 1;
+                    }
                 }
                 else if ((k == MYMANCTRL('@')) && (k != ERR))
                 {
@@ -5592,12 +4056,10 @@ pager(void)
         }
         my_attrset(0);
         my_erase();
-#if USE_COLOR
         if (use_color)
         {
             my_attrset(pen[TEXT_COLOR]);
         }
-#endif
         my_move(0, 0);
     }
     if (debug_pager) {
@@ -5619,23 +4081,6 @@ static int sdl_audio_open = 0;
 void
 gamesfx(void)
 {
-#ifdef ALLEGROCURSES
-#define handle_sfx(n) \
-            do { if (myman_sfx & myman_sfx_ ## n) \
-            { \
-                static MIDI *n##_music = 0; \
-                myman_sfx &= ~myman_sfx_ ## n; \
-                if ((use_sound && ! myman_demo) && ! n##_music) \
-                { \
-                    n##_music = load_midi("sfx/"#n".mid"); \
-                } \
-                if ((use_sound && ! myman_demo) && n##_music) \
-                { \
-                    stop_midi(); \
-                    play_midi(n##_music, 0); \
-                } \
-            } } while (0)
-#else
 #if USE_SDL_MIXER
 #define handle_sfx(n) \
             do { if ((myman_sfx & myman_sfx_ ## n) && sdl_audio_open) \
@@ -5644,11 +4089,11 @@ gamesfx(void)
                 myman_sfx &= ~myman_sfx_ ## n; \
                 if ((use_sound && ! myman_demo) && ! n##_music) \
                 { \
-                    n##_music = Mix_LoadMUS("sfx/"#n".xm"); \
+                    n##_music = Mix_LoadMUS(SOUNDDIR "/"#n".xm"); \
                 } \
                 if ((use_sound && ! myman_demo) && ! n##_music) \
                 { \
-                    n##_music = Mix_LoadMUS("sfx/"#n".mid"); \
+                    n##_music = Mix_LoadMUS(SOUNDDIR "/"#n".mid"); \
                 } \
                 if ((use_sound && ! myman_demo) && n##_music) \
                 { \
@@ -5660,7 +4105,6 @@ gamesfx(void)
 #define handle_sfx(n) do { if (myman_sfx & myman_sfx_ ## n) { myman_sfx &= ~myman_sfx_##n; if ((myman_sfx_##n & ~myman_sfx_nobeep_mask) && use_sound && ! myman_demo) beep(); } } while (0)
 #else
 #define handle_sfx(n) do { if (myman_sfx & myman_sfx_ ## n) { myman_sfx &= ~myman_sfx_##n; } } while (0)
-#endif
 #endif
 #endif
     handle_sfx(credit);
@@ -5747,11 +4191,9 @@ gamerender(void)
     else if (gfx_w * maze_w <= VCOLS)
         c_off = (VCOLS - gfx_w * maze_w + 1) / 2;
     if (c_off < 0) c_off = 0;
-#if USE_ATTR || USE_COLOR
     standend();
 #if HAVE_ATTRSET
     attrset(0);
-#endif
 #endif
     for (vline = -(3 * tile_h); (vline < LINES) && (vline < (sprite_h + ((reflect ? (gfx_w * maze_w) : (gfx_h * maze_h))))); vline++)
     {
@@ -5889,13 +4331,11 @@ gamerender(void)
                 }
                 if (filler_tile && tile_used[filler_tile])
                 {
-#if USE_COLOR
                     if (use_color) {
                         a = tile_color[filler_tile];
                         if (! a) a = TEXT_COLOR;
                         a = pen[a];
                     }
-#endif
                     my_move(vline + (reflect ? c_off : r_off), (vcol + (reflect ? r_off : c_off)) * (use_fullwidth ? 2 : 1));
                     my_addch((unsigned long) (unsigned char) tile[filler_tile][((vline + (3 * tile_h)) % tile_h) * tile_w + (vcol % tile_w)], a);
                 }
@@ -5939,13 +4379,11 @@ gamerender(void)
                         chtype a;
 
                         a = 0;
-#if USE_COLOR
                         if (use_color) {
                             a = tile_color[(unsigned) score_tile];
                             if (! a) a = TEXT_COLOR;
                             a = pen[a];
                         }
-#endif
                         my_move(vline + (reflect ? c_off : r_off), col * (use_fullwidth ? 2 : 1));
                         my_addch((unsigned long) (unsigned char) tile[(unsigned) score_tile][vline * tile_w + tile_w - 1 - (score_x % tile_w)], a);
 
@@ -5987,7 +4425,6 @@ gamerender(void)
                     if (c)
                     {
                         a = 0;
-#if USE_COLOR
                         if (use_color) {
                             a = sprite_color[life_sprite];
                             if (! a)
@@ -5997,12 +4434,9 @@ gamerender(void)
                             a = pen[a];
                         }
                         else
-#endif
                         {
-#if USE_ATTR
-#ifdef MY_A_BOLD
-                            a |= use_dim_and_bright ? MY_A_BOLD : 0;
-#endif
+#ifdef A_BOLD
+                            a |= use_dim_and_bright ? A_BOLD : 0;
 #endif
                         }
                         if ((col + (reflect ? r_off : c_off) - hud_life_anchor) >= 0)
@@ -6097,19 +4531,15 @@ gamerender(void)
                     {
                         c = ' ';
                     }
-#if USE_COLOR
                     if (use_color)
                     {
                         a = pen[PAUSE_COLOR];
                     }
                     else
-#endif
                     {
                         a = 0;
-#if USE_ATTR
-#ifdef MY_A_REVERSE
-                        a |= MY_A_REVERSE;
-#endif
+#ifdef A_REVERSE
+                        a |= A_REVERSE;
 #endif
                     }
                 }
@@ -6146,7 +4576,6 @@ gamerender(void)
                             {
                                 c = '.';
                             }
-#if USE_COLOR
                             if (use_color) {
                                 a = sprite_color[t];
                                 if (! a)
@@ -6154,23 +4583,20 @@ gamerender(void)
                                 a = pen[a];
                             }
                             else
-#endif
                             {
-#if USE_ATTR
-#ifdef MY_A_BOLD
+#ifdef A_BOLD
                                 if ((s == HERO) || (((unsigned) sprite_register[s]) == SPRITE_WHITE) || iseyes)
                                 {
-                                    a |= use_dim_and_bright ? MY_A_BOLD : 0;
+                                    a |= use_dim_and_bright ? A_BOLD : 0;
                                     break;
                                 }
 #endif
-#ifdef MY_A_UNDERLINE
+#ifdef A_UNDERLINE
                                 if (((unsigned) sprite_register[s]) == SPRITE_BLUE)
                                 {
-                                    a |= use_underline ? MY_A_UNDERLINE : 0;
+                                    a |= use_underline ? A_UNDERLINE : 0;
                                     break;
                                 }
-#endif
 #endif
                             }
                             break;
@@ -6181,7 +4607,6 @@ gamerender(void)
                                    && ((y = sprite_register_y[s] - sgfx_h / 2) <= j)
                                    && ((y_off = j - y) < sgfx_h)
                                    && ((c = sgfx(t, y_off, x_off)) != 0)) {
-#if USE_COLOR
                             if (use_color) {
                                 a = sprite_color[t];
                                 if (! a)
@@ -6189,23 +4614,20 @@ gamerender(void)
                                 a = pen[a];
                             }
                             else
-#endif
                             {
-#if USE_ATTR
-#ifdef MY_A_BOLD
+#ifdef A_BOLD
                                 if ((s == HERO) || (((unsigned) sprite_register[s]) == SPRITE_WHITE) || iseyes)
                                 {
-                                    a |= use_dim_and_bright ? MY_A_BOLD : 0;
+                                    a |= use_dim_and_bright ? A_BOLD : 0;
                                     break;
                                 }
 #endif
-#ifdef MY_A_UNDERLINE
+#ifdef A_UNDERLINE
                                 if (((unsigned) sprite_register[s]) == SPRITE_BLUE)
                                 {
-                                    a |= use_underline ? MY_A_UNDERLINE : 0;
+                                    a |= use_underline ? A_UNDERLINE : 0;
                                     break;
                                 }
-#endif
 #endif
                             }
                             break;
@@ -6219,7 +4641,6 @@ gamerender(void)
                                    && ((y_off = j - y) < gfx_h)
                                    && ((c = gfx((unsigned long) (unsigned char) cp437_sprite[t], y_off, x_off)) != 0))
                         {
-#if USE_COLOR
                             if (use_color)
                             {
                                 a = tile_color[t];
@@ -6228,23 +4649,20 @@ gamerender(void)
                                 a = pen[a];
                             }
                             else
-#endif
                             {
-#if USE_ATTR
-#ifdef MY_A_BOLD
+#ifdef A_BOLD
                                 if ((s == HERO) || (((unsigned) sprite_register[s]) == SPRITE_WHITE) || iseyes)
                                 {
-                                    a |= use_dim_and_bright ? MY_A_BOLD : 0;
+                                    a |= use_dim_and_bright ? A_BOLD : 0;
                                     break;
                                 }
 #endif
-#ifdef MY_A_UNDERLINE
+#ifdef A_UNDERLINE
                                 if (((unsigned) sprite_register[s]) == SPRITE_BLUE)
                                 {
-                                    a |= use_underline ? MY_A_UNDERLINE : 0;
+                                    a |= use_underline ? A_UNDERLINE : 0;
                                     break;
                                 }
-#endif
 #endif
                             }
                             break;
@@ -6286,7 +4704,6 @@ gamerender(void)
                             {
                                 is_wall = 1;
                             }
-#if USE_COLOR
                             if (use_color)
                             {
                                 a = (int) (unsigned char) maze_color[(maze_level*maze_h+ytile) * (maze_w + 1)+xtile];
@@ -6316,18 +4733,15 @@ gamerender(void)
                                 a = pen[a];
                             }
                             else
-#endif
                             {
-#if USE_ATTR
-#ifdef MY_A_BOLD
+#ifdef A_BOLD
                                 if (ISPELLET(c))
-                                    a |= use_dim_and_bright ? MY_A_BOLD : 0;
+                                    a |= use_dim_and_bright ? A_BOLD : 0;
 #endif
-#ifdef MY_A_UNDERLINE
+#ifdef A_UNDERLINE
                                 if (use_underline)
                                     if (ISWALL(c) && (! ISDOOR(c)))
-                                        a |= MY_A_UNDERLINE;
-#endif
+                                        a |= A_UNDERLINE;
 #endif
                             }
                             if (debug) {
@@ -6344,14 +4758,12 @@ gamerender(void)
                                     : ISOPEN(c) ? ' '
                                     : ISDOOR(c) ? 'X'
                                     : '@';
-#if USE_COLOR
                                 if (use_color && ((unsigned) d)) {
                                     a = sprite_color[((unsigned) sprite_register[MEANGHOST(s)]) + sprite_register_frame[MEANGHOST(s)]];
                                     if (! a)
                                         a = sprite_register_color[MEANGHOST(s)];
                                     a = pen[a];
                                 }
-#endif
                             }
                             else
                             {
@@ -6366,11 +4778,9 @@ gamerender(void)
                                 else if ((winning < (2 * TWOSECS)) && ((winning / MYMANFIFTH) & 4) && ! ghost_eaten_timer)
                                 {
                                     is_wall = 0;
-#if USE_COLOR
                                     if (use_color)
                                         a = pen[0xF];
                                     else
-#endif
                                         c_mapped = ' ';
                                 }
                                 c = gfx(c_mapped, j, i);
@@ -6398,7 +4808,6 @@ gamerender(void)
                                         {
                                             c = ' ';
                                         }
-#if USE_COLOR
                                         if (use_color)
                                         {
                                             if (TRANSLATED_WALL_COLOR)
@@ -6407,19 +4816,16 @@ gamerender(void)
                                             }
                                         }
                                         else
-#endif
                                         {
-#if USE_ATTR
-#ifdef MY_A_REVERSE
+#ifdef A_REVERSE
                                             if (SOLID_WALLS_BGCOLOR)
                                             {
-                                                a |= MY_A_REVERSE;
+                                                a |= A_REVERSE;
                                             }
 #endif
-#ifdef MY_A_UNDERLINE
+#ifdef A_UNDERLINE
                                             if (use_underline)
-                                                a |= MY_A_UNDERLINE;
-#endif
+                                                a |= A_UNDERLINE;
 #endif
                                         }
                                     }
@@ -6433,7 +4839,6 @@ gamerender(void)
                                               ||
                                               ((c != ' ') && (IS_FULLY_INVERTED(xtile, ytile) || IS_INVERTED(xtile, ytile)))))
                                     {
-#if USE_COLOR
                                         if (use_color)
                                         {
                                             if (TRANSLATED_WALL_COLOR)
@@ -6444,19 +4849,16 @@ gamerender(void)
                                             }
                                         }
                                         else
-#endif
                                         {
-#if USE_ATTR
-#ifdef MY_A_REVERSE
+#ifdef A_REVERSE
                                             if (SOLID_WALLS_BGCOLOR)
                                             {
-                                                a |= MY_A_REVERSE;
+                                                a |= A_REVERSE;
                                             }
 #endif
-#ifdef MY_A_UNDERLINE
+#ifdef A_UNDERLINE
                                             if (use_underline)
-                                                a |= MY_A_UNDERLINE;
-#endif
+                                                a |= A_UNDERLINE;
 #endif
                                         }
                                     }
@@ -6473,24 +4875,20 @@ gamerender(void)
             if (c)
             {
                 vmove(line + r_off, c_off + col);
-#if USE_ATTR
-#ifdef MY_A_UNDERLINE
-#if USE_COLOR
+#ifdef A_UNDERLINE
                 if (! use_color)
-#endif
                     if (use_underline
                         &&
-                        (a & MY_A_UNDERLINE)
+                        (a & A_UNDERLINE)
                         &&
-#ifdef MY_A_REVERSE
-                        (! (a & MY_A_REVERSE))
+#ifdef A_REVERSE
+                        (! (a & A_REVERSE))
                         &&
 #endif
                         (c == ' '))
                     {
-                        a &= ~MY_A_UNDERLINE;
+                        a &= ~A_UNDERLINE;
                     }
-#endif
 #endif
                 my_addch((unsigned long) (unsigned char) c, a);
             }
@@ -6531,7 +4929,6 @@ gamerender(void)
                     if (c)
                     {
                         a = 0;
-#if USE_COLOR
                         if (use_color) {
                             a = sprite_color[level_sprite];
                             if (! a)
@@ -6540,7 +4937,6 @@ gamerender(void)
                             }
                             a = pen[a];
                         }
-#endif
                         my_move(vline + (reflect ? c_off : r_off), col * (use_fullwidth ? 2 : 1));
                         my_addch((unsigned long) (unsigned char) c, a);
                         continue;
@@ -6596,7 +4992,6 @@ gamerender(void)
                         if (c)
                         {
                             a = 0;
-#if USE_COLOR
                             if (use_color) {
                                 a = sprite_color[life_sprite];
                                 if (! a)
@@ -6606,12 +5001,9 @@ gamerender(void)
                                 a = pen[a];
                             }
                             else
-#endif
                             {
-#if USE_ATTR
-#ifdef MY_A_BOLD
-                                a |= use_dim_and_bright ? MY_A_BOLD : 0;
-#endif
+#ifdef A_BOLD
+                                a |= use_dim_and_bright ? A_BOLD : 0;
 #endif
                             }
                             my_addch((unsigned long) (unsigned char) c, a);
@@ -6636,7 +5028,6 @@ gamerender(void)
                         if (c)
                         {
                             a = 0;
-#if USE_COLOR
                             if (use_color) {
                                 a = sprite_color[level_sprite];
                                 if (! a)
@@ -6645,7 +5036,6 @@ gamerender(void)
                                 }
                                 a = pen[a];
                             }
-#endif
                             my_addch((unsigned long) (unsigned char) c, a);
                             continue;
                         }
@@ -6830,11 +5220,10 @@ gameinput(void)
             gameinfo();
             return 0;
         }
-        else if ((k == '\?') || (k == MYMANCTRL('H')))
+        else if ((k == '?') || (k == MYMANCTRL('H')))
         {
-            /* Temporarily disabled - help system under refactoring */
             gamehelp();
-            return 1; /* Trigger screen refresh */
+            return 1;
         } else if ((k == '@') || (got_sigwinch && (k == ERR)))
         {
             if (got_sigwinch)
@@ -6865,7 +5254,6 @@ gameinput(void)
                 idlok(stdscr, FALSE);
             }
 #endif
-#if USE_COLOR
         } else if ((k == 'c') || (k == 'C')) {
             use_color = ! use_color;
             use_color_p = 1;
@@ -6880,18 +5268,15 @@ gameinput(void)
             ignore_delay = 1;
             frameskip = 0;
             return 1;
-#endif
         } else if ((k == 'b') || (k == 'B')) {
             use_dim_and_bright =
                 ! use_dim_and_bright;
             use_dim_and_bright_p = 1;
-#if USE_COLOR
             if (use_color)
             {
                 destroy_pen();
                 init_pen();
             }
-#endif
             my_attrset(0);
             my_clear();
             clearok(curscr, TRUE);
@@ -6899,7 +5284,6 @@ gameinput(void)
             ignore_delay = 1;
             frameskip = 0;
             return 1;
-#if USE_ATTR
         } else if ((k == 'u') || (k == 'U')) {
             use_underline = ! use_underline;
             my_clear();
@@ -6908,7 +5292,6 @@ gameinput(void)
             ignore_delay = 1;
             frameskip = 0;
             return 1;
-#endif
         } else if ((k == 's') || (k == 'S')) {
             use_sound = ! use_sound;
             return 1;
@@ -7084,14 +5467,7 @@ gameinput(void)
 static void
 myman(void)
 {
-#ifdef SLANG_VERSION
-#if SLANG_VERSION >= 20000
-    SLutf8_enable(-1);
-    SLtt_utf8_enable(1);
-    SLsmg_utf8_enable(1);
-    SLinterp_utf8_enable(1);
-#endif
-#endif
+
     do
     {
 #if USE_SDL_MIXER
@@ -7104,30 +5480,14 @@ myman(void)
 #endif
         if (! myman_lines) myman_lines = (reflect ? (maze_w * gfx_w) : (maze_h * gfx_h)) + (3 * tile_h + sprite_h);
         if (! myman_columns) myman_columns = (reflect ? (maze_h * gfx_h) : (maze_w * gfx_w)) * (use_fullwidth ? 2 : 1);
-#ifdef GTKCURSES
-        if (((! myman_getenv("GTKCURSES_ICON")) || ! *(myman_getenv("GTKCURSES_ICON"))) && MYMANICONPNG && *MYMANICONPNG)
-        {
-            myman_setenv("GTKCURSES_ICON", MYMANICONPNG);
-        }
-#endif
+
 #ifdef INITSCR_WITH_HINTS
         initscrWithHints(myman_lines,
                          myman_columns,
                          "MyMan [" MYMAN " " MYMANVERSION "]",
                          MYMAN);
 #else
-#if defined(SLCURSES) || defined(__PDCURSES__)
-        if (! reinit_requested)
-#endif
         {
-#ifdef XCURSES
-            if (! Xinitscr(argc, argv))
-            {
-                perror("Xinitscr");
-                fflush(stderr);
-                exit(1);
-            }
-#else
             if (! initscr())
             {
                 perror("initscr");
@@ -7135,20 +5495,10 @@ myman(void)
                 exit(1);
             }
 #endif
-#ifdef __PDCURSES__
-#ifdef PDC_BUILD
-#if PDC_BUILD >= 2400
-            PDC_set_title("MyMan [" MYMAN " " MYMANVERSION "]");
-#endif
-#endif
-            use_default_colors();
-#else
 #ifdef NCURSES_VERSION
             use_default_colors();
 #endif
-#endif
         }
-#endif
         my_clear();
         cbreak();
         noecho();
@@ -7188,27 +5538,26 @@ myman(void)
             use_acs = USE_ACS;
         }
         init_trans(use_bullet_for_dots);
-#if USE_COLOR
 #if COLORIZE
         if (! use_color_p) {
             use_color = has_colors();
             use_color_p = 1;
         }
 #endif
-#ifdef SLCURSES
-        if (! reinit_requested)
-#endif
         {
             start_color();
         }
         if (use_color)
             init_pen();
-#endif
 #if USE_SIGWINCH
         old_sigwinch_handler = signal(SIGWINCH, sigwinch_handler);
 #endif
         reinit_requested = 0;
         pager();
+        if (! pager_notice)
+        {
+            reinit_requested = 0;
+        }
         old_lines = 0;
         old_cols = 0;
         old_score = 0;
@@ -7230,7 +5579,6 @@ myman(void)
         curs_set(1); /* slcurses doesn't do this in endwin() */
 #endif
         my_clear();
-#if USE_COLOR
         if (use_color)
         {
             standout();
@@ -7241,7 +5589,6 @@ myman(void)
             mvprintw(LINES ? 1 : 0, 0, " ");
             addch('\n');
         }
-#endif
         refresh();
         echo();
         endwin();
@@ -7282,11 +5629,7 @@ myman(void)
                 if (! myman_lines) myman_lines = LINES;
                 if (! myman_columns) myman_columns = COLS;
 #ifdef KEY_RESIZE
-#ifdef __PDCURSES__
-                resize_term(0, 0);
-#else
                 resizeterm(myman_lines ? myman_lines : LINES, myman_columns ? myman_columns : COLS);
-#endif
 #else
                 {
                     static char buf[32];
@@ -7302,9 +5645,7 @@ myman(void)
     } while (reinit_requested);
     fprintf(stderr, "%s: scored %d points\n",
             progname, score);
-#ifdef XCURSES
-    XCursesExit();
-#endif
+
 #if USE_ICONV
     if (cd_to_wchar != (iconv_t) -1)
     {
@@ -7326,11 +5667,7 @@ usage(const char *mazefile, const char *spritefile, const char *tilefile)
     puts("-h \tdisplay this help and exit");
     puts("-b \tenable sounds");
     puts("-q \tdisable sounds");
-#if USE_COLOR
     puts("-c \tenable color support");
-#else
-    puts("-c \tenable color support (must recompile first)");
-#endif
     puts("-n \tdisable color support");
     puts("-B \tuse dim and bright attributes for missing colors");
     puts("-N \tdon't use dim and bold attributes for extra colors");
@@ -7345,11 +5682,7 @@ usage(const char *mazefile, const char *spritefile, const char *tilefile)
     puts("-D NAME=VALUE \tdefine environment variable NAME with value VALUE");
     puts("-g NUM \tplay against NUM monsters");
     puts("-l NUM \tstart with NUM lives");
-#if USE_ATTR
     puts("-u \tuse the underline attribute for maze walls");
-#else
-    puts("-u \tuse the underline attribute for maze walls (must recompile first)");
-#endif
     puts("-U \tdon't use the underline attribute for maze walls");
     puts("-r \tuse raw tile characters (CP437 or UCS/Unicode character graphics)");
     puts("-R \tuse altcharset translations (VT100-style graphics)");
@@ -7690,19 +6023,11 @@ parse_myman_args(int argc, char **argv)
         debug = atoi(myman_getenv("MYMAN_DEBUG"));
         debug = debug ? debug : 1;
     }
-#ifdef XCURSES
-    argv[optind - 1] = progname;
-    argc -= optind;
-    argc ++;
-    argv += optind;
-    argv --;
-#else
     if (optind < argc)
     {
         fprintf(stderr, SUMMARY(progname));
         fflush(stderr), exit(2);
     }
-#endif
     if (strcmp(defvariant, MYMANVARIANT))
     {
         fprintf(stderr,
@@ -7720,24 +6045,6 @@ parse_myman_args(int argc, char **argv)
         exit(2);
     }
 
-#if ! USE_ATTR
-    if (use_underline)
-    {
-        fprintf(stderr,
-                "%s: compile with -DUSE_ATTR=1 to enable the -u option.\n",
-                progname);
-        fflush(stderr), exit(1);
-    }
-#endif
-#if ! USE_COLOR
-    if (use_color)
-    {
-        fprintf(stderr,
-                "%s: compile with -DUSE_COLOR=1 to enable color support.\n",
-                progname);
-        fflush(stderr), exit(1);
-    }
-#endif
     if ((tilefile && readfont(tilefile, &tile_w, &tile_h, tile, tile_used, &tile_flags, tile_color, &tile_args)) ||
         (spritefile && readfont(spritefile, &sprite_w, &sprite_h, sprite, sprite_used, &sprite_flags, sprite_color, &sprite_args)))
         exit(1);
@@ -7895,49 +6202,6 @@ main(int argc, char *argv[]
 #endif
     progname = (argc > 0) ? argv[0] : "";
     // pager_notice = MYMANLEGALNOTICE;  // skipped for better UX, see help (? or Ctrl-H) for license
-#ifdef MACCURSES
-#ifdef __CARBON__
-    /* when launched as a CFM application under Mac OS X, there is no
-     * argv[0], so we jump through a few hoops to figure out what it
-     * should have been. */
-    if ((argc == 0)
-        ||
-        ((argc == 2) && (! strncmp(argv[1], "-psn_", strlen("-psn_")))))
-    {
-        ProcessSerialNumber psn;
-
-        if (noErr == MacGetCurrentProcess(&psn))
-        {
-            FSSpec processAppSpec;
-            ProcessInfoRec pir;
-
-            memset((void *) &pir, 0, sizeof(pir));
-            pir.processInfoLength = sizeof(pir);
-            pir.processAppSpec = &processAppSpec;
-            if (noErr == GetProcessInformation(&psn, &pir))
-            {
-                FSRef location;
-
-                if (noErr == FSpMakeFSRef(&processAppSpec, &location))
-                {
-                    static UInt8 path[256];
-
-                    if (noErr == FSRefMakePath(&location, path, sizeof(path) - 1))
-                    {
-                        progname = (char *) path;
-                    }
-                }
-            }
-        }
-    }
-    /* when launched as a native application under Mac OS X, there may
-     * be a bogus process serial number parameter. */
-    if ((argc == 2) && (! strncmp(argv[1], "-psn_", strlen("-psn_"))))
-    {
-        argc = 1;
-    }
-#endif /* defined(__CARBON__) */
-#endif /* defined(MACCURSES) */
     progname = (progname && *progname) ? progname : MYMAN;
     td = 0.0L;
     for (i = 0; i < SPRITE_REGISTERS; i ++) {

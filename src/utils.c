@@ -29,15 +29,9 @@
 #endif
 #endif
 
-/* feature guessing */
-#ifndef MYMAN_GUESS_H_INCLUDED
-#include "guess.h"
-#endif
 
 #include <ctype.h>
-#if HAVE_UNISTD_H
 #include <unistd.h>
-#endif
 #include <errno.h>
 #include <limits.h>
 #include <math.h>
@@ -53,34 +47,12 @@
 #endif
 #endif
 
-#ifdef macintosh
-#if TARGET_API_MAC_CARBON
-/* Case 1: flat Carbon headers */
-#include <Carbon.h>
-#else /* ! defined(TARGET_API_MAC_CARBON) */
-/* Case 2: Toolbox */
-#include <ConditionalMacros.h>
-#if defined(UNIVERSAL_INTERFACES_VERSION) && (UNIVERSAL_INTERFACES_VERSION >= 0x0300)
-#include <MacTypes.h>
-#else
-#include <Types.h>
-#endif
-#include <Files.h>
-#endif /* ! defined(TARGET_API_MAC_CARBON) */
-#endif /* ! defined(macintosh) */
 
-#ifdef VMS
-#include <unixlib.h>
-#endif /* defined(VMS) */
 
-/* MyMan utilities; also defines cruft like __MSDOS__ under some circumstances */
 #ifndef MYMAN_UTILS_H_INCLUDED
 #include "utils.h"
 #endif
 
-#if defined(WIN32)
-#include <windows.h>
-#endif
 
 /* command-line argument parser */
 #ifndef MYGETOPT_H
@@ -1549,125 +1521,8 @@ static FILE *fopen_datafile(const char *path, const char *mode)
     FILE *ret = NULL;
 
     ret = fopen(path, mode);
-#ifdef macintosh
-    /* FIXME: we roll our own sleazy POSIX->mac filename conversion
-     * hack that really only works for completely ASCII filenames. */
-    if (strrchr(path, '/') && (! ret))
-    {
-        int i;
-
-        i = 0;
-        if ((! strncmp(path, "/Volumes/", strlen("/Volumes/")))
-            &&
-            strchr(path + strlen("/Volumes/"), '/'))
-        {
-            /* /Volumes/volName/foo -> volName:foo */
-            buf = strdup(path + strlen("/Volumes/"));
-        }
-        else if (*path == '/')
-        {
-            Str255 volName;
-            short vRefNum;
-            long dirID;
-
-            if (noErr == HGetVol(volName, &vRefNum, &dirID))
-            {
-                buf = (char *) malloc(volName[0] + strlen(path) + 1);
-                if (buf)
-                {
-                    i = volName[0];
-                    /* /foo -> volName:foo */
-                    memcpy((void *) buf, (void *) (volName + 1), i);
-                    memcpy((void *) (buf + i), (void *) path, strlen(path) + 1);
-                }
-            }
-        }
-        else if ((! strchr(path, ':'))
-                 ||
-                 (strchr(path, ':') > strchr(path, '/')))
-        {
-            /* foo/bar -> :foo:bar */
-            buf = strdup(path);
-            if (buf)
-            {
-                char *buf2;
-
-                buf2 = (char *) realloc((void *) buf, strlen(buf) + 2);
-                if (buf2)
-                {
-                    buf = buf2;
-                    memmove((void *) (buf + 1), (void *) buf, strlen(buf) + 1);
-                    *buf = '/';
-                }
-                else
-                {
-                    free((void *) buf);
-                    buf = NULL;
-                }
-            }
-        }
-        if (buf)
-        {
-            /* '//' -> '/' */
-            while (strstr(buf + i, "//"))
-            {
-                char *slashslash;
-
-                slashslash = strstr(buf + i, "//");
-                memmove(slashslash + strlen("/"), slashslash + strlen("//"), strlen(slashslash + strlen("//")) + 1);
-            }
-            /* '/./' -> '/' */
-            while (strstr(buf + i, "/./"))
-            {
-                char *slashdotslash;
-
-                slashdotslash = strstr(buf + i, "/./");
-                memmove(slashdotslash + strlen("/"), slashdotslash + strlen("/./"), strlen(slashdotslash + strlen("/./")) + 1);
-            }
-            /* '/../' -> '//' */
-            while (strstr(buf + i, "/../"))
-            {
-                char *dotdot;
-
-                dotdot = strstr(buf + i, "/../");
-                sprintf(dotdot, "//");
-                memmove(dotdot + strlen("//"), dotdot + strlen("/../"), strlen(dotdot + strlen("/../")) + 1);
-            }
-            /* swap '/' and ':' */
-            for (; buf[i]; i ++)
-            {
-                if (buf[i] == '/')
-                {
-                    buf[i] = ':';
-                }
-                else if (buf[i] == ':')
-                {
-                    buf[i] = '/';
-                }
-            }
-            ret = fopen(buf, mode);
-            free((void *) buf);
-            buf = NULL;
-        }
-    }
-#endif
     if (progname && *progname && (! ret))
     {
-#ifdef VMS
-
-#pragma __nostandard
-
-        const char *progname_posix = NULL;
-
-        progname_posix = decc$translate_vms(progname);
-        if (! progname_posix) progname_posix = progname;
-
-#undef progname
-#define progname progname_posix
-
-#pragma __standard
-
-#endif /* defined(VMS) */
         buf = (char *) malloc(strlen(progname) + 1 + strlen(path) + 1);
         if (buf)
         {
@@ -1679,18 +1534,6 @@ static FILE *fopen_datafile(const char *path, const char *mode)
             {
                 sep = buf;
             }
-#if defined(WIN32) || defined(__MSDOS__)
-            if (strrchr(sep, '\\'))
-            {
-                sep = strrchr(sep, '\\');
-            }
-#endif
-#ifdef macintosh
-            if (strrchr(sep, ':'))
-            {
-                sep = strrchr(sep, ':');
-            }
-#endif
             if (sep && (sep != buf))
             {
                 sep += 1;
@@ -1700,31 +1543,12 @@ static FILE *fopen_datafile(const char *path, const char *mode)
                 if (! ret)
                 {
                     strcpy(buf, progname);
-#ifdef VMS
-#undef progname
-#endif /* defined(VMS) */
                     sep = strstr(buf, ".app/");
                     if (sep)
                     {
                         sep += strlen(".app");
                         sep[0] = '\0';
                     }
-#if defined(WIN32) || defined(__MSDOS__)
-                    if (strstr(buf, ".app\\"))
-                    {
-                        sep = strstr(buf, ".app\\");
-                        sep += strlen(".app");
-                        sep[0] = '\0';
-                    }
-#endif
-#ifdef macintosh
-                    if (strstr(buf, ".app:"))
-                    {
-                        sep = strstr(buf, ".app:");
-                        sep += strlen(".app");
-                        sep[0] = '\0';
-                    }
-#endif
                     if (sep)
                     {
                         sep = strrchr(buf, '/');
@@ -1732,18 +1556,6 @@ static FILE *fopen_datafile(const char *path, const char *mode)
                         {
                             sep = buf;
                         }
-#if defined(WIN32) || defined(__MSDOS__)
-                        if (strrchr(sep, '\\'))
-                        {
-                            sep = strrchr(sep, '\\');
-                        }
-#endif
-#ifdef macintosh
-                        if (strrchr(sep, ':'))
-                        {
-                            sep = strrchr(sep, ':');
-                        }
-#endif
                         if (sep && (sep != buf))
                         {
                             sep += 1;
@@ -4940,40 +4752,7 @@ int myman_setenv(const char *name, const char *value)
 {
     int ret = 1;
 
-#if HAVE_SETENV
-#ifdef macintosh
-    ret = setenv(name, value);
-#else /* ! defined(macintosh) */
     ret = setenv(name, value, 1);
-#endif /* ! defined(macintosh) */
-#else /* ! HAVE_SETENV */
-#if HAVE_PUTENV || defined(WIN32)
-    {
-        char *pair;
-        size_t name_len, value_len;
-
-        name_len = strlen(name);
-        value_len = strlen(value);
-        pair = (char *) malloc(name_len + 1 + value_len + 1);
-        if (pair)
-        {
-            memcpy((void *) pair, (void *) name, name_len);
-            pair[name_len] = '=';
-            memcpy((void *) (pair + name_len + 1), (void *) value, value_len);
-            pair[name_len + 1 + value_len] = '\0';
-#if HAVE_PUTENV
-            ret = putenv(pair);
-#else /* ! HAVE_PUTENV */
-            ret = _putenv(pair);
-#endif /* ! HAVE_PUTENV */
-            free((void *) pair);
-        }
-#ifdef WIN32
-        ret = SetEnvironmentVariableA(name, value) ? ret : 1;
-#endif /* ! defined(WIN32) */
-    }
-#endif /* HAVE_PUTENV || defined(WIN32) */
-#endif /* ! HAVE_SETENV */
     if (! ret)
     {
         const char *value_check;
