@@ -64,20 +64,6 @@
 #endif /* ! defined(UNICODE) */
 #endif /* ! defined(_UNICODE) */
 
-#ifdef MACCURSES
-/* needed for the argv[0] trick */
-#ifdef macintosh
-#if TARGET_API_MAC_CARBON
-#include <Carbon.h>
-#else
-#include <Files.h>
-#include <Processes.h>
-#endif
-#else
-#include <Carbon/Carbon.h>
-#endif
-#endif
-
 #include <errno.h>
 
 #include <signal.h>
@@ -166,114 +152,6 @@
 
 
 /* work-arounds for old BSD curses */
-#ifdef OLDCURSES
-
-#ifndef DANGEROUS_ATTRS
-#define DANGEROUS_ATTRS 1
-#endif
-
-#ifndef intrflush
-#define intrflush(win, x)
-#endif
-
-#ifndef use_env
-#define use_env(x)
-#endif
-
-#ifndef HAVE_NODELAY
-#ifndef nodelay
-#define HAVE_NODELAY 0
-#endif
-#endif
-
-#ifndef HAVE_CURS_SET
-#ifndef curs_set
-#define HAVE_CURS_SET 0
-#endif
-#endif
-
-#ifndef A_STANDOUT
-#ifndef HAVE_ATTRSET
-#ifndef attrset
-#define HAVE_ATTRSET 0
-#endif
-#endif
-#endif
-
-#ifndef USE_ATTR
-#define USE_ATTR 1
-#endif
-
-#if USE_ATTR
-#ifndef A_STANDOUT
-#ifdef _STANDOUT
-#define A_STANDOUT _STANDOUT
-#else
-#ifdef __STANDOUT
-#define A_STANDOUT ((__STANDOUT) << 8)
-#else
-#ifdef _REVERSE
-#ifdef _BOLD
-#define A_STANDOUT ((_BOLD | _REVERSE) << 8)
-#else
-#define A_STANDOUT ((_REVERSE) << 8)
-#endif
-#else
-#define A_STANDOUT 0x100
-#endif
-#endif
-#endif
-#endif
-#ifndef A_BLINK
-#ifdef _BLINK
-#define A_BLINK ((_BLINK) << 8)
-#endif
-#endif
-#ifndef A_BOLD
-#ifdef _BOLD
-#define A_BOLD ((_BOLD) << 8)
-#endif
-#endif
-#ifndef A_REVERSE
-#ifdef _REVERSE
-#define A_REVERSE ((_REVERSE) << 8)
-#endif
-#ifndef A_UNDERLINE
-#ifdef _UNDERLINE
-#define A_UNDERLINE ((_UNDERLINE) << 8)
-#endif
-#endif
-#endif
-
-#endif
-
-#ifndef beep
-#define beep() do{fputc('\a', stdout);fflush(stdout);}while(0)
-#endif
-
-#ifndef HAVE_CHTYPE
-#ifndef chtype
-#define HAVE_CHTYPE 0
-#endif
-#endif
-
-#ifdef A_STANDOUT
-#if A_STANDOUT == 0x80
-#ifndef A_CHARTEXT
-#define A_CHARTEXT 0x7f
-#endif
-#endif
-#endif
-
-#ifndef A_CHARTEXT
-#define A_CHARTEXT 0xff
-#endif
-
-#ifndef USE_A_CHARTEXT
-#define USE_A_CHARTEXT 1
-#endif
-
-#endif
 
 /* work-arounds for slcurses */
 #ifdef SLCURSES
