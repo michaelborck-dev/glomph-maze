@@ -25,6 +25,33 @@ See `CMAKE_SETUP.md` for details.
 ## Changelog Commands
 - **Generate changelog**: `./scripts/generate_changelog.sh` (regenerates CHANGELOG.md from git history)
 
+## Current Refactoring Status
+
+**Branch:** refactor  
+**Phase:** 0 Complete - globals.h created
+
+### What Changed:
+- ✅ Created `include/globals.h` - consolidates all 210+ global variable declarations
+- ✅ All source files include `globals.h` after `utils.h`
+- ✅ No behavior changes - pure organizational refactoring
+
+### Architecture:
+```
+include/
+├── globals.h  (NEW - all extern declarations)
+└── utils.h    (still used - contains macros, constants, function prototypes)
+
+src/
+├── myman.c    (includes globals.h)
+├── utils.c    (includes globals.h - defines most globals)
+├── logic.c    (includes globals.h)
+└── main.c     (includes globals.h)
+```
+
+**Next Phase:** C17 upgrade (update CMakeLists.txt, add static assertions)
+
+See `docs/REFACTOR_PLAN.md` for full plan.
+
 ## Known Issues
 None currently. Help system is working correctly.
 
