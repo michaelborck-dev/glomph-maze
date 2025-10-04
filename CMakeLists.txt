@@ -39,6 +39,7 @@ set(COMMON_SOURCES
     src/logic.c
     src/render/render.c
     src/maze/maze_io.c
+    src/sprite/sprite_io.c
 )
 
 # Define size variants with their tile/sprite files
