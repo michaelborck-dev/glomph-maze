@@ -396,7 +396,7 @@ const unsigned char cp437_fullwidth_rhs[256] =
 
 const unsigned long *uni_cp437 = uni_cp437_halfwidth;
 
-unsigned char reflect_sprite[256] = {
+uint8_t reflect_sprite[256] = {
     /* 0x00 */
     /*%8*/0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
     0x08, 0x09, /*"^*/0x0b, /*"<*/0x0a, /*"v*/0x0d, /*">*/0x0c, /*m2*/0x0e, 0x0f,
@@ -450,7 +450,7 @@ unsigned char reflect_sprite[256] = {
     0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff
 };
 
-unsigned char cp437_sprite[256] = {
+uint8_t cp437_sprite[256] = {
     /* 0x00 */
     /*%8*/'%', 'v', '@', '@', '@', 'Y', 'A', 'F',
     'A', 'A', /*"^*/'\"', /*"<*/'\"', /*"v*/'\"', /*">*/'\"', /*m2*/'m', 'm',
@@ -541,7 +541,7 @@ udlr[256] = {
     0x0f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-unsigned char fallback_cp437[256] = {
+uint8_t fallback_cp437[256] = {
 /* 0x00 */
     0x00, '@', '@', '*', '+', '%', '&', 'o',
     '#', 'o', '#', 'd', 'q', 'l', 'H', '*',
@@ -592,7 +592,7 @@ unsigned char fallback_cp437[256] = {
     0x09, '.', 0x07, 'V', 'n', '2', 0xfa, ' '
 };
 
-unsigned char reflect_cp437[256] = {
+uint8_t reflect_cp437[256] = {
 /* 0x00 */
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
     0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
@@ -2770,10 +2770,10 @@ char *maze = NULL;
 char *maze_color = NULL;
 char *blank_maze = NULL;
 char *blank_maze_color = NULL;
-unsigned char *dirty_cell = NULL;
-int all_dirty;
+uint8_t *dirty_cell = NULL;
+bool all_dirty = false;
 
-int nogame = 0;
+bool nogame = false;
 
 int maze_n;
 int maze_w;
@@ -2901,7 +2901,7 @@ maze_putsn_nonblank(int y, int x, int color, const char *s, int n)
     }
 }
 
-unsigned char sprite_register[SPRITE_REGISTERS];
+uint8_t sprite_register[SPRITE_REGISTERS];
 int sprite_register_frame[SPRITE_REGISTERS];
 int sprite_register_x[SPRITE_REGISTERS], sprite_register_y[SPRITE_REGISTERS];
 int sprite_register_used[SPRITE_REGISTERS];
@@ -2922,26 +2922,26 @@ mark_sprite_register(int s)
 }
 
 int ghost_dir[MAXGHOSTS], ghost_mem[MAXGHOSTS], ghost_man[MAXGHOSTS], ghost_timer[MAXGHOSTS];
-unsigned char *home_dir = NULL;
+uint8_t *home_dir = NULL;
 
-unsigned char
-gfx2(unsigned char c)
+uint8_t
+gfx2(uint8_t c)
 {
-    return (((reflect ^ gfx_reflect) && ! REFLECT_LARGE) ? ((unsigned) reflect_cp437[(unsigned long) (unsigned char) (c)]) : (unsigned) (c));
+    return (((reflect ^ gfx_reflect) && ! REFLECT_LARGE) ? ((unsigned) reflect_cp437[(unsigned long) (uint8_t) (c)]) : (unsigned) (c));
 }
 
 size_t
-gfx1(const char **font, unsigned char c, int y, int x, int w)
+gfx1(const char **font, uint8_t c, int y, int x, int w)
 {
     return (reflect ^ ((reflect ^ gfx_reflect) && ! REFLECT_LARGE)) ?
-        font[(unsigned) (unsigned char) c][x * w + y] :
-        font[(unsigned) (unsigned char) c][y * w + x];
+        font[(unsigned) (uint8_t) c][x * w + y] :
+        font[(unsigned) (uint8_t) c][y * w + x];
 }
 
-unsigned char
-gfx0(unsigned char c, unsigned char *m)
+uint8_t
+gfx0(uint8_t c, uint8_t *m)
 {
-    return (REFLECT_LARGE | gfx_reflect) ? ((unsigned) (unsigned char) ((m)[(unsigned long) (unsigned char) (c)])) : ((unsigned) (unsigned char) (c));
+    return (REFLECT_LARGE | gfx_reflect) ? ((unsigned) (uint8_t) ((m)[(unsigned long) (uint8_t) (c)])) : ((unsigned) (uint8_t) (c));
 }
 
 int reflect = 0;
@@ -2959,7 +2959,7 @@ long winning = 1;
 unsigned long mymandelay = MYMANDELAY;
 unsigned long mindelay = MYMANDELAY / 2;
 int ghost_eaten_timer = 0;
-int paused = 0;
+bool paused = false;
 long intermission_running = 0;
 unsigned long myman_demo_setup = 0;
 int need_reset = 0;

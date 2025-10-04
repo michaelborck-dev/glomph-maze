@@ -54,6 +54,8 @@
 #define GLOBALS_H
 
 #include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
 #include <getopt.h>
 
 /*============================================================================
@@ -134,11 +136,11 @@ extern const char *progname;
 extern const unsigned long uni_cp437_halfwidth[256];
 extern const unsigned long uni_cp437_fullwidth[256];
 extern const unsigned char cp437_fullwidth_rhs[256];
-extern unsigned char reflect_sprite[256];
-extern unsigned char cp437_sprite[256];
-extern const unsigned char udlr[256];
-extern unsigned char fallback_cp437[256];
-extern unsigned char reflect_cp437[256];
+extern uint8_t reflect_sprite[256];
+extern uint8_t cp437_sprite[256];
+extern const uint8_t udlr[256];
+extern uint8_t fallback_cp437[256];
+extern uint8_t reflect_cp437[256];
 extern const unsigned long *uni_cp437;
 
 /*============================================================================
@@ -207,10 +209,10 @@ extern char *maze;
 extern char *maze_color;
 extern char *blank_maze;
 extern char *blank_maze_color;
-extern unsigned char *dirty_cell;
-extern int all_dirty;
+extern uint8_t *dirty_cell;
+extern bool all_dirty;
 
-extern int nogame;
+extern bool nogame;
 
 extern int maze_n;
 extern int maze_w;
@@ -260,13 +262,13 @@ extern int ghost_dir[MAXGHOSTS];
 extern int ghost_mem[MAXGHOSTS];
 extern int ghost_man[MAXGHOSTS];
 extern int ghost_timer[MAXGHOSTS];
-extern unsigned char *home_dir;
+extern uint8_t *home_dir;
 
 /*============================================================================
  * SPRITE REGISTERS
  *===========================================================================*/
 
-extern unsigned char sprite_register[SPRITE_REGISTERS];
+extern uint8_t sprite_register[SPRITE_REGISTERS];
 extern int sprite_register_frame[SPRITE_REGISTERS];
 extern int sprite_register_x[SPRITE_REGISTERS];
 extern int sprite_register_y[SPRITE_REGISTERS];
@@ -280,9 +282,9 @@ extern void mark_sprite_register(int s);
  * GRAPHICS AND RENDERING
  *===========================================================================*/
 
-extern unsigned char gfx2(unsigned char c);
+extern uint8_t gfx2(uint8_t c);
 extern size_t gfx1(const char **font, unsigned char c, int y, int x, int w);
-extern unsigned char gfx0(unsigned char c, unsigned char *m);
+extern uint8_t gfx0(uint8_t c, uint8_t *m);
 
 extern int reflect;
 extern int gfx_reflect;
@@ -354,7 +356,7 @@ extern long pellet_time;
  * DISPLAY STATE
  *===========================================================================*/
 
-extern unsigned short *inside_wall;
+extern uint16_t *inside_wall;
 extern FILE *snapshot;
 extern FILE *snapshot_txt;
 extern int xoff_received;
@@ -402,7 +404,7 @@ extern int ghost_eaten_timer;
  * PAUSE STATE
  *===========================================================================*/
 
-extern int paused;
+extern bool paused;
 
 /*============================================================================
  * INTERMISSION STATE

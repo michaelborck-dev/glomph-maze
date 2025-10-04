@@ -2,7 +2,7 @@
 
 **Branch:** refactor  
 **Last Updated:** 2025-10-04  
-**Current Phase:** 1 ✅ COMPLETE
+**Current Phase:** 2 ✅ COMPLETE
 
 ---
 
@@ -10,11 +10,39 @@
 
 - [x] **Phase 0: globals.h Foundation** ✅ COMPLETE (2025-10-04)
 - [x] **Phase 1: C17 Upgrade** ✅ COMPLETE (2025-10-04)
-- [ ] **Phase 2: Type Modernization** (Next)
+- [x] **Phase 2: Type Modernization** ✅ COMPLETE (2025-10-04)
+- [ ] **Phase 3: Header Reorganization** (Next)
 - [ ] **Phase 3: Header Reorganization**
 - [ ] **Phase 3: Header Reorganization**
 - [ ] **Phase 4: Function Documentation** (Ongoing)
 - [ ] **Phase 5: Extract First Module** (Optional)
+
+---
+
+## What Changed in Phase 2
+
+### Modified Files
+- `include/globals.h` - Added stdint.h, stdbool.h; updated type declarations
+- `include/utils.h` - Added headers; updated all type declarations  
+- `src/utils.c` - Updated variable definitions and function signatures
+
+### Type Modernization
+```c
+// Changed types:
+unsigned char  → uint8_t  (20+ occurrences)
+unsigned short → uint16_t (1 occurrence)
+int (boolean)  → bool     (3 occurrences)
+```
+
+### Specific Changes
+- **uint8_t:** sprite_register, dirty_cell, home_dir, reflect arrays, gfx functions
+- **uint16_t:** inside_wall
+- **bool:** all_dirty, nogame, paused
+
+### Verification
+- ✅ All 4 variants build successfully
+- ✅ All variants tested and working
+- ✅ No new warnings introduced
 
 ---
 

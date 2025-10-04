@@ -28,7 +28,7 @@
 
 - [x] Phase 0: globals.h Foundation ✅ COMPLETE
 - [x] Phase 1: C17 Upgrade ✅ COMPLETE
-- [ ] Phase 2: Type Modernization
+- [x] Phase 2: Type Modernization ✅ COMPLETE
 - [ ] Phase 3: Header Reorganization
 - [ ] Phase 4: Function Documentation (Ongoing)
 - [ ] Phase 5: Extract First Module (Optional)
@@ -94,33 +94,38 @@ All 4 variants build and run successfully with C17.
 
 ---
 
-## Phase 2: Type Modernization
+## Phase 2: Type Modernization ✅ COMPLETE
 
 **Goal:** Use C17 stdint.h and stdbool.h types
 
-### Task 2.1: Update globals.h Types
+**Status:** COMPLETE
+
+### Task 2.1: Update globals.h Types ✅
 ```c
-// Replace:
-unsigned char → uint8_t
-unsigned short → uint16_t
-unsigned int → uint32_t
-int flags → bool (where appropriate)
+// Replaced:
+unsigned char → uint8_t (arrays, pointers, functions)
+unsigned short → uint16_t (inside_wall)
+int flags → bool (all_dirty, nogame, paused)
 ```
 
-### Task 2.2: Update globals.c Definitions
-Match types from globals.h
+### Task 2.2: Update utils.h Types ✅
+- Added <stdio.h>, <stdint.h>, <stdbool.h>
+- Updated all type declarations to match globals.h
 
-### Task 2.3: Fix Compilation Errors
-Build and fix one file at a time
+### Task 2.3: Update utils.c Definitions ✅
+- Updated variable definitions
+- Updated function signatures
+- Updated function bodies
 
-### Task 2.4: Test & Commit
-```bash
-cmake --build build
-./build/glomph  # Play full game
-git commit -m "Phase 2: Modernize types to stdint/stdbool"
-```
+### Task 2.4: Test & Commit ✅
+All 4 variants build and run successfully.
 
-**Time estimate:** 6-8 hours
+**Time actual:** 2 hours
+
+**Types Modernized:**
+- `uint8_t`: sprite_register, dirty_cell, home_dir, reflection arrays, gfx functions
+- `uint16_t`: inside_wall pointer
+- `bool`: all_dirty, nogame, paused
 
 ---
 

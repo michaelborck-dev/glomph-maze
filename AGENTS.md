@@ -33,14 +33,17 @@ See `CMAKE_SETUP.md` for details.
 ## Current Refactoring Status
 
 **Branch:** refactor  
-**Phase:** 1 Complete - C17 upgrade with static assertions
+**Phase:** 2 Complete - Type modernization (stdint.h, stdbool.h)
 
 ### What Changed:
 - ✅ Phase 0: Created `include/globals.h` - consolidates all 210+ global variable declarations
 - ✅ Phase 0: All source files include `globals.h` after `utils.h`
-- ✅ Phase 1: Upgraded to C17 standard (from C11)
+- ✅ Phase 1: Upgraded to C17 standard (from C89/C90)
 - ✅ Phase 1: Added 6 compile-time static assertions for safety
 - ✅ Phase 1: Fixed SPRITE_REGISTERS constant (46 → 57)
+- ✅ Phase 2: Modernized types using stdint.h and stdbool.h
+- ✅ Phase 2: Changed unsigned char → uint8_t, unsigned short → uint16_t
+- ✅ Phase 2: Changed int boolean flags → bool (all_dirty, nogame, paused)
 - ✅ No behavior changes - pure organizational refactoring and modernization
 
 ### Architecture:
@@ -56,7 +59,7 @@ src/
 └── main.c     (includes globals.h)
 ```
 
-**Next Phase:** Type modernization (stdint.h, stdbool.h)
+**Next Phase:** Header reorganization (split globals.h into modules)
 
 See `docs/REFACTOR_PLAN.md` for full plan.
 

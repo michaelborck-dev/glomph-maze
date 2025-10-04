@@ -25,6 +25,9 @@
 #ifndef MYMAN_UTILS_H_INCLUDED
 #define MYMAN_UTILS_H_INCLUDED 1
 
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 #undef DATADIR /* FIXME: conflicts with Win32 header files */
 
@@ -151,23 +154,23 @@ extern const unsigned char cp437_fullwidth_rhs[256];
 
 /* mapping used to reflect sprites */
 
-extern unsigned char reflect_sprite[256];
+extern uint8_t reflect_sprite[256];
 
 /* fallback mapping to map missing sprites to tiles */
 
-extern unsigned char cp437_sprite[256];
+extern uint8_t cp437_sprite[256];
 
 /* box drawing Up-Down-Left-Right data for CP437 */
 
-extern const unsigned char udlr[256];
+extern const uint8_t udlr[256];
 
 /* fallback mapping for missing tiles */
 
-extern unsigned char fallback_cp437[256];
+extern uint8_t fallback_cp437[256];
 
 /* mapping used to reflect tiles */
 
-extern unsigned char reflect_cp437[256];
+extern uint8_t reflect_cp437[256];
 
 extern short mille_to_scale(short n, short scale);
 
@@ -292,10 +295,10 @@ extern char *maze;
 extern char *maze_color;
 extern char *blank_maze;
 extern char *blank_maze_color;
-extern unsigned char *dirty_cell;
-extern int all_dirty;
+extern uint8_t *dirty_cell;
+extern bool all_dirty;
 
-extern int nogame;
+extern bool nogame;
 
 extern int maze_n;
 extern int maze_w;
@@ -377,7 +380,7 @@ extern void maze_putsn_nonblank(int y, int x, int color, const char *s, int n);
 #endif
 
 extern int ghost_dir[MAXGHOSTS], ghost_mem[MAXGHOSTS], ghost_man[MAXGHOSTS], ghost_timer[MAXGHOSTS];
-extern unsigned char *home_dir;
+extern uint8_t *home_dir;
 
 /* sprite register numbers */
 #define GHOSTEYES(ghost) ((ghost) * 2)
@@ -396,7 +399,7 @@ extern unsigned char *home_dir;
 /* total sprite register count */
 #define SPRITE_REGISTERS (BIGHERO_LR + 1)
 
-extern unsigned char sprite_register[SPRITE_REGISTERS];
+extern uint8_t sprite_register[SPRITE_REGISTERS];
 extern int sprite_register_frame[SPRITE_REGISTERS];
 extern int sprite_register_x[SPRITE_REGISTERS], sprite_register_y[SPRITE_REGISTERS];
 extern int sprite_register_used[SPRITE_REGISTERS];
@@ -443,11 +446,11 @@ mark_sprite_register(int s);
 #define XLEAVING(dir, x) ( -((((dir) == MYMAN_LEFT) && ! NOTLEFT(x)) ? 1 : 0) + \
 ((((dir) == MYMAN_RIGHT) && ! NOTRIGHT(x)) ? 1 : 0))
 
-extern unsigned char gfx2(unsigned char c);
+extern uint8_t gfx2(uint8_t c);
 
-extern size_t gfx1(const char **font, unsigned char c, int y, int x, int w);
+extern size_t gfx1(const char **font, uint8_t c, int y, int x, int w);
 
-extern unsigned char gfx0(unsigned char c, unsigned char *m);
+extern uint8_t gfx0(uint8_t c, uint8_t *m);
 
 #define gfx_w (gfx_reflect ? tile_h : tile_w)
 #define gfx_h (gfx_reflect ? tile_w : tile_h)
@@ -518,7 +521,7 @@ extern int gamecycle(int lines, int cols);
 extern void creditscreen(void);
 extern void paint_walls(int verbose);
 
-extern unsigned short *inside_wall;
+extern uint16_t *inside_wall;
 extern FILE *snapshot;
 extern FILE *snapshot_txt;
 extern int xoff_received;
@@ -540,7 +543,7 @@ extern long winning;
 extern unsigned long mymandelay;
 extern unsigned long mindelay;
 extern int ghost_eaten_timer;
-extern int paused;
+extern bool paused;
 extern long intermission_running;
 extern unsigned long myman_demo_setup;
 extern int need_reset;
