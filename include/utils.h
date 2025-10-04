@@ -25,9 +25,9 @@
 #ifndef MYMAN_UTILS_H_INCLUDED
 #define MYMAN_UTILS_H_INCLUDED 1
 
-#include <stdio.h>
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
 
 #undef DATADIR /* FIXME: conflicts with Win32 header files */
 
@@ -70,49 +70,70 @@
 /* used for text screenshots */
 #ifndef TXT_SUFFIX
 #define TXT_SUFFIX ".txt"
-#endif 
+#endif
 
-extern const char *maze_ABOUT_prefix;
+extern const char* maze_ABOUT_prefix;
 
-extern const char *maze_FIXME_prefix;
+extern const char* maze_FIXME_prefix;
 
-extern const char *maze_NOTE_prefix;
+extern const char* maze_NOTE_prefix;
 
-extern const char *tile_ABOUT_prefix;
+extern const char* tile_ABOUT_prefix;
 
-extern const char *tile_FIXME_prefix;
+extern const char* tile_FIXME_prefix;
 
-extern const char *tile_NOTE_prefix;
+extern const char* tile_NOTE_prefix;
 
-extern const char *sprite_ABOUT_prefix;
+extern const char* sprite_ABOUT_prefix;
 
-extern const char *sprite_FIXME_prefix;
+extern const char* sprite_FIXME_prefix;
 
-extern const char *sprite_NOTE_prefix;
+extern const char* sprite_NOTE_prefix;
 
-extern const char *MYMANKEYS_prefix;
+extern const char* MYMANKEYS_prefix;
 
-extern const char *MOREMESSAGE;
+extern const char* MOREMESSAGE;
 
-extern const char *DONEMESSAGE;
+extern const char* DONEMESSAGE;
 
-#define ISTEXT(c) (((c) == '!') || (((c) >= '0') && ((c) <= '9')) || ((c) == '@') || (((c) >= 'A') && ((c) <= 'Z')))
+#define ISTEXT(c)                                                              \
+    (((c) == '!') || (((c) >= '0') && ((c) <= '9')) || ((c) == '@') ||         \
+     (((c) >= 'A') && ((c) <= 'Z')))
 #define ISDOT(c) (((c) == 249) || ((c) == '.'))
 #define ISPELLET(c) (((c) == 254) || ((c) == 'o'))
 #define ISZAPLEFT(c) (((c) == '<') || (c == 174))
 #define ISZAPRIGHT(c) (((c) == '>') || (c == 175))
 #define ISZAPUP(c) ((c) == '^')
 #define ISZAPDOWN(c) ((c) == 'v')
-#define ISOPEN(c) (((c) == ' ') || ISDOT(c) || ISPELLET(c) || ((c) == '!') || (((c) >= 'A') && ((c) <= 'Z')) || ((c) == 'l') || ((c) == '~') || ISZAPRIGHT(c) || ISZAPLEFT(c) || ISZAPUP(c) || ISZAPDOWN(c))
+#define ISOPEN(c)                                                              \
+    (((c) == ' ') || ISDOT(c) || ISPELLET(c) || ((c) == '!') ||                \
+     (((c) >= 'A') && ((c) <= 'Z')) || ((c) == 'l') || ((c) == '~') ||         \
+     ISZAPRIGHT(c) || ISZAPLEFT(c) || ISZAPUP(c) || ISZAPDOWN(c))
 #define ISDOOR(c) (((c) == '=') || (c == ':') || ((c) == 240) || (c == 255))
 
-#define ISWALLCENTER(c) ((((unsigned) (unsigned char) (char) (c)) == 0x07) || (((unsigned) (unsigned char) (char) (c)) == 0x12) || (((unsigned) (unsigned char) (char) (c)) == 0x1d) || (((unsigned) (unsigned char) (char) (c)) == 0x3c) || (((unsigned) (unsigned char) (char) (c)) == 0x3e) || (((unsigned) (unsigned char) (char) (c)) == 0x5e) || (((unsigned) (unsigned char) (char) (c)) == 0x76) || (((unsigned) (unsigned char) (char) (c)) == 0xae) || (((unsigned) (unsigned char) (char) (c)) == 0xaf))
-#define ISWALLUP(c) (((unsigned) udlr[(unsigned int) (unsigned char) (c)]) & 0xc0)
-#define ISWALLDOWN(c) (((unsigned) udlr[(unsigned int) (unsigned char) (c)]) & 0x30)
-#define ISWALLLEFT(c) (((unsigned) udlr[(unsigned int) (unsigned char) (c)]) & 0x0c)
-#define ISWALLRIGHT(c) (((unsigned) udlr[(unsigned int) (unsigned char) (c)]) & 0x03)
-#define ISWALL(c) (ISWALLUP(c) || ISWALLDOWN(c) || ISWALLLEFT(c) || ISWALLRIGHT(c) || ISWALLCENTER(c))
-#define ISNONINVERTABLE(c) (ISPELLET(c) || ISDOT(c) || ISZAPLEFT(c) || ISZAPRIGHT(c) || ISZAPUP(c) || ISZAPDOWN(c) || ISDOOR(c))
+#define ISWALLCENTER(c)                                                        \
+    ((((unsigned)(unsigned char)(char)(c)) == 0x07) ||                         \
+     (((unsigned)(unsigned char)(char)(c)) == 0x12) ||                         \
+     (((unsigned)(unsigned char)(char)(c)) == 0x1d) ||                         \
+     (((unsigned)(unsigned char)(char)(c)) == 0x3c) ||                         \
+     (((unsigned)(unsigned char)(char)(c)) == 0x3e) ||                         \
+     (((unsigned)(unsigned char)(char)(c)) == 0x5e) ||                         \
+     (((unsigned)(unsigned char)(char)(c)) == 0x76) ||                         \
+     (((unsigned)(unsigned char)(char)(c)) == 0xae) ||                         \
+     (((unsigned)(unsigned char)(char)(c)) == 0xaf))
+#define ISWALLUP(c) (((unsigned)udlr[(unsigned int)(unsigned char)(c)]) & 0xc0)
+#define ISWALLDOWN(c)                                                          \
+    (((unsigned)udlr[(unsigned int)(unsigned char)(c)]) & 0x30)
+#define ISWALLLEFT(c)                                                          \
+    (((unsigned)udlr[(unsigned int)(unsigned char)(c)]) & 0x0c)
+#define ISWALLRIGHT(c)                                                         \
+    (((unsigned)udlr[(unsigned int)(unsigned char)(c)]) & 0x03)
+#define ISWALL(c)                                                              \
+    (ISWALLUP(c) || ISWALLDOWN(c) || ISWALLLEFT(c) || ISWALLRIGHT(c) ||        \
+     ISWALLCENTER(c))
+#define ISNONINVERTABLE(c)                                                     \
+    (ISPELLET(c) || ISDOT(c) || ISZAPLEFT(c) || ISZAPRIGHT(c) || ISZAPUP(c) || \
+     ISZAPDOWN(c) || ISDOOR(c))
 
 #define NPENS 256
 
@@ -123,7 +144,8 @@ extern const char *DONEMESSAGE;
 
 /* copyright information for the program as a whole */
 #ifndef MYMANCOPYRIGHT
-#define MYMANCOPYRIGHT "Copyright 1997-2009, Benjamin C. Wiley Sittler <bsittler@gmail.com>"
+#define MYMANCOPYRIGHT                                                         \
+    "Copyright 1997-2009, Benjamin C. Wiley Sittler <bsittler@gmail.com>"
 #endif
 
 /* package version number */
@@ -132,12 +154,12 @@ extern const char *DONEMESSAGE;
 #endif
 
 /* legal notice to display before starting */
-extern const char *MYMANLEGALNOTICE;
+extern const char* MYMANLEGALNOTICE;
 
-extern const char *MYMANKEYS;
+extern const char* MYMANKEYS;
 
-extern const char *short_options;
-extern struct option *long_options;
+extern const char*    short_options;
+extern struct option* long_options;
 
 /* UCS/Unicode mapping for CP437 (used in HTML snapshots) */
 
@@ -174,7 +196,7 @@ extern uint8_t reflect_cp437[256];
 
 extern short mille_to_scale(short n, short scale);
 
-extern const unsigned long *uni_cp437;
+extern const unsigned long* uni_cp437;
 
 /* read a utf-8 sequence from stream, convert it to cp437, and return
  * it. unmappable sequences are silently converted to spaces. this
@@ -184,95 +206,77 @@ extern const unsigned long *uni_cp437;
 extern int fputc_utf8(unsigned long u, FILE *stream);
 #endif
 
-extern int
-fgetc_cp437_utf8(FILE *stream);
+extern int fgetc_cp437_utf8(FILE* stream);
 
 /* like fputc, but converts unicode to a utf-8 sequence. this
  * theoretically works with U+0000 .. U+D7FF and U+E000 .. U+10FFFF;
  * note that the return value is a bit different -- EOF for failure, 0
  * for success */
 
-extern int fputc_utf8(unsigned long u, FILE *stream);
+extern int fputc_utf8(unsigned long u, FILE* stream);
 
 /* like fputc, but converts cp437 to a utf-8 sequence. this
  * theoretically works with U+0000 .. U+D7FF and U+E000 .. U+10FFFF;
  * adding 0x100 ignores CJK mode */
 
-extern int fputc_utf8_cp437(int c, FILE *stream);
+extern int fputc_utf8_cp437(int c, FILE* stream);
 
 /* like ungetc, but converts cp437 to a utf-8 sequence and puts that
  * back one byte at a time. this theoretically works with U+0000
  * .. U+D7FF and U+E000 .. U+10FFFF */
 
-extern int ungetc_cp437_utf8(int c, FILE *stream);
+extern int ungetc_cp437_utf8(int c, FILE* stream);
 
-extern char *strword(const char *from, const char **endp, size_t *lenp);
+extern char* strword(const char* from, const char** endp, size_t* lenp);
 
-extern long *strtollist(const char *from, const char **endp, size_t *lenp);
+extern long* strtollist(const char* from, const char** endp, size_t* lenp);
 
-extern double *strtodlist(const char *from, const char **endp, size_t *lenp);
+extern double* strtodlist(const char* from, const char** endp, size_t* lenp);
 
-extern long *strtollist_word(const char *from, const char **endp, size_t *lenp);
+extern long* strtollist_word(const char* from, const char** endp, size_t* lenp);
 
-extern double *strtodlist_word(const char *from, const char **endp, size_t *lenp);
+extern double* strtodlist_word(const char* from, const char** endp,
+                               size_t* lenp);
 
-extern void mymanescape(const char *s, int len);
+extern void mymanescape(const char* s, int len);
 
-extern int readfont(const char *fontfile,
-                    int *w,
-                    int *h,
-                    const char **font,
-                    int *used,
-                    int *flags,
-                    int *color,
-                    const char **args);
+extern int readfont(const char* fontfile, int* w, int* h, const char** font,
+                    int* used, int* flags, int* color, const char** args);
 
-extern void writefont(const char *file,
-                      const char *prefix,
-                      int w, int h,
-                      const char **font,
-                      int *used,
-                      int flags,
-                      int *color,
-                      const char *args);
+extern void writefont(const char* file, const char* prefix, int w, int h,
+                      const char** font, int* used, int flags, int* color,
+                      const char* args);
 
-extern int parse_tile_args(const char *tilefile, const char *tile_args);
+extern int parse_tile_args(const char* tilefile, const char* tile_args);
 
-extern int parse_sprite_args(const char *spritefile, const char *sprite_args);
+extern int parse_sprite_args(const char* spritefile, const char* sprite_args);
 
-extern const char *progname;
+extern const char* progname;
 
-extern int readmaze(const char *mazefile,
-                    int *levels,
-                    int *w,
-                    int *h,
-                    char **maze,
-                    int *flags,
-                    char **color,
-                    const char **args);
+extern int readmaze(const char* mazefile, int* levels, int* w, int* h,
+                    char** maze, int* flags, char** color, const char** args);
 
-extern void writemaze(const char *mazefile);
+extern void writemaze(const char* mazefile);
 
-extern int parse_maze_args(const char *mazefile, const char *maze_args);
+extern int parse_maze_args(const char* mazefile, const char* maze_args);
 
-extern char *mystrdup(const char *s);
+extern char* mystrdup(const char* s);
 
 #undef strdup
 #define strdup(s) mystrdup(s)
 
 #ifndef MIN
-#define MIN(x,y) (((x) < (y)) ? (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #endif
 
 #ifndef MAX
-#define MAX(x,y) (((y) <= (x)) ? (x) : (y))
+#define MAX(x, y) (((y) <= (x)) ? (x) : (y))
 #endif
 
 /* which level to show intermissions after */
 #ifndef INTERMISSION
-#define INTERMISSION(level) \
-    (((level) == 2) || \
-     (((level) >= 5) && (! (((level) - 1) % 4))))
+#define INTERMISSION(level)                                                    \
+    (((level) == 2) || (((level) >= 5) && (!(((level) - 1) % 4))))
 #endif
 
 /* intermission length */
@@ -282,8 +286,7 @@ extern char *mystrdup(const char *s);
 
 /* how many times to show a given intermission */
 #ifndef INTERMISSION_REPEAT
-#define INTERMISSION_REPEAT(intermission) \
-    (((intermission) == 2) ? 3 : 1)
+#define INTERMISSION_REPEAT(intermission) (((intermission) == 2) ? 3 : 1)
 #endif
 
 /* how many intermissions are there? */
@@ -291,40 +294,40 @@ extern char *mystrdup(const char *s);
 #define INTERMISSION_N 3
 #endif
 
-extern char *maze;
-extern char *maze_color;
-extern char *blank_maze;
-extern char *blank_maze_color;
-extern uint8_t *dirty_cell;
-extern bool all_dirty;
+extern char*    maze;
+extern char*    maze_color;
+extern char*    blank_maze;
+extern char*    blank_maze_color;
+extern uint8_t* dirty_cell;
+extern bool     all_dirty;
 
 extern bool nogame;
 
-extern int maze_n;
-extern int maze_w;
-extern int maze_h;
-extern int maze_flags;
-extern int maze_level;
-extern const char *maze_args;
+extern int         maze_n;
+extern int         maze_w;
+extern int         maze_h;
+extern int         maze_flags;
+extern int         maze_level;
+extern const char* maze_args;
 
-extern int tile_w;
-extern int tile_h;
-extern int tile_flags;
-extern const char *tile_args;
-extern const char *tile[256];
-extern int tile_used[256];
-extern int tile_color[256];
+extern int         tile_w;
+extern int         tile_h;
+extern int         tile_flags;
+extern const char* tile_args;
+extern const char* tile[256];
+extern int         tile_used[256];
+extern int         tile_color[256];
 
-extern int sprite_w;
-extern int sprite_h;
-extern int sprite_flags;
-extern const char *sprite_args;
-extern const char *sprite[256];
-extern int sprite_used[256];
-extern int sprite_color[256];
+extern int         sprite_w;
+extern int         sprite_h;
+extern int         sprite_flags;
+extern const char* sprite_args;
+extern const char* sprite[256];
+extern int         sprite_used[256];
+extern int         sprite_color[256];
 
 #ifndef VISIBLE_EYES
-#define VISIBLE_EYES (! ((sprite_flags) & 1))
+#define VISIBLE_EYES (!((sprite_flags) & 1))
 #endif
 
 #ifndef SOLID_WALLS
@@ -335,9 +338,10 @@ extern int sprite_color[256];
 #define SOLID_WALLS_BGCOLOR ((tile_flags) & 4)
 #endif
 
-/* whether to always switch maze levels, rather than only during intermissions */
+/* whether to always switch maze levels, rather than only during intermissions
+ */
 #ifndef FLIP_ALWAYS
-#define FLIP_ALWAYS (! ((maze_flags) & 1))
+#define FLIP_ALWAYS (!((maze_flags) & 1))
 #endif
 
 /* whether to repeat the flip_to maze after showing the last one */
@@ -345,7 +349,8 @@ extern int sprite_color[256];
 #define FLIP_LOCK ((maze_flags) & 2)
 #endif
 
-/* if set, base the WALL_COLOR vs. MORTAR_COLOR choice on wall thickness rather than wall edge vs. wall fill*/
+/* if set, base the WALL_COLOR vs. MORTAR_COLOR choice on wall thickness rather
+ * than wall edge vs. wall fill*/
 #ifndef BICOLOR_WALLS
 #define BICOLOR_WALLS ((maze_flags) & 4)
 #endif
@@ -355,17 +360,30 @@ extern int sprite_color[256];
 
 #define XWRAP2(x) (XWRAP(x) % maze_w)
 
-#define CLEAN_ALL() do { memset((void *)dirty_cell, 0, maze_h * ((maze_w + 1 + 7) >> 3) * sizeof(*dirty_cell)); all_dirty = 0; } while (0)
-#define DIRTY_ALL() do { all_dirty = 1; } while (0)
-#define IS_CELL_DIRTY(x,y) (all_dirty || ((((long) (x)) >= 0) && (((long) (y)) >= 0) && ((x) <= maze_w) && ((y) < maze_h) && ((unsigned) dirty_cell[((y)) * ((maze_w+1+7) >> 3) + ((x)>>3)]&(1<<((x)&7)))))
+#define CLEAN_ALL()                                                            \
+    do {                                                                       \
+        memset((void*)dirty_cell, 0,                                           \
+               maze_h * ((maze_w + 1 + 7) >> 3) * sizeof(*dirty_cell));        \
+        all_dirty = 0;                                                         \
+    } while (0)
+#define DIRTY_ALL()                                                            \
+    do {                                                                       \
+        all_dirty = 1;                                                         \
+    } while (0)
+#define IS_CELL_DIRTY(x, y)                                                    \
+    (all_dirty ||                                                              \
+     ((((long)(x)) >= 0) && (((long)(y)) >= 0) && ((x) <= maze_w) &&           \
+      ((y) < maze_h) &&                                                        \
+      ((unsigned)dirty_cell[((y)) * ((maze_w + 1 + 7) >> 3) + ((x) >> 3)] &    \
+       (1 << ((x) & 7)))))
 
 extern void maze_erase(void);
 
 extern void mark_cell(int x, int y);
 
-extern void maze_puts(int y, int x, int color, const char *s);
+extern void maze_puts(int y, int x, int color, const char* s);
 
-extern void maze_putsn_nonblank(int y, int x, int color, const char *s, int n);
+extern void maze_putsn_nonblank(int y, int x, int color, const char* s, int n);
 
 #ifndef LIVES
 #define LIVES 3
@@ -379,8 +397,9 @@ extern void maze_putsn_nonblank(int y, int x, int color, const char *s, int n);
 #define MAXGHOSTS 16
 #endif
 
-extern int ghost_dir[MAXGHOSTS], ghost_mem[MAXGHOSTS], ghost_man[MAXGHOSTS], ghost_timer[MAXGHOSTS];
-extern uint8_t *home_dir;
+extern int ghost_dir[MAXGHOSTS], ghost_mem[MAXGHOSTS], ghost_man[MAXGHOSTS],
+    ghost_timer[MAXGHOSTS];
+extern uint8_t* home_dir;
 
 /* sprite register numbers */
 #define GHOSTEYES(ghost) ((ghost) * 2)
@@ -400,14 +419,14 @@ extern uint8_t *home_dir;
 #define SPRITE_REGISTERS (BIGHERO_LR + 1)
 
 extern uint8_t sprite_register[SPRITE_REGISTERS];
-extern int sprite_register_frame[SPRITE_REGISTERS];
-extern int sprite_register_x[SPRITE_REGISTERS], sprite_register_y[SPRITE_REGISTERS];
+extern int     sprite_register_frame[SPRITE_REGISTERS];
+extern int     sprite_register_x[SPRITE_REGISTERS],
+    sprite_register_y[SPRITE_REGISTERS];
 extern int sprite_register_used[SPRITE_REGISTERS];
 extern int sprite_register_timer[SPRITE_REGISTERS];
 extern int sprite_register_color[SPRITE_REGISTERS];
 
-extern void
-mark_sprite_register(int s);
+extern void mark_sprite_register(int s);
 
 #define SPRITE_FRUIT 0x00
 #define SPRITE_MEAN 0x08
@@ -421,7 +440,8 @@ mark_sprite_register(int s);
 #define SPRITE_1600 0x34
 #define SPRITE_WHITE 0x35
 #define SPRITE_LIFE 0x37
-/* rightward-facing large hero sprite, split into four quadrants with four frames each */
+/* rightward-facing large hero sprite, split into four quadrants with four
+ * frames each */
 #define SPRITE_BIGHERO_UL 0x38
 #define SPRITE_BIGHERO_UR 0x3C
 #define SPRITE_BIGHERO_LL 0x40
@@ -438,27 +458,41 @@ mark_sprite_register(int s);
 
 #define DIRWRAP(dir) (((dir) + 3) % 4 + 1)
 
-#define XDIR(dir) ((((dir) == MYMAN_RIGHT) ? 1 : 0) - (((dir) == MYMAN_LEFT) ? 1 : 0))
-#define YDIR(dir) ((((dir) == MYMAN_DOWN) ? 1 : 0) - (((dir) == MYMAN_UP) ? 1 : 0))
+#define XDIR(dir)                                                              \
+    ((((dir) == MYMAN_RIGHT) ? 1 : 0) - (((dir) == MYMAN_LEFT) ? 1 : 0))
+#define YDIR(dir)                                                              \
+    ((((dir) == MYMAN_DOWN) ? 1 : 0) - (((dir) == MYMAN_UP) ? 1 : 0))
 
-#define YLEAVING(dir, y) ( -((((dir) == MYMAN_UP) && ! NOTTOP(y)) ? 1 : 0) + \
-((((dir) == MYMAN_DOWN) && ! NOTBOTTOM(y)) ? 1 : 0))
-#define XLEAVING(dir, x) ( -((((dir) == MYMAN_LEFT) && ! NOTLEFT(x)) ? 1 : 0) + \
-((((dir) == MYMAN_RIGHT) && ! NOTRIGHT(x)) ? 1 : 0))
+#define YLEAVING(dir, y)                                                       \
+    (-((((dir) == MYMAN_UP) && !NOTTOP(y)) ? 1 : 0) +                          \
+     ((((dir) == MYMAN_DOWN) && !NOTBOTTOM(y)) ? 1 : 0))
+#define XLEAVING(dir, x)                                                       \
+    (-((((dir) == MYMAN_LEFT) && !NOTLEFT(x)) ? 1 : 0) +                       \
+     ((((dir) == MYMAN_RIGHT) && !NOTRIGHT(x)) ? 1 : 0))
 
 extern uint8_t gfx2(uint8_t c);
 
-extern size_t gfx1(const char **font, uint8_t c, int y, int x, int w);
+extern size_t gfx1(const char** font, uint8_t c, int y, int x, int w);
 
-extern uint8_t gfx0(uint8_t c, uint8_t *m);
+extern uint8_t gfx0(uint8_t c, uint8_t* m);
 
 #define gfx_w (gfx_reflect ? tile_h : tile_w)
 #define gfx_h (gfx_reflect ? tile_w : tile_h)
-#define gfx(c,y,x) ((unsigned long) (unsigned char) gfx2((unsigned long) (unsigned char) gfx1(tile, (unsigned long) (unsigned char) gfx0(((unsigned long) (unsigned char) (c)), (reflect_cp437)), (y) % gfx_h, (x) % gfx_w, tile_w)))
+#define gfx(c, y, x)                                                           \
+    ((unsigned long)(unsigned char)gfx2((unsigned long)(unsigned char)gfx1(    \
+        tile,                                                                  \
+        (unsigned long)(unsigned char)gfx0(                                    \
+            ((unsigned long)(unsigned char)(c)), (reflect_cp437)),             \
+        (y) % gfx_h, (x) % gfx_w, tile_w)))
 
 #define sgfx_w (gfx_reflect ? sprite_h : sprite_w)
 #define sgfx_h (gfx_reflect ? sprite_w : sprite_h)
-#define sgfx(c,y,x) ((unsigned long) (unsigned char) gfx2((unsigned long) (unsigned char) gfx1(sprite, (unsigned long) (unsigned char) gfx0(((unsigned long) (unsigned char) (c)), (reflect_sprite)), (y) % sgfx_h, (x) % sgfx_w, sprite_w)))
+#define sgfx(c, y, x)                                                          \
+    ((unsigned long)(unsigned char)gfx2((unsigned long)(unsigned char)gfx1(    \
+        sprite,                                                                \
+        (unsigned long)(unsigned char)gfx0(                                    \
+            ((unsigned long)(unsigned char)(c)), (reflect_sprite)),            \
+        (y) % sgfx_h, (x) % sgfx_w, sprite_w)))
 
 extern int reflect;
 extern int gfx_reflect;
@@ -467,8 +501,11 @@ extern int gfx_reflect;
 #define XTILE(x) ((x) / gfx_w)
 #define YTILE(y) ((y) / gfx_h)
 
-#define collide(s1, s2) ((XTILE(sprite_register_x[s1] - sgfx_w / 2) == XTILE(sprite_register_x[s2] - sgfx_w / 2)) \
-&& (YTILE(sprite_register_y[s1] - sgfx_h / 2) == YTILE(sprite_register_y[s2] - sgfx_h / 2)))
+#define collide(s1, s2)                                                        \
+    ((XTILE(sprite_register_x[s1] - sgfx_w / 2) ==                             \
+      XTILE(sprite_register_x[s2] - sgfx_w / 2)) &&                            \
+     (YTILE(sprite_register_y[s1] - sgfx_h / 2) ==                             \
+      YTILE(sprite_register_y[s2] - sgfx_h / 2)))
 
 #define PIX_W ((maze_w + 1) * gfx_w)
 #define PIX_H (maze_h * gfx_h)
@@ -498,12 +535,21 @@ extern int gfx_reflect;
 #define INSIDE_WALL_NO 0x0040
 #define INSIDE_WALL_PHASE2 0x0080
 #define INSIDE_WALL_PHASE3 0x0100
-#define IS_INVERTED(x,y) (((unsigned) inside_wall[(maze_level*maze_h+(y)) * (maze_w + 1)+(x)]) & INSIDE_WALL_INVERTED)
-#define IS_FULLY_INVERTED(x,y) (((unsigned) inside_wall[(maze_level*maze_h+(y)) * (maze_w + 1)+(x)]) & INSIDE_WALL_FULLY_INVERTED)
-#define IS_FULLY_NON_INVERTED(x,y) (((unsigned) inside_wall[(maze_level*maze_h+(y)) * (maze_w + 1)+(x)]) & INSIDE_WALL_FULLY_NON_INVERTED)
+#define IS_INVERTED(x, y)                                                      \
+    (((unsigned)                                                               \
+          inside_wall[(maze_level * maze_h + (y)) * (maze_w + 1) + (x)]) &     \
+     INSIDE_WALL_INVERTED)
+#define IS_FULLY_INVERTED(x, y)                                                \
+    (((unsigned)                                                               \
+          inside_wall[(maze_level * maze_h + (y)) * (maze_w + 1) + (x)]) &     \
+     INSIDE_WALL_FULLY_INVERTED)
+#define IS_FULLY_NON_INVERTED(x, y)                                            \
+    (((unsigned)                                                               \
+          inside_wall[(maze_level * maze_h + (y)) * (maze_w + 1) + (x)]) &     \
+     INSIDE_WALL_FULLY_NON_INVERTED)
 
 extern double doubletime(void);
-extern void my_usleep(long usecs);
+extern void   my_usleep(long usecs);
 
 extern void gameintro(void);
 extern void gamedemo(void);
@@ -511,63 +557,48 @@ extern void gamestart(void);
 extern void gameintermission(void);
 extern void gamehelp(void);
 extern void gameinfo(void);
-extern int gamelogic(void);
+extern int  gamelogic(void);
 extern void gamesfx(void);
 extern void gamereset(void);
 extern void gamerender(void);
-extern int gameinput(void);
-extern int gamecycle(int lines, int cols);
+extern int  gameinput(void);
+extern int  gamecycle(int lines, int cols);
 
 extern void creditscreen(void);
 extern void paint_walls(int verbose);
 
-extern uint16_t *inside_wall;
-extern FILE *snapshot;
-extern FILE *snapshot_txt;
-extern int xoff_received;
-extern double td;
-extern const char * pager_notice;
-extern const char * pager_remaining;
-extern int pager_arrow_magic;
-extern int reinit_requested;
-extern long myman_intro;
+extern uint16_t*     inside_wall;
+extern FILE*         snapshot;
+extern FILE*         snapshot_txt;
+extern int           xoff_received;
+extern double        td;
+extern const char*   pager_notice;
+extern const char*   pager_remaining;
+extern int           pager_arrow_magic;
+extern int           reinit_requested;
+extern long          myman_intro;
 extern unsigned long myman_start;
 extern unsigned long myman_demo;
-extern int munched;
-extern int old_lines, old_cols, old_score, old_showlives, old_level;
-extern int ignore_delay;
-extern long frameskip, frameskip0, frameskip1;
-extern long scrolling;
-extern long frames;
-extern long winning;
+extern int           munched;
+extern int           old_lines, old_cols, old_score, old_showlives, old_level;
+extern int           ignore_delay;
+extern long          frameskip, frameskip0, frameskip1;
+extern long          scrolling;
+extern long          frames;
+extern long          winning;
 extern unsigned long mymandelay;
 extern unsigned long mindelay;
-extern int ghost_eaten_timer;
-extern bool paused;
-extern long intermission_running;
+extern int           ghost_eaten_timer;
+extern bool          paused;
+extern long          intermission_running;
 extern unsigned long myman_demo_setup;
-extern int need_reset;
-extern int level,
-    intermission,
-    intermission_shown,
-    cycles,
-    score,
-    dots,
-    points,
-    lives,
-    lives_used,
-    earned,
-    dying,
-    dead,
-    deadpan,
-    myman_lines,
-    myman_columns,
-    oldplayer,
-    player;
-extern int key_buffer;
-extern int key_buffer_ERR;
-extern long pellet_timer,
-    pellet_time;
+extern int           need_reset;
+extern int level, intermission, intermission_shown, cycles, score, dots, points,
+    lives, lives_used, earned, dying, dead, deadpan, myman_lines, myman_columns,
+    oldplayer, player;
+extern int  key_buffer;
+extern int  key_buffer_ERR;
+extern long pellet_timer, pellet_time;
 
 #define GHOST0 ((ghosts > 2) ? 0 : 2)
 #define GHOST1 1
@@ -740,10 +771,17 @@ extern long pellet_timer,
 
 #define ghosts ((GHOSTS > MAXGHOSTS) ? MAXGHOSTS : GHOSTS)
 
-#define WHOSE_HOME_DIR(r,c) (((unsigned) home_dir[(GHOST2 % ghosts*maze_h+(r))*(maze_w+1)+(c)]) ? GHOST2 \
-                             : ((unsigned) home_dir[(GHOST0 % ghosts*maze_h+(r))*(maze_w+1)+(c)]) ? GHOST0 \
-                             : ((unsigned) home_dir[(GHOST3 % ghosts*maze_h+(r))*(maze_w+1)+(c)]) ? GHOST3 \
-                             : GHOST1)
+#define WHOSE_HOME_DIR(r, c)                                                   \
+    (((unsigned)                                                               \
+          home_dir[(GHOST2 % ghosts * maze_h + (r)) * (maze_w + 1) + (c)])     \
+         ? GHOST2                                                              \
+     : ((unsigned)                                                             \
+            home_dir[(GHOST0 % ghosts * maze_h + (r)) * (maze_w + 1) + (c)])   \
+         ? GHOST0                                                              \
+     : ((unsigned)                                                             \
+            home_dir[(GHOST3 % ghosts * maze_h + (r)) * (maze_w + 1) + (c)])   \
+         ? GHOST3                                                              \
+         : GHOST1)
 
 #define rmsg (RMSG % maze_h)
 #define cmsg (CMSG % maze_w)
@@ -752,12 +790,14 @@ extern long pellet_timer,
 
 #define COMPLEXITY_ADJUST(x) ((x) * (maze_h + maze_w) / (28 + 31))
 
-#define TWOSECS    (10 * MYMANFIFTH)
-#define ONESEC     (TWOSECS / 2)
-#define FRUITLIFE  COMPLEXITY_ADJUST(TWOSECS * 15 / 4)
+#define TWOSECS (10 * MYMANFIFTH)
+#define ONESEC (TWOSECS / 2)
+#define FRUITLIFE COMPLEXITY_ADJUST(TWOSECS * 15 / 4)
 #define DEATHSHIFT 3
 #define DEATHDELAY (1 << (DEATHSHIFT + 2))
-#define MEMDELAY(ghost) (COMPLEXITY_ADJUST((3 + ((ghost) > 3) * (1.0 * ((ghost) - 3) / (ghosts - 3))) * TWOSECS))
+#define MEMDELAY(ghost)                                                        \
+    (COMPLEXITY_ADJUST(                                                        \
+        (3 + ((ghost) > 3) * (1.0 * ((ghost) - 3) / (ghosts - 3))) * TWOSECS))
 
 #ifndef MAXFRAMESKIP
 #define MAXFRAMESKIP (1 + tile_w)
@@ -765,9 +805,10 @@ extern long pellet_timer,
 
 #define MYMANSQUARE ((tile_h + tile_h) > tile_w)
 
-#define MYMANFIFTH     (tile_w * (MYMANSQUARE ? 2 : 1))
+#define MYMANFIFTH (tile_w * (MYMANSQUARE ? 2 : 1))
 
-#define PELLET_ADJUST(x) (COMPLEXITY_ADJUST(x * 4) / (pellets[maze_level] ? pellets[maze_level] : 4))
+#define PELLET_ADJUST(x)                                                       \
+    (COMPLEXITY_ADJUST(x * 4) / (pellets[maze_level] ? pellets[maze_level] : 4))
 
 #ifndef MYMANDELAY
 #define MYMANDELAY 166667
@@ -780,7 +821,8 @@ extern long pellet_timer,
 #define CJK_MODE (uni_cp437[0x20] == uni_cp437_fullwidth[0x20])
 
 #ifndef CHERO
-#define CHERO (maze_CHERO_len ? maze_CHERO[maze_level % maze_CHERO_len] : (maze_w * 0.5))
+#define CHERO                                                                  \
+    (maze_CHERO_len ? maze_CHERO[maze_level % maze_CHERO_len] : (maze_w * 0.5))
 #endif
 
 #ifndef RHERO
@@ -788,31 +830,39 @@ extern long pellet_timer,
 #endif
 
 #ifndef CFRUIT
-#define CFRUIT (maze_CFRUIT_len ? maze_CFRUIT[maze_level % maze_CFRUIT_len] : CHERO)
+#define CFRUIT                                                                 \
+    (maze_CFRUIT_len ? maze_CFRUIT[maze_level % maze_CFRUIT_len] : CHERO)
 #endif
 
 #ifndef RFRUIT
-#define RFRUIT (maze_RFRUIT_len ? maze_RFRUIT[maze_level % maze_RFRUIT_len] : 17.5)
+#define RFRUIT                                                                 \
+    (maze_RFRUIT_len ? maze_RFRUIT[maze_level % maze_RFRUIT_len] : 17.5)
 #endif
 
 #ifndef RGHOST
-#define RGHOST (maze_RGHOST_len ? maze_RGHOST[maze_level % maze_RGHOST_len] : (RFRUIT - 3.0))
+#define RGHOST                                                                 \
+    (maze_RGHOST_len ? maze_RGHOST[maze_level % maze_RGHOST_len]               \
+                     : (RFRUIT - 3.0))
 #endif
 
 #ifndef CGHOST
-#define CGHOST (maze_CGHOST_len ? maze_CGHOST[maze_level % maze_CGHOST_len] : CHERO)
+#define CGHOST                                                                 \
+    (maze_CGHOST_len ? maze_CGHOST[maze_level % maze_CGHOST_len] : CHERO)
 #endif
 
 #ifndef COGHOST
-#define COGHOST (maze_COGHOST_len ? maze_COGHOST[maze_level % maze_COGHOST_len] : 2)
+#define COGHOST                                                                \
+    (maze_COGHOST_len ? maze_COGHOST[maze_level % maze_COGHOST_len] : 2)
 #endif
 
 #ifndef ROGHOST
-#define ROGHOST (maze_ROGHOST_len ? maze_ROGHOST[maze_level % maze_ROGHOST_len] : 3)
+#define ROGHOST                                                                \
+    (maze_ROGHOST_len ? maze_ROGHOST[maze_level % maze_ROGHOST_len] : 3)
 #endif
 
 #ifndef RTOP
-#define RTOP (maze_RTOP_len ? maze_RTOP[maze_level % maze_RTOP_len] : (RFRUIT - 5.0))
+#define RTOP                                                                   \
+    (maze_RTOP_len ? maze_RTOP[maze_level % maze_RTOP_len] : (RFRUIT - 5.0))
 #endif
 
 #ifndef CMSG
@@ -832,21 +882,18 @@ extern long pellet_timer,
 #endif
 
 #ifndef PLAYER1
-#define PLAYER1  "PLAYER ONE"
+#define PLAYER1 "PLAYER ONE"
 #endif
 
 #ifndef PLAYER2
-#define PLAYER2  "PLAYER TWO"
+#define PLAYER2 "PLAYER TWO"
 #endif
 
 #ifndef MAXPLAYERS
 #define MAXPLAYERS 2
 #endif
 
-#define PLAYER(n) \
-(((n) == 1) \
-? msg_PLAYER1 \
-: msg_PLAYER2)
+#define PLAYER(n) (((n) == 1) ? msg_PLAYER1 : msg_PLAYER2)
 
 #ifndef START
 #define START "PUSH START BUTTON"
@@ -863,7 +910,7 @@ extern long pellet_timer,
 #define CREDIT(n) (((n) > 1) ? CREDIT1 : CREDIT1)
 
 #ifndef READY
-#define READY    "  READY!  "
+#define READY "  READY!  "
 #endif
 
 #ifndef GAMEOVER
@@ -874,76 +921,71 @@ extern long pellet_timer,
 #define PAUSE " - PAUSED - "
 #endif
 
-#define BONUS(n) \
-(((n) < 4) \
-? ((n) - 1) \
-: (((n) < 15) \
-? ((n) + 1) / 2 \
-: 7))
+#define BONUS(n) (((n) < 4) ? ((n) - 1) : (((n) < 15) ? ((n) + 1) / 2 : 7))
 
-extern char *tmp_notice;
-extern const char * maze_ABOUT;
-extern const char * maze_FIXME;
-extern const char * maze_NOTE;
-extern const char * tile_ABOUT;
-extern const char * tile_FIXME;
-extern const char * tile_NOTE;
-extern const char * sprite_ABOUT;
-extern const char * sprite_FIXME;
-extern const char * sprite_NOTE;
-extern const char *msg_READY;
-extern const char *msg_GAMEOVER;
-extern const char *msg_PLAYER1;
-extern const char *msg_PLAYER2;
-extern const char *maze_WALL_COLORS;
-extern size_t maze_WALL_COLORS_len;
-extern const char *maze_DOT_COLORS;
-extern size_t maze_DOT_COLORS_len;
-extern const char *maze_PELLET_COLORS;
-extern size_t maze_PELLET_COLORS_len;
-extern const char *maze_MORTAR_COLORS;
-extern size_t maze_MORTAR_COLORS_len;
-extern long *maze_GHOSTS;
-extern size_t maze_GHOSTS_len;
-extern double *maze_RGHOST;
-extern size_t maze_RGHOST_len;
-extern double *maze_CGHOST;
-extern size_t maze_CGHOST_len;
-extern double *maze_ROGHOST;
-extern size_t maze_ROGHOST_len;
-extern double *maze_COGHOST;
-extern size_t maze_COGHOST_len;
-extern double *maze_RFRUIT;
-extern size_t maze_RFRUIT_len;
-extern double *maze_CFRUIT;
-extern size_t maze_CFRUIT_len;
-extern double *maze_RTOP;
-extern size_t maze_RTOP_len;
-extern double *maze_RHERO;
-extern size_t maze_RHERO_len;
-extern double *maze_CHERO;
-extern size_t maze_CHERO_len;
-extern long *maze_RMSG;
-extern size_t maze_RMSG_len;
-extern long *maze_CMSG;
-extern size_t maze_CMSG_len;
-extern long *maze_RMSG2;
-extern size_t maze_RMSG2_len;
-extern long *maze_CMSG2;
-extern size_t maze_CMSG2_len;
-extern int dirhero;
-extern long scroll_offset_x0;
-extern long scroll_offset_y0;
-extern int msglen;
-extern int hero_dir;
-extern int *total_dots;
-extern int *pellets;
-extern long flip_to;
-extern int debug;
-extern int ghosts_p;
+extern char*         tmp_notice;
+extern const char*   maze_ABOUT;
+extern const char*   maze_FIXME;
+extern const char*   maze_NOTE;
+extern const char*   tile_ABOUT;
+extern const char*   tile_FIXME;
+extern const char*   tile_NOTE;
+extern const char*   sprite_ABOUT;
+extern const char*   sprite_FIXME;
+extern const char*   sprite_NOTE;
+extern const char*   msg_READY;
+extern const char*   msg_GAMEOVER;
+extern const char*   msg_PLAYER1;
+extern const char*   msg_PLAYER2;
+extern const char*   maze_WALL_COLORS;
+extern size_t        maze_WALL_COLORS_len;
+extern const char*   maze_DOT_COLORS;
+extern size_t        maze_DOT_COLORS_len;
+extern const char*   maze_PELLET_COLORS;
+extern size_t        maze_PELLET_COLORS_len;
+extern const char*   maze_MORTAR_COLORS;
+extern size_t        maze_MORTAR_COLORS_len;
+extern long*         maze_GHOSTS;
+extern size_t        maze_GHOSTS_len;
+extern double*       maze_RGHOST;
+extern size_t        maze_RGHOST_len;
+extern double*       maze_CGHOST;
+extern size_t        maze_CGHOST_len;
+extern double*       maze_ROGHOST;
+extern size_t        maze_ROGHOST_len;
+extern double*       maze_COGHOST;
+extern size_t        maze_COGHOST_len;
+extern double*       maze_RFRUIT;
+extern size_t        maze_RFRUIT_len;
+extern double*       maze_CFRUIT;
+extern size_t        maze_CFRUIT_len;
+extern double*       maze_RTOP;
+extern size_t        maze_RTOP_len;
+extern double*       maze_RHERO;
+extern size_t        maze_RHERO_len;
+extern double*       maze_CHERO;
+extern size_t        maze_CHERO_len;
+extern long*         maze_RMSG;
+extern size_t        maze_RMSG_len;
+extern long*         maze_CMSG;
+extern size_t        maze_CMSG_len;
+extern long*         maze_RMSG2;
+extern size_t        maze_RMSG2_len;
+extern long*         maze_CMSG2;
+extern size_t        maze_CMSG2_len;
+extern int           dirhero;
+extern long          scroll_offset_x0;
+extern long          scroll_offset_y0;
+extern int           msglen;
+extern int           hero_dir;
+extern int*          total_dots;
+extern int*          pellets;
+extern long          flip_to;
+extern int           debug;
+extern int           ghosts_p;
 extern unsigned long myman_sfx;
-extern int showlives;
-extern int visible_frame;
+extern int           showlives;
+extern int           visible_frame;
 
 #define myman_sfx_credit 0x1UL
 #define myman_sfx_dot 0x2UL
@@ -962,7 +1004,10 @@ extern int visible_frame;
 #define myman_sfx_life 0x4000UL
 #define myman_sfx_level 0x8000UL
 #define myman_sfx_bonus 0x10000UL
-#define myman_sfx_nobeep_mask (myman_sfx_siren0_up|myman_sfx_siren0_down|myman_sfx_siren1_up|myman_sfx_siren1_down|myman_sfx_siren2_up|myman_sfx_siren2_down|myman_sfx_dot)
+#define myman_sfx_nobeep_mask                                                  \
+    (myman_sfx_siren0_up | myman_sfx_siren0_down | myman_sfx_siren1_up |       \
+     myman_sfx_siren1_down | myman_sfx_siren2_up | myman_sfx_siren2_down |     \
+     myman_sfx_dot)
 
 #ifndef WALL_COLORS
 #define WALL_COLORS "\x00"
@@ -996,16 +1041,28 @@ extern int visible_frame;
 #define MORTAR_COLOR maze_MORTAR_COLORS[maze_level % maze_MORTAR_COLORS_len]
 #endif
 
-#define TRANSLATED_MORTAR_COLOR (((BICOLOR_WALLS) && (((unsigned) udlr[(unsigned) (unsigned char) (char) maze[(maze_level*maze_h+ytile)*(maze_w+1)+xtile]]) & 0xAA)) ? (WALL_COLOR) : (MORTAR_COLOR))
+#define TRANSLATED_MORTAR_COLOR                                                \
+    (((BICOLOR_WALLS) &&                                                       \
+      (((unsigned)udlr[(unsigned)(unsigned char)(char)                         \
+                           maze[(maze_level * maze_h + ytile) * (maze_w + 1) + \
+                                xtile]]) &                                     \
+       0xAA))                                                                  \
+         ? (WALL_COLOR)                                                        \
+         : (MORTAR_COLOR))
 
-#define TRANSLATED_WALL_COLOR ((BICOLOR_WALLS) ? TRANSLATED_MORTAR_COLOR : (WALL_COLOR))
+#define TRANSLATED_WALL_COLOR                                                  \
+    ((BICOLOR_WALLS) ? TRANSLATED_MORTAR_COLOR : (WALL_COLOR))
 
-#define EFFECTIVE_MORTAR_COLOR (((TRANSLATED_WALL_COLOR) && ! (SOLID_WALLS || SOLID_WALLS_BGCOLOR)) ? (TRANSLATED_WALL_COLOR) : (TRANSLATED_MORTAR_COLOR))
+#define EFFECTIVE_MORTAR_COLOR                                                 \
+    (((TRANSLATED_WALL_COLOR) && !(SOLID_WALLS || SOLID_WALLS_BGCOLOR))        \
+         ? (TRANSLATED_WALL_COLOR)                                             \
+         : (TRANSLATED_MORTAR_COLOR))
 
-#define NET_LIVES ((int) lives + (int) earned - (int) lives_used + (myman_demo ? 1 : 0))
+#define NET_LIVES                                                              \
+    ((int)lives + (int)earned - (int)lives_used + (myman_demo ? 1 : 0))
 
 #ifndef MSG_COLOR
-#define MSG_COLOR ((NET_LIVES && ! myman_demo) ? 0xE : 0xC)
+#define MSG_COLOR ((NET_LIVES && !myman_demo) ? 0xE : 0xC)
 #endif
 
 #ifndef MSG2_COLOR
@@ -1024,7 +1081,7 @@ extern int visible_frame;
 #define EXTRA_GHOST_COLORS "\x0A\x05\x04\x03"
 #endif
 
-extern int my_clear(void);
+extern int  my_clear(void);
 extern void my_clearok(int ok);
 
 #ifndef BONUSHERO
@@ -1057,8 +1114,12 @@ extern int find_home_dir(int s, int r, int c);
 /* heuristic for rewriting maze tiles */
 extern long maze_visual(int n, int i, int j);
 
-extern int myman_setenv(const char *name, const char *value);
+extern int myman_setenv(const char* name, const char* value);
 
-extern char *myman_getenv(const char *name);
+extern char* myman_getenv(const char* name);
+
+extern int ignore_bom_utf8(FILE* stream);
+
+extern FILE* fopen_datafile(const char* path, const char* mode);
 
 #endif /* ! defined(MYMAN_UTILS_H_INCLUDED) */
