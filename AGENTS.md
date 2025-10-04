@@ -22,6 +22,11 @@ See `CMAKE_SETUP.md` for details.
 - **Static analysis**: `cppcheck --enable=all --inconclusive --suppress=missingInclude src/ inc/`
 - **Test**: `./build/glomph --help` or `./build/glomph-xlarge --help` (basic smoke test)
 
+## Documentation Commands
+- **Generate docs**: `./scripts/generate_docs_script.sh` (Doxygen + cflow)
+- **View HTML docs**: `open docs/generated/html/index.html`
+- **cflow outputs**: `docs/cflow/callgraph-*.txt`
+
 ## Changelog Commands
 - **Generate changelog**: `./scripts/generate_changelog.sh` (regenerates CHANGELOG.md from git history)
 
