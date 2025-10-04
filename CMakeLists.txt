@@ -37,10 +37,10 @@ set(COMMON_SOURCES
     src/myman.c
     src/utils.c
     src/logic.c
-    src/render/render.c
-    src/maze/maze_io.c
-    src/sprite/sprite_io.c
-    src/game/game_state.c
+    src/render.c
+    src/maze_io.c
+    src/sprite_io.c
+    src/game_state.c
 )
 
 # Define size variants with their tile/sprite files
