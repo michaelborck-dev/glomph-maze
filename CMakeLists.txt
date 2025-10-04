@@ -5,9 +5,10 @@
 cmake_minimum_required(VERSION 3.15)
 project(glomph-maze VERSION 0.7.0 LANGUAGES C)
 
-# C standard
-set(CMAKE_C_STANDARD 11)
+# C standard - upgraded to C17 for modern safety features
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)  # Disable GNU extensions, ensure portable C17
 
 # Generate compile_commands.json for IDEs
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

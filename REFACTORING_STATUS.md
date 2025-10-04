@@ -2,18 +2,44 @@
 
 **Branch:** refactor  
 **Last Updated:** 2025-10-04  
-**Current Phase:** 0 ✅ COMPLETE
+**Current Phase:** 1 ✅ COMPLETE
 
 ---
 
 ## Phase Completion
 
 - [x] **Phase 0: globals.h Foundation** ✅ COMPLETE (2025-10-04)
-- [ ] **Phase 1: C17 Upgrade** (Next)
-- [ ] **Phase 2: Type Modernization**
+- [x] **Phase 1: C17 Upgrade** ✅ COMPLETE (2025-10-04)
+- [ ] **Phase 2: Type Modernization** (Next)
+- [ ] **Phase 3: Header Reorganization**
 - [ ] **Phase 3: Header Reorganization**
 - [ ] **Phase 4: Function Documentation** (Ongoing)
 - [ ] **Phase 5: Extract First Module** (Optional)
+
+---
+
+## What Changed in Phase 1
+
+### Modified Files
+- `CMakeLists.txt` - Updated to C17 standard with extensions disabled
+- `include/globals.h` - Added 6 static assertions for compile-time validation
+- Fixed SPRITE_REGISTERS constant (was 46, should be 57)
+
+### Static Assertions Added
+```c
+_Static_assert(MAXGHOSTS == 16, ...);
+_Static_assert(SPRITE_REGISTERS == 57, ...);
+_Static_assert(LIVES >= 0 && LIVES <= 99, ...);
+_Static_assert(NPENS == 256, ...);
+_Static_assert(sizeof(int) >= 4, ...);
+_Static_assert(sizeof(void*) >= 4, ...);
+```
+
+### Verification
+- ✅ All 4 variants build with C17
+- ✅ All static assertions pass
+- ✅ Game runs identically
+- ✅ No new warnings introduced
 
 ---
 

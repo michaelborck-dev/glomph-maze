@@ -27,7 +27,7 @@
 ## Progress Tracking
 
 - [x] Phase 0: globals.h Foundation ✅ COMPLETE
-- [ ] Phase 1: C17 Upgrade
+- [x] Phase 1: C17 Upgrade ✅ COMPLETE
 - [ ] Phase 2: Type Modernization
 - [ ] Phase 3: Header Reorganization
 - [ ] Phase 4: Function Documentation (Ongoing)
@@ -59,35 +59,38 @@
 
 ---
 
-## Phase 1: C17 Upgrade
+## Phase 1: C17 Upgrade ✅ COMPLETE
 
 **Goal:** Update to C17 standard with compile-time safety
 
-### Task 1.1: Update CMakeLists.txt
+**Status:** COMPLETE
+
+### Task 1.1: Update CMakeLists.txt ✅
 ```cmake
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 ```
 
-### Task 1.2: Add Static Assertions
+### Task 1.2: Add Static Assertions ✅
 ```c
-// In globals.c
+// In globals.h
 _Static_assert(MAXGHOSTS == 16, "Ghost array size hardcoded as 16");
-_Static_assert(SPRITE_REGISTERS == 46, "Sprite register count changed");
+_Static_assert(SPRITE_REGISTERS == 57, "Sprite register count");
+_Static_assert(LIVES >= 0 && LIVES <= 99, "Lives range check");
+_Static_assert(NPENS == 256, "Color palette size");
 _Static_assert(sizeof(int) >= 4, "Need 32-bit integers");
+_Static_assert(sizeof(void*) >= 4, "Need 32-bit pointers");
 ```
 
-### Task 1.3: Test & Commit
-```bash
-rm -rf build
-cmake -B build
-cmake --build build
-./build/glomph
-git commit -m "Phase 1: Upgrade to C17 with static assertions"
-```
+### Task 1.3: Test & Commit ✅
+All 4 variants build and run successfully with C17.
 
-**Time estimate:** 1-2 hours
+**Time actual:** 1 hour
+
+**Corrections made:**
+- Fixed SPRITE_REGISTERS constant: was 46, actually 57 (calculated from MAXGHOSTS=16)
+- All static assertions pass at compile time
 
 ---
 

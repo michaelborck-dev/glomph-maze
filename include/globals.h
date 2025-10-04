@@ -65,7 +65,7 @@
 #endif
 
 #ifndef SPRITE_REGISTERS
-#define SPRITE_REGISTERS 46
+#define SPRITE_REGISTERS 57
 #endif
 
 #ifndef LIVES
@@ -75,6 +75,30 @@
 #ifndef NPENS
 #define NPENS 256
 #endif
+
+/*============================================================================
+ * COMPILE-TIME ASSERTIONS (C17)
+ *===========================================================================*/
+
+/* Verify critical constants at compile time to catch configuration errors early */
+
+_Static_assert(MAXGHOSTS == 16, 
+               "MAXGHOSTS must be 16 - ghost arrays hardcoded to this size");
+
+_Static_assert(SPRITE_REGISTERS == 57, 
+               "SPRITE_REGISTERS must be 57 - calculated from MAXGHOSTS and sprite layout");
+
+_Static_assert(LIVES >= 0 && LIVES <= 99, 
+               "LIVES must be between 0 and 99 - display assumes two digits");
+
+_Static_assert(NPENS == 256, 
+               "NPENS must be 256 - color palette requires full 8-bit range");
+
+_Static_assert(sizeof(int) >= 4, 
+               "Need at least 32-bit integers for score and coordinate calculations");
+
+_Static_assert(sizeof(void*) >= 4, 
+               "Need at least 32-bit pointers for maze data structures");
 
 /*============================================================================
  * STRING CONSTANTS AND PREFIXES

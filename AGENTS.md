@@ -33,12 +33,15 @@ See `CMAKE_SETUP.md` for details.
 ## Current Refactoring Status
 
 **Branch:** refactor  
-**Phase:** 0 Complete - globals.h created
+**Phase:** 1 Complete - C17 upgrade with static assertions
 
 ### What Changed:
-- ✅ Created `include/globals.h` - consolidates all 210+ global variable declarations
-- ✅ All source files include `globals.h` after `utils.h`
-- ✅ No behavior changes - pure organizational refactoring
+- ✅ Phase 0: Created `include/globals.h` - consolidates all 210+ global variable declarations
+- ✅ Phase 0: All source files include `globals.h` after `utils.h`
+- ✅ Phase 1: Upgraded to C17 standard (from C11)
+- ✅ Phase 1: Added 6 compile-time static assertions for safety
+- ✅ Phase 1: Fixed SPRITE_REGISTERS constant (46 → 57)
+- ✅ No behavior changes - pure organizational refactoring and modernization
 
 ### Architecture:
 ```
@@ -53,7 +56,7 @@ src/
 └── main.c     (includes globals.h)
 ```
 
-**Next Phase:** C17 upgrade (update CMakeLists.txt, add static assertions)
+**Next Phase:** Type modernization (stdint.h, stdbool.h)
 
 See `docs/REFACTOR_PLAN.md` for full plan.
 
@@ -69,7 +72,7 @@ None currently. Help system is working correctly.
 - **Pointer alignment**: Left (e.g., `int* ptr`)
 - **Include sorting**: Enabled
 - **Braces**: Attach style
-- **Standard**: C11
+- **Standard**: C17 (upgraded from C11)
 
 ### Linting (.clang-tidy)
 - **Enabled checks**: clang-analyzer-*, modernize-*, cppcoreguidelines-*
