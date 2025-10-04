@@ -40,6 +40,7 @@ set(COMMON_SOURCES
     src/render/render.c
     src/maze/maze_io.c
     src/sprite/sprite_io.c
+    src/game/game_state.c
 )
 
 # Define size variants with their tile/sprite files
