@@ -33,7 +33,7 @@ See `CMAKE_SETUP.md` for details.
 ## Current Refactoring Status
 
 **Branch:** refactor  
-**Phase:** 2 Complete - Type modernization (stdint.h, stdbool.h)
+**Phase:** 3 Complete - Header modularization
 
 ### What Changed:
 - ✅ Phase 0: Created `include/globals.h` - consolidates all 210+ global variable declarations
@@ -44,13 +44,21 @@ See `CMAKE_SETUP.md` for details.
 - ✅ Phase 2: Modernized types using stdint.h and stdbool.h
 - ✅ Phase 2: Changed unsigned char → uint8_t, unsigned short → uint16_t
 - ✅ Phase 2: Changed int boolean flags → bool (all_dirty, nogame, paused)
+- ✅ Phase 3: Split globals.h into 5 domain-specific modules
+- ✅ Phase 3: Created game_state.h, sprite_state.h, maze_state.h, render_state.h, input_state.h
+- ✅ Phase 3: globals.h now acts as central aggregator
 - ✅ No behavior changes - pure organizational refactoring and modernization
 
 ### Architecture:
 ```
 include/
-├── globals.h  (NEW - all extern declarations)
-└── utils.h    (still used - contains macros, constants, function prototypes)
+├── globals.h        (aggregator - includes all modules)
+├── game_state.h     (score, lives, level, player state)
+├── sprite_state.h   (sprite registers, ghost AI)
+├── maze_state.h     (maze data, dimensions, loading)
+├── render_state.h   (tiles, screen, colors, pager)
+├── input_state.h    (keyboard, controls, timing)
+└── utils.h          (macros, constants, function prototypes)
 
 src/
 ├── myman.c    (includes globals.h)
@@ -59,7 +67,7 @@ src/
 └── main.c     (includes globals.h)
 ```
 
-**Next Phase:** Header reorganization (split globals.h into modules)
+**Next Phase:** Function extraction and encapsulation
 
 See `docs/REFACTOR_PLAN.md` for full plan.
 

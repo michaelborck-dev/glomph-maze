@@ -2,7 +2,7 @@
 
 **Branch:** refactor  
 **Last Updated:** 2025-10-04  
-**Current Phase:** 2 ✅ COMPLETE
+**Current Phase:** 3 ✅ COMPLETE
 
 ---
 
@@ -11,11 +11,52 @@
 - [x] **Phase 0: globals.h Foundation** ✅ COMPLETE (2025-10-04)
 - [x] **Phase 1: C17 Upgrade** ✅ COMPLETE (2025-10-04)
 - [x] **Phase 2: Type Modernization** ✅ COMPLETE (2025-10-04)
-- [ ] **Phase 3: Header Reorganization** (Next)
-- [ ] **Phase 3: Header Reorganization**
-- [ ] **Phase 3: Header Reorganization**
-- [ ] **Phase 4: Function Documentation** (Ongoing)
+- [x] **Phase 3: Header Reorganization** ✅ COMPLETE (2025-10-04)
+- [ ] **Phase 4: Function Documentation** (Next)
 - [ ] **Phase 5: Extract First Module** (Optional)
+
+---
+
+## What Changed in Phase 3
+
+### New Files
+- `include/game_state.h` - Game state (score, lives, level, player state)
+- `include/sprite_state.h` - Sprite and ghost AI state
+- `include/maze_state.h` - Maze data, dimensions, loading
+- `include/render_state.h` - Rendering and display state
+- `include/input_state.h` - Input handling and timing
+
+### Modified Files
+- `include/globals.h` - Now acts as central aggregator, includes all module headers
+- `.clang-format` - Updated Standard to c++17 (from C11)
+
+### Header Modularization
+```
+Before Phase 3:
+include/globals.h (682 lines - monolithic)
+
+After Phase 3:
+include/
+├── globals.h (110 lines - aggregator)
+├── game_state.h (114 lines)
+├── sprite_state.h (123 lines)
+├── maze_state.h (114 lines)
+├── render_state.h (139 lines)
+└── input_state.h (91 lines)
+```
+
+### Benefits
+- **Better organization:** Related declarations grouped by domain
+- **Easier navigation:** Find declarations by functional area
+- **Documentation:** Each module has clear purpose and scope
+- **Maintainability:** Smaller, focused headers
+- **No breaking changes:** globals.h still works for all existing code
+
+### Verification
+- ✅ All 4 variants build successfully
+- ✅ Help system tested and working
+- ✅ Code formatted with clang-format
+- ✅ No behavior changes
 
 ---
 
@@ -103,8 +144,13 @@ c136511 - Phase 0: Consolidate globals - create globals.h
 
 ```
 include/
-├── globals.h  ← NEW: All 210+ extern declarations
-└── utils.h    ← Existing: Macros, constants, function prototypes
+├── globals.h        ← Aggregator: includes all modules
+├── game_state.h     ← Game state (score, lives, level)
+├── sprite_state.h   ← Sprites and ghost AI
+├── maze_state.h     ← Maze data and loading
+├── render_state.h   ← Rendering and display
+├── input_state.h    ← Input and timing
+└── utils.h          ← Macros, constants, utilities
 
 src/
 ├── myman.c    ← Includes globals.h
@@ -146,26 +192,17 @@ git status                             # Current status
 
 ## Next Phase Preview
 
-### Phase 1: C17 Upgrade (1-2 hours)
+### Phase 4: Function Documentation (Optional)
 
-**Tasks:**
-1. Update `CMakeLists.txt`:
-   ```cmake
-   set(CMAKE_C_STANDARD 17)
-   set(CMAKE_C_STANDARD_REQUIRED ON)
-   set(CMAKE_C_EXTENSIONS OFF)
-   ```
+**Goal:** Add Doxygen documentation to all functions
 
-2. Add static assertions to `include/globals.h`:
-   ```c
-   _Static_assert(MAXGHOSTS == 16, "Ghost array size must be 16");
-   _Static_assert(SPRITE_REGISTERS == 46, "Sprite register count changed");
-   _Static_assert(sizeof(int) >= 4, "Need 32-bit integers");
-   ```
+**Approach:**
+- Document public API functions
+- Add parameter descriptions
+- Add return value documentation
+- Document side effects
 
-3. Test all 4 build variants
-
-4. Commit changes
+**Estimated Time:** 4-8 hours (or skip to Phase 5)
 
 ---
 
@@ -228,4 +265,4 @@ documentation up-to-date.
 
 ---
 
-**Status:** Phase 0 complete, ready for Phase 1 when you are! 🚀
+**Status:** Phase 3 complete! Headers are now modularized. Ready for Phase 4 (documentation) or Phase 5 (module extraction).

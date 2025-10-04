@@ -20,4 +20,4 @@ NamespaceIndentation: None
 PointerAlignment: Left
 SortIncludes: true
 SpacesBeforeTrailingComments: 2
-Standard: C11
+Standard: c++17
