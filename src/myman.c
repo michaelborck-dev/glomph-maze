@@ -87,6 +87,8 @@
 #include "utils.h"
 #endif
 
+#include "globals.h"
+
 #include <langinfo.h>
 
 #ifndef F_OK

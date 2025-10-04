@@ -73,6 +73,7 @@
 #endif
 
 #include "utils.h"
+#include "globals.h"
 
 #ifdef XCURSES
 #define XCURSES_USAGE \

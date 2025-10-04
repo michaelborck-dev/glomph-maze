@@ -53,6 +53,7 @@
 #include "utils.h"
 #endif
 
+#include "globals.h"
 
 /* command-line argument parser */
 #ifndef MYGETOPT_H
