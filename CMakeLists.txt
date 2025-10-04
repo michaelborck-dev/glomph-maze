@@ -37,6 +37,7 @@ set(COMMON_SOURCES
     src/myman.c
     src/utils.c
     src/logic.c
+    src/render/render.c
 )
 
 # Define size variants with their tile/sprite files
