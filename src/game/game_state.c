@@ -959,3 +959,87 @@ void gameintermission(void) {
                   "COFFEE BREAK");
     }
 }
+#define COLLISION_TYPE_HERO 1
+#define COLLISION_TYPE_GHOST 2
+
+/**
+ * @brief Check and handle collisions between hero and a ghost
+ *
+ * Tests for collision between hero sprite and ghost sprites (mean/blue states).
+ * Handles two collision scenarios:
+ * - Mean ghost hits hero: Hero dies, plays death animation
+ * - Hero eats vulnerable (blue) ghost: Award points (200/400/800/1600), show
+ * score
+ *
+ * @param eyes Ghost eyes sprite register index
+ * @param mean Mean (normal/aggressive) ghost sprite register index
+ * @param blue Blue (vulnerable) ghost sprite register index
+ *
+ * @return COLLISION_TYPE_HERO if hero was killed, COLLISION_TYPE_GHOST if ghost
+ * eaten, 0 if no collision
+ *
+ * @note Modifies global state: score, dying, munched, ghost_eaten_timer, sprite
+ * registers
+ * @note Points double with each ghost eaten in one power pellet
+ * (200→400→800→1600 max)
+ * @see gamelogic, pellet_timer
+ */
+int check_collision(int eyes, int mean, int blue) {
+    if (sprite_register_used[mean] && collide(mean, HERO) &&
+        !ghost_eaten_timer) {
+        myman_sfx |= myman_sfx_dying;
+        dying                       = DEATHDELAY;
+        sprite_register[HERO]       = SPRITE_HERO + 8;
+        sprite_register_frame[HERO] = 0;
+        ghost_eaten_timer           = ONESEC;
+        munched                     = HERO;
+        return COLLISION_TYPE_HERO;
+    } else if (sprite_register_used[blue] && collide(blue, HERO) &&
+               !ghost_eaten_timer) {
+        myman_sfx |= myman_sfx_ghost;
+        if (!myman_demo)
+            score += points;
+        points *= 2;
+        if (points > 1600)
+            points = 1600;
+        ghost_eaten_timer                 = ONESEC;
+        sprite_register_used[HERO]        = 0;
+        munched                           = eyes;
+        sprite_register_used[GHOST_SCORE] = 1;
+        sprite_register_x[GHOST_SCORE]    = sprite_register_x[blue];
+        sprite_register_y[GHOST_SCORE]    = sprite_register_y[blue];
+        sprite_register_x[eyes]           = sprite_register_x[blue];
+        sprite_register_y[eyes]           = sprite_register_y[blue];
+        sprite_register_used[blue]        = 0;
+        return COLLISION_TYPE_GHOST;
+    }
+    return 0;
+}
+
+/**
+ * @brief Find pathfinding direction for ghost at given position
+ *
+ * Looks up pre-computed pathfinding direction from home_dir array.
+ * Used by ghost AI to navigate maze efficiently toward targets.
+ * Each ghost has its own pathfinding map stored in home_dir.
+ *
+ * @param s Ghost index (0-15, see MAXGHOSTS)
+ * @param r Row position in maze (tile coordinates)
+ * @param c Column position in maze (tile coordinates)
+ *
+ * @return Direction constant (MYMAN_UP, MYMAN_DOWN, MYMAN_LEFT, MYMAN_RIGHT)
+ *
+ * @note Requires home_dir array to be initialized
+ * @see WHOSE_HOME_DIR macro, ghost AI in gamelogic
+ */
+int find_home_dir(int s, int r, int c) {
+    return (
+        ((unsigned)home_dir[(WHOSE_HOME_DIR((r), (c)) % ghosts * maze_h + (r)) *
+                                (maze_w + 1) +
+                            (c)])
+            ? ((unsigned)
+                   home_dir[(WHOSE_HOME_DIR((r), (c)) % ghosts * maze_h + (r)) *
+                                (maze_w + 1) +
+                            (c)])
+            : ((unsigned)home_dir[((s)*maze_h + (r)) * (maze_w + 1) + (c)]));
+}
