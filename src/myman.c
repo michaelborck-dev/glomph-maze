@@ -109,12 +109,6 @@ static void sigwinch_handler(int signum) {
 /* User feature toggles - can be overridden at compile-time or changed at
  * runtime via command-line flags */
 
-/* USE_UNDERLINE: Enable underline attribute for text (default: off, toggle with
- * -u/-U) */
-#ifndef USE_UNDERLINE
-#define USE_UNDERLINE 0
-#endif
-
 /* HAVE_CURS_SET: ncurses always has curs_set() for cursor visibility */
 #define HAVE_CURS_SET 1
 
@@ -122,12 +116,6 @@ static void sigwinch_handler(int signum) {
  * audio disabled) */
 #ifndef USE_BEEP
 #define USE_BEEP 1
-#endif
-
-/* SOUND: Enable sound effects at startup (default: off, toggle with -b/-q or
- * 'S' key) */
-#ifndef SOUND
-#define SOUND 0
 #endif
 
 /* COLORIZE: Enable color support (default: on, requires ncurses color support)
@@ -140,24 +128,6 @@ static void sigwinch_handler(int signum) {
  * customization) */
 #ifndef USE_PALETTE
 #define USE_PALETTE 1
-#endif
-
-/* USE_RAW_UCS: Enable raw UCS/Unicode character mode for CJK characters
- * (default: off, toggle with -e/-E) */
-#ifndef USE_RAW_UCS
-#define USE_RAW_UCS 0
-#endif
-
-/* USE_RAW: Enable raw character output mode vs ACS graphics (default: off,
- * toggle with -r/-R) */
-#ifndef USE_RAW
-#define USE_RAW 0
-#endif
-
-/* USE_ACS: Enable ACS (Alternate Character Set) graphics for borders/walls
- * (default: on, toggle with -a/-A) */
-#ifndef USE_ACS
-#define USE_ACS 1
 #endif
 
 /* MYMANSIZE is defined by CMake (e.g., "standard", "xlarge", "small", "tiny")
@@ -649,11 +619,14 @@ static void init_trans(int use_bullet_for_dots) {
     altcharset_cp437[158] = ascii_cp437[158] = 'P';
 }
 
-static int use_raw = USE_RAW;
+/* Runtime user-configurable options (defaults here, changeable via
+ * command-line) */
+static int use_raw = 0; /* Raw character mode (toggle with -r/-R) */
 
-static int use_raw_ucs = USE_RAW_UCS;
+static int use_raw_ucs =
+    0; /* Raw UCS/Unicode mode for CJK (toggle with -e/-E) */
 
-int use_underline = USE_UNDERLINE;
+int use_underline = 0; /* Underline attribute (toggle with -u/-U) */
 
 static int use_idlok = 1;
 
@@ -677,7 +650,7 @@ int xoff_received = 0;
 
 static int use_fullwidth = 0;
 
-static int use_sound = SOUND;
+static int use_sound = 0; /* Sound effects (toggle with -b/-q or 'S' key) */
 
 #define MY_COLS (COLS / (use_fullwidth ? 2 : 1))
 
@@ -4250,7 +4223,7 @@ static void myman(void) {
         use_dim_and_bright = USE_DIM_AND_BRIGHT;
     }
     if (!use_acs_p) {
-        use_acs = USE_ACS;
+        use_acs = 1; /* Default: ACS graphics enabled */
     }
     init_trans(use_bullet_for_dots);
 #if COLORIZE
