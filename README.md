@@ -193,7 +193,7 @@ See [LICENSE](LICENSE) for details.
 - **Python Rewrite**: Michael Borck (2025)
 - **Inspired by**: Pac-Man by Toru Iwatani (Namco)
 
-### Original Sources
+### Original MyMan Sources
 - Author's homepage: https://xent.com/~bsittler/geocities/#myman
 - SourceForge: https://sourceforge.net/projects/myman/
 - GitHub mirror: https://github.com/kragen/myman
