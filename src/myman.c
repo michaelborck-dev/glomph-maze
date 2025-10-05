@@ -196,40 +196,8 @@ static void sigwinch_handler(int signum) {
 
 #define SWAPDOTS 0 /* Don't swap dots and pellets by default */
 
-#ifdef A_BOLD
-#endif
-
-#ifdef A_UNDERLINE
-#endif
-
-#ifdef A_STANDOUT
-#endif
-
-#ifdef A_REVERSE
-#endif
-
-#ifdef A_DIM
-#endif
-
-#ifdef A_ATTRIBUTES
-#endif
-
-#ifdef A_CHARTEXT
-#endif
-
-#ifdef A_STANDOUT
-#endif
-
-#ifdef A_ATTRIBUTES
-#else
-#endif
-
 #ifndef USE_UNDERLINE
 #define USE_UNDERLINE 0
-#endif
-
-#ifndef DANGEROUS_ATTRS
-#define DANGEROUS_ATTRS 0
 #endif
 
 /* ncurses always has curs_set() */
@@ -252,9 +220,6 @@ static void sigwinch_handler(int signum) {
 #endif
 
 #ifndef USE_RAW_UCS
-#endif
-
-#ifndef USE_RAW_UCS
 #define USE_RAW_UCS 0
 #endif
 
@@ -264,157 +229,6 @@ static void sigwinch_handler(int signum) {
 
 #ifndef USE_ACS
 #define USE_ACS 1
-#endif
-
-#ifdef ACS_BDDB
-#endif
-#ifdef ACS_BSSB
-#endif
-#ifdef ACS_ULCORNER
-#endif
-#ifdef ACS_DDBB
-#endif
-#ifdef ACS_SSBB
-#endif
-#ifdef ACS_LLCORNER
-#endif
-#ifdef ACS_BBDD
-#endif
-#ifdef ACS_BBSS
-#endif
-#ifdef ACS_URCORNER
-#endif
-#ifdef ACS_DBBD
-#endif
-#ifdef ACS_SBBS
-#endif
-#ifdef ACS_LRCORNER
-#endif
-#ifdef ACS_DBDD
-#endif
-#ifdef ACS_SBSD
-#endif
-#ifdef ACS_DBDS
-#endif
-#ifdef ACS_SBSS
-#endif
-#ifdef ACS_RTEE
-#endif
-#ifdef ACS_DDDB
-#endif
-#ifdef ACS_SDSB
-#endif
-#ifdef ACS_DSDB
-#endif
-#ifdef ACS_SSSB
-#endif
-#ifdef ACS_LTEE
-#endif
-#ifdef ACS_DDBD
-#endif
-#ifdef ACS_SDBD
-#endif
-#ifdef ACS_DSBS
-#endif
-#ifdef ACS_SSBS
-#endif
-#ifdef ACS_BTEE
-#endif
-#ifdef ACS_BDDD
-#endif
-#ifdef ACS_BDSD
-#endif
-#ifdef ACS_BSDS
-#endif
-#ifdef ACS_BSSS
-#endif
-#ifdef ACS_TTEE
-#endif
-#ifdef ACS_BDSS
-#endif
-#ifdef ACS_BDSB
-#endif
-#ifdef ACS_SSDB
-#endif
-#ifdef ACS_BSDB
-#endif
-#ifdef ACS_SDBS
-#endif
-#ifdef ACS_SDBB
-#endif
-#ifdef ACS_DSSB
-#endif
-#ifdef ACS_DSBB
-#endif
-#ifdef ACS_BSSD
-#endif
-#ifdef ACS_BBSD
-#endif
-#ifdef ACS_SBDS
-#endif
-#ifdef ACS_BBDS
-#endif
-#ifdef ACS_SSBD
-#endif
-#ifdef ACS_SBBD
-#endif
-#ifdef ACS_DBSS
-#endif
-#ifdef ACS_DBBS
-#endif
-#ifdef ACS_BDBD
-#endif
-#ifdef ACS_BSBS
-#endif
-#ifdef ACS_HLINE
-#endif
-#ifdef ACS_DBDB
-#endif
-#ifdef ACS_SBSB
-#endif
-#ifdef ACS_VLINE
-#endif
-#ifdef ACS_DDDD
-#endif
-#ifdef ACS_SDSD
-#endif
-#ifdef ACS_DSDS
-#endif
-#ifdef ACS_SSSS
-#endif
-#ifdef ACS_PLUS
-#endif
-#ifdef ACS_DIAMOND
-#endif
-#ifdef ACS_DEGREE
-#endif
-#ifdef ACS_BBBB
-#endif
-#ifdef ACS_BULLET
-#endif
-#ifdef ACS_DARROW
-#endif
-#ifdef ACS_UARROW
-#endif
-#ifdef ACS_LANTERN
-#endif
-#ifdef ACS_BOARD
-#endif
-#ifdef ACS_CKBOARD
-#endif
-#ifdef ACS_BLOCK
-#endif
-#ifdef ACS_LARROW
-#endif
-#ifdef ACS_LEQUAL
-#endif
-#ifdef ACS_RARROW
-#endif
-#ifdef ACS_GEQUAL
-#endif
-#ifdef ACS_PI
-#endif
-#ifdef ACS_STERLING
 #endif
 
 /* MYMANSIZE is defined by CMake (e.g., "standard", "xlarge", "small", "tiny")
@@ -457,7 +271,6 @@ static chtype altcharset_cp437[256];
 
 /* mapping from CP437 to ASCII */
 static chtype ascii_cp437[256];
-
 
 #ifndef USE_WCWIDTH
 #if USE_RAW_UCS
@@ -1757,74 +1570,10 @@ static void my_move(int y, int x) {
 }
 
 static int my_real_attrset(chtype attrs) {
-#if DANGEROUS_ATTRS
-    if (attrs) {
-        int cur_x, cur_y;
 
-        getyx(stdscr, cur_y, cur_x);
-        /* classic BSD curses has an annoying bug which causes it to
-         * hang if attributes are used in the last writable screen
-         * cell */
-        if ((cur_x >=
-             (COLS - (CJK_MODE ? 1 : 0) - 2 * (cur_y == (LINES - 1))))) {
-            return 1;
-        }
-    }
-#endif
-#if HAVE_ATTRSET
     attrset(attrs);
-#else
-    {
-#ifdef A_STANDOUT
-        if (attrs & A_STANDOUT)
-            standout();
-        else
-            standend();
-#endif
-#if HAVE_SETATTR
-        {
-#ifdef MY_A_BLINK
-#ifdef _BLINK
-            if (attrs & MY_A_BLINK)
-                setattr(_BLINK);
-            else
-                clrattr(_BLINK);
-#endif
-#endif
-#ifdef A_BOLD
-#ifdef _BOLD
-            if (attrs & A_BOLD)
-                setattr(_BOLD);
-            else
-                clrattr(_BOLD);
-#endif
-#endif
-#ifdef A_REVERSE
-#ifdef _REVERSE
-            if (attrs & A_REVERSE)
-                setattr(_REVERSE);
-            else
-                clrattr(_REVERSE);
-#endif
-#endif
-#ifdef A_UNDERLINE
-#ifdef _UNDERLINE
-            if (attrs & A_UNDERLINE)
-                setattr(_UNDERLINE);
-            else
-                clrattr(_UNDERLINE);
-#endif
-#endif
-        }
-#endif
-    }
-#endif
     return 1;
 }
-
-#if DANGEROUS_ATTRS
-static chtype my_attrs = 0;
-#endif
 
 static int my_attrset(chtype attrs) {
     snapshot_attrset(attrs);
@@ -1835,11 +1584,7 @@ static int my_attrset(chtype attrs) {
                                         0
 #endif
                                         : 0;
-#if DANGEROUS_ATTRS
-    my_attrs = attrs;
-#else
     my_real_attrset(attrs);
-#endif
     return 1;
 }
 
@@ -2382,9 +2127,6 @@ static int my_addch(unsigned long b, chtype attrs) {
             snapshot_addch(rhs);
         }
     }
-#if DANGEROUS_ATTRS
-    my_real_attrset(my_attrs);
-#endif
     do {
         if (use_acs && use_raw && !use_raw_ucs) {
             char buf[2];
@@ -2439,9 +2181,6 @@ static int my_addch(unsigned long b, chtype attrs) {
 #ifdef A_CHARTEXT
                                     if (c & ~A_CHARTEXT) {
                                         my_attrset(attrs);
-#if DANGEROUS_ATTRS
-                                        my_real_attrset(my_attrs);
-#endif
                                     }
 #endif
 #endif
@@ -2450,9 +2189,6 @@ static int my_addch(unsigned long b, chtype attrs) {
 #ifdef A_CHARTEXT
                                     if (c & ~A_CHARTEXT) {
                                         my_attrset(attrs);
-#if DANGEROUS_ATTRS
-                                        my_real_attrset(my_attrs);
-#endif
                                     }
 #endif
 #endif
@@ -2473,9 +2209,6 @@ static int my_addch(unsigned long b, chtype attrs) {
 #ifdef A_CHARTEXT
                 if (c & ~A_CHARTEXT) {
                     my_attrset(attrs | (c & ~A_CHARTEXT));
-#if DANGEROUS_ATTRS
-                    my_real_attrset(my_attrs);
-#endif
                 }
 #endif
 #endif
@@ -2484,9 +2217,6 @@ static int my_addch(unsigned long b, chtype attrs) {
 #ifdef A_CHARTEXT
                 if (c & ~A_CHARTEXT) {
                     my_attrset(attrs);
-#if DANGEROUS_ATTRS
-                    my_real_attrset(my_attrs);
-#endif
                 }
 #endif
 #endif
@@ -2503,9 +2233,6 @@ static int my_addch(unsigned long b, chtype attrs) {
 #ifdef A_CHARTEXT
                             if (c & ~A_CHARTEXT) {
                                 my_attrset(attrs | (c & ~A_CHARTEXT));
-#if DANGEROUS_ATTRS
-                                my_real_attrset(my_attrs);
-#endif
                             }
 #endif
 #endif
@@ -2514,9 +2241,6 @@ static int my_addch(unsigned long b, chtype attrs) {
 #ifdef A_CHARTEXT
                             if (c & ~A_CHARTEXT) {
                                 my_attrset(attrs);
-#if DANGEROUS_ATTRS
-                                my_real_attrset(my_attrs);
-#endif
                             }
 #endif
 #endif
@@ -2539,10 +2263,6 @@ static int my_addch(unsigned long b, chtype attrs) {
             }
         }
     } while (0);
-#if DANGEROUS_ATTRS
-    if (my_attrs)
-        my_real_attrset(0);
-#endif
     return ret;
 }
 
