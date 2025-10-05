@@ -2945,35 +2945,23 @@ void gamesfx(void) {
     }
 }
 
-void gamerender(void) {
-    int  i, j;
-    long c = 0;
-    int  x1, y1;
-    int  r_off, c_off;
-    int  line, col;
-    int  vline, vcol;
-    int  pause_shown;
-
-    pause_shown = 0;
-    {
-        int s;
-        for (s = 0; s < SPRITE_REGISTERS; s++) {
-            if (sprite_register_used[s]) {
-                mark_sprite_register(s);
-            }
+/* Helper: Mark all used sprite registers as dirty for redraw */
+static void mark_all_dirty_sprites(void) {
+    for (int s = 0; s < SPRITE_REGISTERS; s++) {
+        if (sprite_register_used[s]) {
+            mark_sprite_register(s);
         }
     }
-    if (snapshot || snapshot_txt || all_dirty) {
-        my_erase();
-        DIRTY_ALL();
-        ignore_delay = 1;
-        frameskip    = 0;
-    }
-#define VLINES (reflect ? MY_COLS : LINES)
-#define VCOLS (reflect ? LINES : MY_COLS)
-#define vmove(y, x)                                                            \
-    (reflect ? my_move((x), (y) * (use_fullwidth ? 2 : 1))                     \
-             : my_move((y), (x) * (use_fullwidth ? 2 : 1)))
+}
+
+/* Helper: Calculate viewport offset to center on player
+ * Returns offsets for row and column positioning */
+static void calculate_viewport_offset(int* x1_out, int* y1_out, int* r_off_out,
+                                      int* c_off_out) {
+    int x1, y1, r_off, c_off;
+    int VLINES = (reflect ? MY_COLS : LINES);
+    int VCOLS  = (reflect ? LINES : MY_COLS);
+
     x1 = sprite_register_x[HERO] - VCOLS / 2;
     y1 = sprite_register_y[HERO] - VLINES / 2 - deadpan;
     if (x1 + VCOLS - (reflect ? 1 : 0) > maze_w * gfx_w)
@@ -2984,6 +2972,7 @@ void gamerender(void) {
         x1 = 0;
     if (y1 < 0)
         y1 = 0;
+
     r_off = 0;
     c_off = 0;
     if (((gfx_h * maze_h + (reflect ? 0 : (3 * tile_h + sprite_h)))) <= VLINES)
@@ -3001,6 +2990,7 @@ void gamerender(void) {
         r_off = (VLINES - gfx_h * maze_h + 1) / 2;
     if (r_off < 0)
         r_off = 0;
+
     if ((gfx_w * maze_w + (reflect ? (3 * tile_h + sprite_h) : 0)) <= VCOLS)
         c_off = (VCOLS - (reflect ? (3 * tile_h + sprite_h) : 0) -
                  gfx_w * maze_w + 1) /
@@ -3016,6 +3006,36 @@ void gamerender(void) {
         c_off = (VCOLS - gfx_w * maze_w + 1) / 2;
     if (c_off < 0)
         c_off = 0;
+
+    *x1_out    = x1;
+    *y1_out    = y1;
+    *r_off_out = r_off;
+    *c_off_out = c_off;
+}
+
+void gamerender(void) {
+    int  i, j;
+    long c = 0;
+    int  x1, y1;
+    int  r_off, c_off;
+    int  line, col;
+    int  vline, vcol;
+    int  pause_shown;
+
+    pause_shown = 0;
+    mark_all_dirty_sprites();
+    if (snapshot || snapshot_txt || all_dirty) {
+        my_erase();
+        DIRTY_ALL();
+        ignore_delay = 1;
+        frameskip    = 0;
+    }
+#define VLINES (reflect ? MY_COLS : LINES)
+#define VCOLS (reflect ? LINES : MY_COLS)
+#define vmove(y, x)                                                            \
+    (reflect ? my_move((x), (y) * (use_fullwidth ? 2 : 1))                     \
+             : my_move((y), (x) * (use_fullwidth ? 2 : 1)))
+    calculate_viewport_offset(&x1, &y1, &r_off, &c_off);
     standend();
 #if HAVE_ATTRSET
     attrset(0);
@@ -4441,59 +4461,127 @@ void usage(const char* mazefile, const char* spritefile, const char* tilefile) {
     printf("\"\n");
 }
 
-
 /* Helper functions for parse_myman_args() - organized by functional category */
 
 /* Handle display/rendering options (-r, -a, -c, -u, etc.) */
 static void handle_display_options(int opt) {
     switch (opt) {
-    case 'r': use_raw = 1; break;
-    case 'R': use_raw = 0; break;
-    case 'e': use_raw_ucs = 1; break;
-    case 'E': use_raw_ucs = 0; break;
-    case 'a': use_acs = 0; use_acs_p = 1; break;
-    case 'A': use_acs = 1; use_acs_p = 1; break;
-    case 'x': reflect = 1; break;
-    case 'X': reflect = 0; break;
-    case 'n': use_color_p = 1; use_color = 0; break;
-    case 'c': use_color_p = 1; use_color = 1; break;
-    case 'B': use_dim_and_bright = 1; use_dim_and_bright_p = 1; break;
-    case 'N': use_dim_and_bright = 0; use_dim_and_bright_p = 1; break;
-    case 'o': use_bullet_for_dots = 1; use_bullet_for_dots_p = 1; break;
-    case 'p': use_bullet_for_dots = 0; use_bullet_for_dots_p = 1; break;
-    case '1': use_fullwidth = 0; break;
-    case '2': use_fullwidth = 1; break;
-    case 'u': use_underline = 1; break;
-    case 'U': use_underline = 0; break;
-    case 'i': use_idlok = 0; break;
-    case 'I': use_idlok = 1; break;
+    case 'r':
+        use_raw = 1;
+        break;
+    case 'R':
+        use_raw = 0;
+        break;
+    case 'e':
+        use_raw_ucs = 1;
+        break;
+    case 'E':
+        use_raw_ucs = 0;
+        break;
+    case 'a':
+        use_acs   = 0;
+        use_acs_p = 1;
+        break;
+    case 'A':
+        use_acs   = 1;
+        use_acs_p = 1;
+        break;
+    case 'x':
+        reflect = 1;
+        break;
+    case 'X':
+        reflect = 0;
+        break;
+    case 'n':
+        use_color_p = 1;
+        use_color   = 0;
+        break;
+    case 'c':
+        use_color_p = 1;
+        use_color   = 1;
+        break;
+    case 'B':
+        use_dim_and_bright   = 1;
+        use_dim_and_bright_p = 1;
+        break;
+    case 'N':
+        use_dim_and_bright   = 0;
+        use_dim_and_bright_p = 1;
+        break;
+    case 'o':
+        use_bullet_for_dots   = 1;
+        use_bullet_for_dots_p = 1;
+        break;
+    case 'p':
+        use_bullet_for_dots   = 0;
+        use_bullet_for_dots_p = 1;
+        break;
+    case '1':
+        use_fullwidth = 0;
+        break;
+    case '2':
+        use_fullwidth = 1;
+        break;
+    case 'u':
+        use_underline = 1;
+        break;
+    case 'U':
+        use_underline = 0;
+        break;
+    case 'i':
+        use_idlok = 0;
+        break;
+    case 'I':
+        use_idlok = 1;
+        break;
     }
 }
 
 /* Handle audio options (-b, -q) */
 static void handle_audio_options(int opt) {
     switch (opt) {
-    case 'b': use_sound = 1; break;
-    case 'q': use_sound = 0; break;
+    case 'b':
+        use_sound = 1;
+        break;
+    case 'q':
+        use_sound = 0;
+        break;
     }
 }
 
 /* Handle file path options (-m, -s, -t) */
 static void handle_file_options(int opt, const char** mazefile,
-                                  const char** spritefile, const char** tilefile) {
+                                const char** spritefile,
+                                const char** tilefile) {
     switch (opt) {
-    case 'm': *mazefile = optarg; break;
-    case 's': *spritefile = optarg; break;
-    case 't': *tilefile = optarg; break;
+    case 'm':
+        *mazefile = optarg;
+        break;
+    case 's':
+        *spritefile = optarg;
+        break;
+    case 't':
+        *tilefile = optarg;
+        break;
     }
 }
 
 /* Handle dump/debug options (-M, -S, -T, -f, -F) */
-static void handle_dump_options(int opt, int* dump_maze, int* dump_sprite, int* dump_tile) {
+static void handle_dump_options(int opt, int* dump_maze, int* dump_sprite,
+                                int* dump_tile) {
     switch (opt) {
-    case 'M': *dump_maze = 1; nogame = 1; break;
-    case 'S': *dump_sprite = 1; nogame = 1; break;
-    case 'T': *dump_tile = 1; nogame = 1; break;
+    case 'M':
+        *dump_maze = 1;
+        nogame     = 1;
+        break;
+    case 'S':
+        *dump_sprite = 1;
+        nogame       = 1;
+        break;
+    case 'T':
+        *dump_tile = 1;
+        nogame     = 1;
+        break;
     case 'f':
         if (freopen(optarg, "a", stdout) == NULL) {
             perror(optarg);
@@ -4511,7 +4599,7 @@ static void handle_dump_options(int opt, int* dump_maze, int* dump_sprite, int* 
 
 /* Handle info/help options (-V, -h, -k, -L) - these exit immediately */
 static void handle_info_options(int opt, const char* mazefile,
-                                  const char* spritefile, const char* tilefile) {
+                                const char* spritefile, const char* tilefile) {
     switch (opt) {
     case 'V':
         printf("%s-%s (%s) %s\n%s\n", MYMANVARIANT, MYMANSIZE, MYMAN,
@@ -4529,7 +4617,6 @@ static void handle_info_options(int opt, const char* mazefile,
     }
 }
 
-
 static void parse_myman_args(int argc, char** argv) {
     int           i;
     int           dump_maze = 0, dump_sprite = 0, dump_tile = 0;
@@ -4545,98 +4632,94 @@ static void parse_myman_args(int argc, char** argv) {
                             &option_index)) != -1)
         /* Delegate to helper functions for simple option categories */
         handle_info_options(i, mazefile, spritefile, tilefile);
-        handle_display_options(i);
-        handle_audio_options(i);
-        handle_file_options(i, &mazefile, &spritefile, &tilefile);
-        handle_dump_options(i, &dump_maze, &dump_sprite, &dump_tile);
-        
-        /* Handle complex options that need validation or local state */
-        switch (i) {
-        case 'v':
-            defvariant = optarg;
-            break;
-        case 'z':
-            defsize = optarg;
-            break;
-        case 'd': {
-            char garbage;
+    handle_display_options(i);
+    handle_audio_options(i);
+    handle_file_options(i, &mazefile, &spritefile, &tilefile);
+    handle_dump_options(i, &dump_maze, &dump_sprite, &dump_tile);
 
-            if (sscanf(optarg, "%lu%c", &uli, &garbage) != 1) {
-                fprintf(
-                    stderr,
+    /* Handle complex options that need validation or local state */
+    switch (i) {
+    case 'v':
+        defvariant = optarg;
+        break;
+    case 'z':
+        defsize = optarg;
+        break;
+    case 'd': {
+        char garbage;
+
+        if (sscanf(optarg, "%lu%c", &uli, &garbage) != 1) {
+            fprintf(stderr,
                     "%s: argument to -d must be an unsigned long integer.\n",
                     progname);
-                fflush(stderr), exit(1);
-            }
-            mymandelay = uli;
-            mindelay   = mymandelay / 2;
-            break;
+            fflush(stderr), exit(1);
         }
-        case 'D': {
-            char*       name;
-            const char* value;
+        mymandelay = uli;
+        mindelay   = mymandelay / 2;
+        break;
+    }
+    case 'D': {
+        char*       name;
+        const char* value;
 
-            value = "1";
-            name  = strdup(optarg);
-            if (!name) {
-                perror("strdup");
-                fflush(stderr), exit(1);
-            }
-            if (strchr(name, '=')) {
-                *(strchr(name, '=')) = '\0';
-                value                = name + strlen(name) + 1;
-            }
-            if (myman_setenv(name, value)) {
-                perror("setenv");
-                fflush(stderr), exit(1);
-            }
-            {
-                const char* check_value;
+        value = "1";
+        name  = strdup(optarg);
+        if (!name) {
+            perror("strdup");
+            fflush(stderr), exit(1);
+        }
+        if (strchr(name, '=')) {
+            *(strchr(name, '=')) = '\0';
+            value                = name + strlen(name) + 1;
+        }
+        if (myman_setenv(name, value)) {
+            perror("setenv");
+            fflush(stderr), exit(1);
+        }
+        {
+            const char* check_value;
 
-                check_value = myman_getenv(name);
-                if (check_value ? strcmp(check_value, value) : *value) {
-                    fprintf(stderr,
-                            "setenv: did not preserve value, %s=%s vs %s=%s\n",
-                            name, value, name,
-                            check_value ? check_value : "(null)");
-                    fflush(stderr), exit(1);
-                }
+            check_value = myman_getenv(name);
+            if (check_value ? strcmp(check_value, value) : *value) {
+                fprintf(
+                    stderr, "setenv: did not preserve value, %s=%s vs %s=%s\n",
+                    name, value, name, check_value ? check_value : "(null)");
+                fflush(stderr), exit(1);
             }
-            free((void*)name);
-            break;
         }
-        case 'g': {
-            const char* tmp_ghosts_endp = NULL;
+        free((void*)name);
+        break;
+    }
+    case 'g': {
+        const char* tmp_ghosts_endp = NULL;
 
-            maze_GHOSTS =
-                strtollist(optarg, &tmp_ghosts_endp, &maze_GHOSTS_len);
-            if (!maze_GHOSTS) {
-                perror("-g");
-                fflush(stderr), exit(1);
-            } else if (tmp_ghosts_endp && *tmp_ghosts_endp) {
-                fprintf(stderr, "%s: -g: garbage after argument: %s\n",
-                        progname, tmp_ghosts_endp);
-                fflush(stderr), exit(1);
-            }
-            ghosts_p = 1;
-            break;
+        maze_GHOSTS = strtollist(optarg, &tmp_ghosts_endp, &maze_GHOSTS_len);
+        if (!maze_GHOSTS) {
+            perror("-g");
+            fflush(stderr), exit(1);
+        } else if (tmp_ghosts_endp && *tmp_ghosts_endp) {
+            fprintf(stderr, "%s: -g: garbage after argument: %s\n", progname,
+                    tmp_ghosts_endp);
+            fflush(stderr), exit(1);
         }
-        case 'l': {
-            char garbage;
+        ghosts_p = 1;
+        break;
+    }
+    case 'l': {
+        char garbage;
 
-            if (sscanf(optarg, "%lu%c", &uli, &garbage) != 1) {
-                fprintf(stderr,
-                        "%s: argument to -l must be an unsigned integer.\n",
-                        progname);
-                fflush(stderr), exit(1);
-            }
-            lives = (int)uli;
-            break;
+        if (sscanf(optarg, "%lu%c", &uli, &garbage) != 1) {
+            fprintf(stderr, "%s: argument to -l must be an unsigned integer.\n",
+                    progname);
+            fflush(stderr), exit(1);
         }
-        default:
-            fprintf(stderr, SUMMARY(progname));
-            fflush(stderr), exit(2);
-        }
+        lives = (int)uli;
+        break;
+    }
+    default:
+        fprintf(stderr, SUMMARY(progname));
+        fflush(stderr), exit(2);
+    }
 
     if (myman_getenv("MYMAN_DEBUG") && *(myman_getenv("MYMAN_DEBUG")) &&
         strcmp(myman_getenv("MYMAN_DEBUG"), "0")) {
