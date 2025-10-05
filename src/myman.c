@@ -196,77 +196,6 @@ static void sigwinch_handler(int signum) {
 
 #define SWAPDOTS 0 /* Don't swap dots and pellets by default */
 
-#ifdef NEED_LOCALE_IS_UTF8
-static int locale_is_utf8(void) {
-    const char* my_locale;
-    char*       my_locale_lower;
-    int         is_utf8 = 0;
-    int         i;
-
-#ifdef LC_CTYPE
-    my_locale = setlocale(LC_CTYPE, "");
-    if (my_locale) {
-        my_locale_lower = strdup(my_locale);
-        if (my_locale_lower) {
-            for (i = 0; my_locale_lower[i]; i++) {
-                my_locale_lower[i] = tolower(my_locale_lower[i]);
-            }
-            if (strstr(my_locale_lower, "utf8") ||
-                strstr(my_locale_lower, "utf-8")) {
-                is_utf8 = 1;
-            }
-            free((void*)my_locale_lower);
-            my_locale_lower = NULL;
-        }
-#ifdef CODESET
-        {
-            char *codeset, *codeset_lower;
-
-            codeset = nl_langinfo(CODESET);
-            if (codeset) {
-                codeset_lower = strdup(codeset);
-                if (codeset_lower) {
-                    for (i = 0; codeset_lower[i]; i++) {
-                        codeset_lower[i] = tolower(codeset_lower[i]);
-                    }
-                    if ((!strcmp(codeset_lower, "utf8")) ||
-                        (!strcmp(codeset_lower, "utf-8"))) {
-                        is_utf8 = 1;
-                    }
-                    free((void*)codeset_lower);
-                    codeset_lower = NULL;
-                }
-            }
-        }
-#endif /* defined(CODESET) */
-        setlocale(LC_CTYPE, my_locale);
-    }
-#endif /* defined(LC_CTYPE) */
-    /* for broken systems that do not yet support UTF-8 locales
-     * (Cygwin comes to mind) */
-    my_locale = myman_getenv("LC_CTYPE");
-    if (!my_locale)
-        my_locale = myman_getenv("LC_ALL");
-    if (!my_locale)
-        my_locale = myman_getenv("LANG");
-    if (my_locale) {
-        my_locale_lower = strdup(my_locale);
-        if (my_locale_lower) {
-            for (i = 0; my_locale_lower[i]; i++) {
-                my_locale_lower[i] = tolower(my_locale_lower[i]);
-            }
-            if (strstr(my_locale_lower, "utf8") ||
-                strstr(my_locale_lower, "utf-8")) {
-                is_utf8 = 1;
-            }
-            free((void*)my_locale_lower);
-            my_locale_lower = NULL;
-        }
-    }
-    return is_utf8;
-}
-#endif
-
 #ifdef A_BOLD
 #endif
 
@@ -488,48 +417,34 @@ static int locale_is_utf8(void) {
 #ifdef ACS_STERLING
 #endif
 
-#ifdef BUILTIN_SIZE
-extern const char* builtin_size;
-#undef MYMANSIZE
-#define MYMANSIZE builtin_size
-#else
+/* MYMANSIZE is defined by CMake (e.g., "standard", "xlarge", "small", "tiny")
+ */
 #ifndef MYMANSIZE
 #define MYMANSIZE "big"
 #endif
 static const char* MYMANSIZE_str = MYMANSIZE;
 #undef MYMANSIZE
 #define MYMANSIZE MYMANSIZE_str
-#endif
 
 #ifndef TILEFILE
 #define TILEFILE TILEDIR "/chr5x2.txt"
 #endif
 
-#ifdef BUILTIN_TILE
-#undef TILEFILE
-#define TILEFILE 0
-extern const char* builtin_tilefile;
-#else
+/* TILEFILE is defined by CMake (e.g., "tiles/chr4.txt") */
 static const char TILEFILE_str[] = TILEFILE;
 #undef TILEFILE
 #define TILEFILE TILEFILE_str
 #define builtin_tilefile TILEFILE
-#endif
 
 #ifndef SPRITEFILE
 #define SPRITEFILE SPRITEDIR "/spr7x3.txt"
 #endif
 
-#ifdef BUILTIN_SPRITE
-#undef SPRITEFILE
-#define SPRITEFILE 0
-extern const char* builtin_spritefile;
-#else
+/* SPRITEFILE is defined by CMake (e.g., "sprites/spr8.txt") */
 static const char SPRITEFILE_str[] = SPRITEFILE;
 #undef SPRITEFILE
 #define SPRITEFILE SPRITEFILE_str
 #define builtin_spritefile SPRITEFILE
-#endif
 
 /* ncurses always has chtype and attrset() */
 #define HAVE_CHTYPE 1
@@ -543,11 +458,6 @@ static chtype altcharset_cp437[256];
 /* mapping from CP437 to ASCII */
 static chtype ascii_cp437[256];
 
-#ifdef NEED_CP437_TO_ASCII
-static chtype cp437_to_ascii(unsigned char ch) {
-    return ascii_cp437[(ch & 0xff)];
-}
-#endif
 
 #ifndef USE_WCWIDTH
 #if USE_RAW_UCS
@@ -1023,35 +933,23 @@ static int use_sound = SOUND;
 
 #define MY_COLS (COLS / (use_fullwidth ? 2 : 1))
 
-#ifdef BUILTIN_VARIANT
-extern const char* builtin_variant;
-#undef MYMANVARIANT
-#define MYMANVARIANT builtin_variant
-#else
+/* MYMANVARIANT is the game variant name */
 #ifndef MYMANVARIANT
 #define MYMANVARIANT "myman"
 #endif
 static const char* MYMANVARIANT_str = MYMANVARIANT;
 #undef MYMANVARIANT
 #define MYMANVARIANT MYMANVARIANT_str
-#endif
 
 #ifndef MAZEFILE
 #define MAZEFILE MAZEDIR "/maze.txt"
 #endif
 
-#ifdef BUILTIN_MAZE
-extern const char* maze_data;
-extern const char* maze_color_data;
-extern const char* builtin_mazefile;
-#undef MAZEFILE
-#define MAZEFILE 0
-#else
+/* MAZEFILE loads from file at runtime (not embedded) */
 static char MAZEFILE_str[] = MAZEFILE;
 #undef MAZEFILE
 #define MAZEFILE MAZEFILE_str
 #define builtin_mazefile MAZEFILE
-#endif
 
 unsigned short* inside_wall = NULL;
 
@@ -5068,16 +4966,6 @@ static void parse_myman_args(int argc, char** argv) {
             nogame    = 1;
             break;
         case 'm':
-#ifdef BUILTIN_MAZE
-            if ((*optarg == '(') &&
-                (strlen(optarg) == (strlen(builtin_mazefile) + 2)) &&
-                (optarg[strlen(optarg) - 1] == ')') &&
-                !strncmp(optarg + 1, builtin_mazefile,
-                         strlen(builtin_mazefile))) {
-                mazefile = 0;
-                break;
-            }
-#endif
             mazefile = optarg;
             break;
         case 'n':
@@ -5111,29 +4999,9 @@ static void parse_myman_args(int argc, char** argv) {
             use_dim_and_bright_p = 1;
             break;
         case 't':
-#ifdef BUILTIN_TILE
-            if ((*optarg == '(') &&
-                (strlen(optarg) == (strlen(builtin_tilefile) + 2)) &&
-                (optarg[strlen(optarg) - 1] == ')') &&
-                !strncmp(optarg + 1, builtin_tilefile,
-                         strlen(builtin_tilefile))) {
-                tilefile = 0;
-                break;
-            }
-#endif
             tilefile = optarg;
             break;
         case 's':
-#ifdef BUILTIN_SPRITE
-            if ((*optarg == '(') &&
-                (strlen(optarg) == (strlen(builtin_spritefile) + 2)) &&
-                (optarg[strlen(optarg) - 1] == ')') &&
-                !strncmp(optarg + 1, builtin_spritefile,
-                         strlen(builtin_spritefile))) {
-                spritefile = 0;
-                break;
-            }
-#endif
             spritefile = optarg;
             break;
         case 'f':
