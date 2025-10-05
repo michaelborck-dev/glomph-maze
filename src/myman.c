@@ -725,7 +725,7 @@ direction not blocked by an appropriate wall
 
 */
 
-static chtype pen[NPENS];
+chtype pen[NPENS];
 
 /* color palette for USE_PALETTE and HTML snapshots */
 static const short pen_pal[16][3] = {
@@ -1172,13 +1172,13 @@ static void init_pen(void) {
  * snapshots; note that these wrappers support only a small subset of
  * the corresponding curses behavior */
 
-FILE*         snapshot              = NULL;
-FILE*         snapshot_txt          = NULL;
-static int    snapshot_x            = 0;
-static int    snapshot_y            = 0;
-static chtype snapshot_attrs        = 0;
-static chtype snapshot_attrs_active = 0;
-static int    snapshot_use_color    = 0;
+FILE*  snapshot              = NULL;
+FILE*  snapshot_txt          = NULL;
+int    snapshot_x            = 0;
+int    snapshot_y            = 0;
+chtype snapshot_attrs        = 0;
+chtype snapshot_attrs_active = 0;
+int    snapshot_use_color    = 0;
 
 /* simulate a subset of curses attributes in HTML; note that this
  * generates presentational markup (<font color="...">, <u>, <b>,
