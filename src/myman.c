@@ -4441,6 +4441,95 @@ void usage(const char* mazefile, const char* spritefile, const char* tilefile) {
     printf("\"\n");
 }
 
+
+/* Helper functions for parse_myman_args() - organized by functional category */
+
+/* Handle display/rendering options (-r, -a, -c, -u, etc.) */
+static void handle_display_options(int opt) {
+    switch (opt) {
+    case 'r': use_raw = 1; break;
+    case 'R': use_raw = 0; break;
+    case 'e': use_raw_ucs = 1; break;
+    case 'E': use_raw_ucs = 0; break;
+    case 'a': use_acs = 0; use_acs_p = 1; break;
+    case 'A': use_acs = 1; use_acs_p = 1; break;
+    case 'x': reflect = 1; break;
+    case 'X': reflect = 0; break;
+    case 'n': use_color_p = 1; use_color = 0; break;
+    case 'c': use_color_p = 1; use_color = 1; break;
+    case 'B': use_dim_and_bright = 1; use_dim_and_bright_p = 1; break;
+    case 'N': use_dim_and_bright = 0; use_dim_and_bright_p = 1; break;
+    case 'o': use_bullet_for_dots = 1; use_bullet_for_dots_p = 1; break;
+    case 'p': use_bullet_for_dots = 0; use_bullet_for_dots_p = 1; break;
+    case '1': use_fullwidth = 0; break;
+    case '2': use_fullwidth = 1; break;
+    case 'u': use_underline = 1; break;
+    case 'U': use_underline = 0; break;
+    case 'i': use_idlok = 0; break;
+    case 'I': use_idlok = 1; break;
+    }
+}
+
+/* Handle audio options (-b, -q) */
+static void handle_audio_options(int opt) {
+    switch (opt) {
+    case 'b': use_sound = 1; break;
+    case 'q': use_sound = 0; break;
+    }
+}
+
+/* Handle file path options (-m, -s, -t) */
+static void handle_file_options(int opt, const char** mazefile,
+                                  const char** spritefile, const char** tilefile) {
+    switch (opt) {
+    case 'm': *mazefile = optarg; break;
+    case 's': *spritefile = optarg; break;
+    case 't': *tilefile = optarg; break;
+    }
+}
+
+/* Handle dump/debug options (-M, -S, -T, -f, -F) */
+static void handle_dump_options(int opt, int* dump_maze, int* dump_sprite, int* dump_tile) {
+    switch (opt) {
+    case 'M': *dump_maze = 1; nogame = 1; break;
+    case 'S': *dump_sprite = 1; nogame = 1; break;
+    case 'T': *dump_tile = 1; nogame = 1; break;
+    case 'f':
+        if (freopen(optarg, "a", stdout) == NULL) {
+            perror(optarg);
+            fflush(stderr), exit(1);
+        }
+        break;
+    case 'F':
+        if (freopen(optarg, "w", stdout) == NULL) {
+            perror(optarg);
+            fflush(stderr), exit(1);
+        }
+        break;
+    }
+}
+
+/* Handle info/help options (-V, -h, -k, -L) - these exit immediately */
+static void handle_info_options(int opt, const char* mazefile,
+                                  const char* spritefile, const char* tilefile) {
+    switch (opt) {
+    case 'V':
+        printf("%s-%s (%s) %s\n%s\n", MYMANVARIANT, MYMANSIZE, MYMAN,
+               MYMANVERSION, MYMANCOPYRIGHT);
+        fflush(stdout), fflush(stderr), exit(0);
+    case 'h':
+        usage(mazefile, spritefile, tilefile);
+        fflush(stdout), fflush(stderr), exit(0);
+    case 'k':
+        printf("%s", MYMANKEYS);
+        fflush(stdout), fflush(stderr), exit(0);
+    case 'L':
+        printf("%s", MYMANLEGALNOTICE);
+        fflush(stdout), fflush(stderr), exit(0);
+    }
+}
+
+
 static void parse_myman_args(int argc, char** argv) {
     int           i;
     int           dump_maze = 0, dump_sprite = 0, dump_tile = 0;
@@ -4454,54 +4543,20 @@ static void parse_myman_args(int argc, char** argv) {
 
     while ((i = getopt_long(argc, argv, short_options, long_options,
                             &option_index)) != -1)
+        /* Delegate to helper functions for simple option categories */
+        handle_info_options(i, mazefile, spritefile, tilefile);
+        handle_display_options(i);
+        handle_audio_options(i);
+        handle_file_options(i, &mazefile, &spritefile, &tilefile);
+        handle_dump_options(i, &dump_maze, &dump_sprite, &dump_tile);
+        
+        /* Handle complex options that need validation or local state */
         switch (i) {
-        case 'V':
-            printf("%s-%s (%s) %s\n%s\n", MYMANVARIANT, MYMANSIZE, MYMAN,
-                   MYMANVERSION, MYMANCOPYRIGHT);
-            fflush(stdout), fflush(stderr), exit(0);
         case 'v':
             defvariant = optarg;
             break;
         case 'z':
             defsize = optarg;
-            break;
-        case 'b':
-            use_sound = 1;
-            break;
-        case 'q':
-            use_sound = 0;
-            break;
-        case 'i':
-            use_idlok = 0;
-            break;
-        case 'I':
-            use_idlok = 1;
-            break;
-        case 'r':
-            use_raw = 1;
-            break;
-        case 'R':
-            use_raw = 0;
-            break;
-        case 'e':
-            use_raw_ucs = 1;
-            break;
-        case 'E':
-            use_raw_ucs = 0;
-            break;
-        case 'a':
-            use_acs   = 0;
-            use_acs_p = 1;
-            break;
-        case 'A':
-            use_acs   = 1;
-            use_acs_p = 1;
-            break;
-        case 'x':
-            reflect = 1;
-            break;
-        case 'X':
-            reflect = 0;
             break;
         case 'd': {
             char garbage;
@@ -4578,91 +4633,11 @@ static void parse_myman_args(int argc, char** argv) {
             lives = (int)uli;
             break;
         }
-        case 'h':
-            usage(mazefile, spritefile, tilefile);
-            fflush(stdout), fflush(stderr), exit(0);
-            break;
-        case 'k':
-            printf("%s", MYMANKEYS);
-            fflush(stdout), fflush(stderr), exit(0);
-            break;
-        case 'L':
-            printf("%s", MYMANLEGALNOTICE);
-            fflush(stdout), fflush(stderr), exit(0);
-            break;
-        case 'u':
-            use_underline = 1;
-            break;
-        case 'U':
-            use_underline = 0;
-            break;
-        case 'M':
-            dump_maze = 1;
-            nogame    = 1;
-            break;
-        case 'S':
-            dump_sprite = 1;
-            nogame      = 1;
-            break;
-        case 'T':
-            dump_tile = 1;
-            nogame    = 1;
-            break;
-        case 'm':
-            mazefile = optarg;
-            break;
-        case 'n':
-            use_color_p = 1;
-            use_color   = 0;
-            break;
-        case 'o':
-            use_bullet_for_dots   = 1;
-            use_bullet_for_dots_p = 1;
-            break;
-        case 'p':
-            use_bullet_for_dots   = 0;
-            use_bullet_for_dots_p = 1;
-            break;
-        case '2':
-            use_fullwidth = 1;
-            break;
-        case '1':
-            use_fullwidth = 0;
-            break;
-        case 'c':
-            use_color_p = 1;
-            use_color   = 1;
-            break;
-        case 'B':
-            use_dim_and_bright   = 1;
-            use_dim_and_bright_p = 1;
-            break;
-        case 'N':
-            use_dim_and_bright   = 0;
-            use_dim_and_bright_p = 1;
-            break;
-        case 't':
-            tilefile = optarg;
-            break;
-        case 's':
-            spritefile = optarg;
-            break;
-        case 'f':
-            if (freopen(optarg, "a", stdout) == NULL) {
-                perror(optarg);
-                fflush(stderr), exit(1);
-            }
-            break;
-        case 'F':
-            if (freopen(optarg, "w", stdout) == NULL) {
-                perror(optarg);
-                fflush(stderr), exit(1);
-            }
-            break;
         default:
             fprintf(stderr, SUMMARY(progname));
             fflush(stderr), exit(2);
         }
+
     if (myman_getenv("MYMAN_DEBUG") && *(myman_getenv("MYMAN_DEBUG")) &&
         strcmp(myman_getenv("MYMAN_DEBUG"), "0")) {
         debug = atoi(myman_getenv("MYMAN_DEBUG"));
