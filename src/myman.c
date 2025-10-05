@@ -4352,17 +4352,6 @@ static void myman(void) {
 while (reinit_requested)
     ;
 fprintf(stderr, "%s: scored %d points\n", progname, score);
-
-#if USE_ICONV
-if (cd_to_wchar != (iconv_t)-1) {
-    iconv_close(cd_to_wchar);
-    cd_to_wchar = (iconv_t)-1;
-}
-if (cd_to_uni != (iconv_t)-1) {
-    iconv_close(cd_to_uni);
-    cd_to_uni = (iconv_t)-1;
-}
-#endif
 }
 
 void usage(const char* mazefile, const char* spritefile, const char* tilefile) {
