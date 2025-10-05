@@ -106,37 +106,56 @@ static void sigwinch_handler(int signum) {
 
 #define SWAPDOTS 0 /* Don't swap dots and pellets by default */
 
+/* User feature toggles - can be overridden at compile-time or changed at
+ * runtime via command-line flags */
+
+/* USE_UNDERLINE: Enable underline attribute for text (default: off, toggle with
+ * -u/-U) */
 #ifndef USE_UNDERLINE
 #define USE_UNDERLINE 0
 #endif
 
-/* ncurses always has curs_set() */
+/* HAVE_CURS_SET: ncurses always has curs_set() for cursor visibility */
 #define HAVE_CURS_SET 1
 
+/* USE_BEEP: Enable terminal beep for sound effects (default: on, used when SDL
+ * audio disabled) */
 #ifndef USE_BEEP
 #define USE_BEEP 1
 #endif
 
+/* SOUND: Enable sound effects at startup (default: off, toggle with -b/-q or
+ * 'S' key) */
 #ifndef SOUND
 #define SOUND 0
 #endif
 
+/* COLORIZE: Enable color support (default: on, requires ncurses color support)
+ */
 #ifndef COLORIZE
 #define COLORIZE 1
 #endif
 
+/* USE_PALETTE: Enable custom color palette (default: on, allows palette
+ * customization) */
 #ifndef USE_PALETTE
 #define USE_PALETTE 1
 #endif
 
+/* USE_RAW_UCS: Enable raw UCS/Unicode character mode for CJK characters
+ * (default: off, toggle with -e/-E) */
 #ifndef USE_RAW_UCS
 #define USE_RAW_UCS 0
 #endif
 
+/* USE_RAW: Enable raw character output mode vs ACS graphics (default: off,
+ * toggle with -r/-R) */
 #ifndef USE_RAW
 #define USE_RAW 0
 #endif
 
+/* USE_ACS: Enable ACS (Alternate Character Set) graphics for borders/walls
+ * (default: on, toggle with -a/-A) */
 #ifndef USE_ACS
 #define USE_ACS 1
 #endif
@@ -182,9 +201,11 @@ static chtype altcharset_cp437[256];
 /* mapping from CP437 to ASCII */
 static chtype ascii_cp437[256];
 
+/* USE_WCWIDTH: Enable wcwidth() for character width detection (needed for
+ * CJK/wide chars) */
 #ifndef USE_WCWIDTH
 #if USE_RAW_UCS
-#define USE_WCWIDTH 1
+#define USE_WCWIDTH 1 /* Enable wcwidth when using raw UCS mode */
 #else
 #define USE_WCWIDTH 0
 #endif
@@ -192,15 +213,19 @@ static chtype ascii_cp437[256];
 
 #if USE_WCWIDTH
 
-#if !USE_ICONV
-/* for wcwidth(3) */
+/* Include wchar.h for wcwidth(3) - measures display width of wide characters */
 #ifndef wcwidth
 #include <wchar.h>
 #endif
-#endif
 
+/* wcwidth_is_suspect: Detects broken wcwidth() implementations that misreport
+ * CJK character widths */
 static int wcwidth_is_suspect = -1;
 
+/* my_wcwidth: Wrapper for wcwidth() that corrects buggy implementations
+ * Some systems incorrectly report fullwidth characters (CJK) as width 1 instead
+ * of 2
+ */
 static int my_wcwidth(wchar_t wc) {
     int len;
 
@@ -217,7 +242,7 @@ static int my_wcwidth(wchar_t wc) {
             }
         }
         if (wcwidth_is_suspect) {
-            len = 2;
+            len = 2; /* Correct to fullwidth */
         }
     }
     return len;
