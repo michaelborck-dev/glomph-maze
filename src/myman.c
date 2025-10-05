@@ -3918,6 +3918,167 @@ void gamerender(void) {
     }
 }
 
+/* Helper: Handle control flow keys (quit, pause, signals)
+ * Returns: 0 = quit, 1 = continue, -1 = not handled */
+static int handle_control_keys(int k) {
+    if ((k == 'q') || (k == 'Q') || (k == MYMANCTRL('C')) || quit_requested) {
+        quit_requested = 0;
+        return 0;
+    } else if ((k == MYMANCTRL('@')) && (k != ERR)) {
+        return 1;
+    } else if (k == MYMANCTRL('S')) {
+        xoff_received = 1;
+        return 1;
+    } else if (k == MYMANCTRL('Q')) {
+        xoff_received = 0;
+        return 1;
+    } else if ((k == '@') || (got_sigwinch && (k == ERR))) {
+        if (got_sigwinch) {
+            use_env(FALSE);
+        }
+        got_sigwinch     = 0;
+        reinit_requested = 1;
+        return 0;
+    }
+    return -1;
+}
+
+/* Helper: Handle info/help keys
+ * Returns: 0 = exit to menu, 1 = continue, -1 = not handled */
+static int handle_info_keys(int k) {
+    if (k == '!') {
+        gameinfo();
+        return 0;
+    } else if ((k == '?') || (k == MYMANCTRL('H'))) {
+        gamehelp();
+        return 1;
+    }
+    return -1;
+}
+
+/* Helper: Handle display refresh keys
+ * Returns: 1 = handled, -1 = not handled */
+static int handle_refresh_keys(int k) {
+    if ((k == 'r') || (k == 'R') || (k == MYMANCTRL('L')) ||
+        (k == MYMANCTRL('R'))) {
+        my_clear();
+        clearok(curscr, TRUE);
+        DIRTY_ALL();
+        wrefresh(stdscr);
+        ignore_delay = 1;
+        frameskip    = 0;
+        return 1;
+    }
+    return -1;
+}
+
+/* Helper: Handle settings toggle keys (use_color, use_acs, etc.)
+ * Returns: 1 = handled, -1 = not handled */
+static int handle_settings_keys(int k) {
+    if ((k == 'i') || (k == 'I')) {
+        use_idlok = !use_idlok;
+#ifndef DISABLE_IDLOK
+        if (use_idlok) {
+            idlok(stdscr, TRUE);
+        } else {
+            idlok(stdscr, FALSE);
+        }
+#endif
+        return 1;
+    } else if ((k == 'c') || (k == 'C')) {
+        use_color   = !use_color;
+        use_color_p = 1;
+        if (use_color)
+            init_pen();
+        else
+            destroy_pen();
+        my_attrset(0);
+        my_clear();
+        clearok(curscr, TRUE);
+        DIRTY_ALL();
+        ignore_delay = 1;
+        frameskip    = 0;
+        return 1;
+    } else if ((k == 'b') || (k == 'B')) {
+        use_dim_and_bright   = !use_dim_and_bright;
+        use_dim_and_bright_p = 1;
+        if (use_color) {
+            destroy_pen();
+            init_pen();
+        }
+        my_attrset(0);
+        my_clear();
+        clearok(curscr, TRUE);
+        DIRTY_ALL();
+        ignore_delay = 1;
+        frameskip    = 0;
+        return 1;
+    } else if ((k == 'u') || (k == 'U')) {
+        use_underline = !use_underline;
+        my_clear();
+        clearok(curscr, TRUE);
+        DIRTY_ALL();
+        ignore_delay = 1;
+        frameskip    = 0;
+        return 1;
+    } else if ((k == 's') || (k == 'S')) {
+        use_sound = !use_sound;
+        return 1;
+    } else if ((k == 'o') || (k == 'O') || (k == '0')) {
+        use_bullet_for_dots   = !use_bullet_for_dots;
+        use_bullet_for_dots_p = 1;
+        init_trans(use_bullet_for_dots);
+        my_clear();
+        clearok(curscr, TRUE);
+        DIRTY_ALL();
+        ignore_delay = 1;
+        frameskip    = 0;
+        return 1;
+    } else if ((k == 'a') || (k == 'A')) {
+        use_acs   = !use_acs;
+        use_acs_p = 1;
+        my_clear();
+        clearok(curscr, TRUE);
+        DIRTY_ALL();
+        ignore_delay = 1;
+        frameskip    = 0;
+        return 1;
+    } else if ((k == 'x') || (k == 'X')) {
+        use_raw = !use_raw;
+        my_clear();
+        clearok(curscr, TRUE);
+        DIRTY_ALL();
+        ignore_delay = 1;
+        frameskip    = 0;
+        return 1;
+    } else if ((k == '/') || (k == '\\')) {
+        reflect = !reflect;
+        my_clear();
+        clearok(curscr, TRUE);
+        DIRTY_ALL();
+        ignore_delay = 1;
+        frameskip    = 0;
+        if (IS_LEFT_ARROW(key_buffer))
+            key_buffer = KEY_UP;
+        else if (IS_UP_ARROW(key_buffer))
+            key_buffer = KEY_LEFT;
+        else if (IS_RIGHT_ARROW(key_buffer))
+            key_buffer = KEY_DOWN;
+        else if (IS_DOWN_ARROW(key_buffer))
+            key_buffer = KEY_RIGHT;
+        return 1;
+    } else if ((k == 'e') || (k == 'E')) {
+        use_raw_ucs = !use_raw_ucs;
+        my_clear();
+        clearok(curscr, TRUE);
+        DIRTY_ALL();
+        ignore_delay = 1;
+        frameskip    = 0;
+        return 1;
+    }
+    return -1;
+}
+
 int gameinput(void) {
     int           k;
     int           hero_can_move_left  = 0;
@@ -3974,147 +4135,34 @@ int gameinput(void) {
             k = '@';
         }
 #endif
-        if ((k == 'q') || (k == 'Q') || (k == MYMANCTRL('C')) ||
-            quit_requested) {
-            quit_requested = 0;
-            return 0;
-        } else if ((k == MYMANCTRL('@')) && (k != ERR)) {
-            /* NUL - idle keepalive (iTerm, maybe others?) */
+                /* Try helper functions for common key categories */
+        int result;
+        result = handle_control_keys(k);
+        if (result != -1) {
+            if (result == 0) return 0;
             return 1;
-        } else if (k == MYMANCTRL('S')) {
-            xoff_received = 1;
+        }
+        result = handle_info_keys(k);
+        if (result != -1) {
+            if (result == 0) return 0;
             return 1;
-        } else if (k == MYMANCTRL('Q')) {
-            xoff_received = 0;
+        }
+        result = handle_refresh_keys(k);
+        if (result != -1) {
             return 1;
-        } else if (k == '!') {
-            gameinfo();
-            return 0;
-        } else if ((k == '?') || (k == MYMANCTRL('H'))) {
-            gamehelp();
+        }
+        result = handle_settings_keys(k);
+        if (result != -1) {
             return 1;
-        } else if ((k == '@') || (got_sigwinch && (k == ERR))) {
-            if (got_sigwinch) {
-                use_env(FALSE);
-            }
-            got_sigwinch     = 0;
-            reinit_requested = 1;
-            return 0;
-        } else if ((k == 'r') || (k == 'R') || (k == MYMANCTRL('L')) ||
-                   (k == MYMANCTRL('R'))) {
-            my_clear();
-            clearok(curscr, TRUE);
-            DIRTY_ALL();
-            wrefresh(stdscr);
-            ignore_delay = 1;
-            frameskip    = 0;
-            return 1;
-        } else if ((k == 'i') || (k == 'I')) {
-            use_idlok = !use_idlok;
-#ifndef DISABLE_IDLOK
-            if (use_idlok) {
-                idlok(stdscr, TRUE);
-            } else {
-                idlok(stdscr, FALSE);
-            }
-#endif
-        } else if ((k == 'c') || (k == 'C')) {
-            use_color   = !use_color;
-            use_color_p = 1;
-            if (use_color)
-                init_pen();
-            else
-                destroy_pen();
-            my_attrset(0);
-            my_clear();
-            clearok(curscr, TRUE);
-            DIRTY_ALL();
-            ignore_delay = 1;
-            frameskip    = 0;
-            return 1;
-        } else if ((k == 'b') || (k == 'B')) {
-            use_dim_and_bright   = !use_dim_and_bright;
-            use_dim_and_bright_p = 1;
-            if (use_color) {
-                destroy_pen();
-                init_pen();
-            }
-            my_attrset(0);
-            my_clear();
-            clearok(curscr, TRUE);
-            DIRTY_ALL();
-            ignore_delay = 1;
-            frameskip    = 0;
-            return 1;
-        } else if ((k == 'u') || (k == 'U')) {
-            use_underline = !use_underline;
-            my_clear();
-            clearok(curscr, TRUE);
-            DIRTY_ALL();
-            ignore_delay = 1;
-            frameskip    = 0;
-            return 1;
-        } else if ((k == 's') || (k == 'S')) {
-            use_sound = !use_sound;
-            return 1;
-        } else if ((k == 'o') || (k == 'O') || (k == '0')) {
-            use_bullet_for_dots   = !use_bullet_for_dots;
-            use_bullet_for_dots_p = 1;
-            init_trans(use_bullet_for_dots);
-            my_clear();
-            clearok(curscr, TRUE);
-            DIRTY_ALL();
-            ignore_delay = 1;
-            frameskip    = 0;
-            return 1;
-        } else if ((k == 'a') || (k == 'A')) {
-            use_acs   = !use_acs;
-            use_acs_p = 1;
-            my_clear();
-            clearok(curscr, TRUE);
-            DIRTY_ALL();
-            ignore_delay = 1;
-            frameskip    = 0;
-            return 1;
-        } else if ((k == 'x') || (k == 'X')) {
-            use_raw = !use_raw;
-            my_clear();
-            clearok(curscr, TRUE);
-            DIRTY_ALL();
-            ignore_delay = 1;
-            frameskip    = 0;
-            return 1;
-        } else if ((k == '/') || (k == '\\')) {
-            reflect = !reflect;
-            my_clear();
-            clearok(curscr, TRUE);
-            DIRTY_ALL();
-            ignore_delay = 1;
-            frameskip    = 0;
-            if (IS_LEFT_ARROW(key_buffer))
-                key_buffer = KEY_UP;
-            else if (IS_UP_ARROW(key_buffer))
-                key_buffer = KEY_LEFT;
-            else if (IS_RIGHT_ARROW(key_buffer))
-                key_buffer = KEY_DOWN;
-            else if (IS_DOWN_ARROW(key_buffer))
-                key_buffer = KEY_RIGHT;
-            return 1;
-        } else if ((k == 'e') || (k == 'E')) {
-            use_raw_ucs = !use_raw_ucs;
-            my_clear();
-            clearok(curscr, TRUE);
-            DIRTY_ALL();
-            ignore_delay = 1;
-            frameskip    = 0;
-            return 1;
-        } else if ((k == 't') || (k == 'T')) {
+        }
+        
+        /* Handle snapshot, pause, debug, and special keys inline */
+        if ((k == 't') || (k == 'T')) {
             char         buf[128];
             char         buf_txt[128];
             unsigned int idx;
 
             if ((!snapshot) && (!snapshot_txt)) {
-                /* try to find a free slot */
                 for (idx = 0; idx <= 9999; idx++) {
                     sprintf(buf, "snap%4.4u%s", idx, HTM_SUFFIX);
                     sprintf(buf_txt, "snap%4.4u%s", idx, TXT_SUFFIX);
