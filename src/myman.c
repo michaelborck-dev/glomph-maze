@@ -619,38 +619,68 @@ static void init_trans(int use_bullet_for_dots) {
     altcharset_cp437[158] = ascii_cp437[158] = 'P';
 }
 
-/* Runtime user-configurable options (defaults here, changeable via
- * command-line) */
-static int use_raw = 0; /* Raw character mode (toggle with -r/-R) */
+/* Runtime user-configurable settings structure */
+typedef struct {
+    /* Display/Rendering settings */
+    int use_raw;     /* Raw character mode (toggle with -r/-R) */
+    int use_raw_ucs; /* Raw UCS/Unicode mode for CJK (toggle with -e/-E) */
+    int use_acs;     /* ACS graphics for borders (toggle with -a/-A) */
+    int use_dim_and_bright;  /* Dim/bright attributes (toggle with -d/-D) */
+    int use_fullwidth;       /* Fullwidth character mode (toggle with -f/-F) */
+    int use_color;           /* Color support (toggle with -c/-C) */
+    int use_bullet_for_dots; /* Bullet instead of dots (toggle with -p/-P) */
+    int use_underline;       /* Underline attribute (toggle with -u/-U) */
 
-static int use_raw_ucs =
-    0; /* Raw UCS/Unicode mode for CJK (toggle with -e/-E) */
+    /* Audio settings */
+    int use_sound; /* Sound effects (toggle with -b/-q or 'S' key) */
 
-int use_underline = 0; /* Underline attribute (toggle with -u/-U) */
+    /* Internal display settings */
+    int use_idlok; /* Use idlok for scrolling optimization */
 
-static int use_idlok = 1;
+    /* Flags to track if user explicitly set these options */
+    int use_acs_p;
+    int use_dim_and_bright_p;
+    int use_color_p;
+    int use_bullet_for_dots_p;
+} myman_settings_t;
 
-static int use_acs   = 1;
-static int use_acs_p = 0;
+/* Global settings instance with defaults */
+static myman_settings_t settings = {.use_raw               = 0,
+                                    .use_raw_ucs           = 0,
+                                    .use_acs               = 1,
+                                    .use_dim_and_bright    = 0,
+                                    .use_fullwidth         = 0,
+                                    .use_color             = 0,
+                                    .use_bullet_for_dots   = 0,
+                                    .use_underline         = 0,
+                                    .use_sound             = 0,
+                                    .use_idlok             = 1,
+                                    .use_acs_p             = 0,
+                                    .use_dim_and_bright_p  = 0,
+                                    .use_color_p           = 0,
+                                    .use_bullet_for_dots_p = 0};
 
-static int use_dim_and_bright   = 0;
-static int use_dim_and_bright_p = 0;
-
-int        use_color   = 0;
-static int use_color_p = 0;
-
+/* Legacy individual variables - kept for now for external linkage compatibility
+ * These will be gradually replaced with settings struct access */
+static int use_raw               = 0;
+static int use_raw_ucs           = 0;
+int        use_underline         = 0; /* Exported to other modules */
+static int use_idlok             = 1;
+static int use_acs               = 1;
+static int use_acs_p             = 0;
+static int use_dim_and_bright    = 0;
+static int use_dim_and_bright_p  = 0;
+int        use_color             = 0; /* Exported to other modules */
+static int use_color_p           = 0;
 static int use_bullet_for_dots   = 0;
 static int use_bullet_for_dots_p = 0;
+static int use_fullwidth         = 0;
+static int use_sound             = 0;
 
-static int quit_requested = 0;
-
-int reinit_requested = 0;
-
-int xoff_received = 0;
-
-static int use_fullwidth = 0;
-
-static int use_sound = 0; /* Sound effects (toggle with -b/-q or 'S' key) */
+/* Control flow variables (not settings) */
+static int quit_requested   = 0;
+int        reinit_requested = 0; /* Exported to other modules */
+int        xoff_received    = 0;
 
 #define MY_COLS (COLS / (use_fullwidth ? 2 : 1))
 
