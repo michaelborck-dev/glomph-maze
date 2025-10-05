@@ -63,12 +63,10 @@
 /* command-line argument parser */
 #include <getopt.h>
 
-/* character set conversion library */
-#ifndef USE_ICONV
+/* Character set conversion - not used on modern UTF-8 systems */
 #define USE_ICONV 0
-#endif
 
-#if USE_ICONV
+#if 0 /* USE_ICONV disabled - modern systems use UTF-8 */
 #include <iconv.h>
 #ifndef wcwidth
 #include <wchar.h>
@@ -170,29 +168,13 @@ static void sigwinch_handler(int signum) {
 
 #endif
 
-#ifndef CRLF
+/* Terminal and keyboard constants */
 #define CRLF "\r\n"
-#endif
-
-#ifndef CCHARW_MAX
 #define CCHARW_MAX 6
-#endif
-
-#ifndef USE_KEYPAD
-#ifdef KEY_LEFT
-#define USE_KEYPAD 1
-#else
-#define USE_KEYPAD 0
-#endif
-#endif
-
-#ifndef USE_A_CHARTEXT
-#define USE_A_CHARTEXT 0
-#endif
-
-#ifndef MYMANCTRL
-#define MYMANCTRL(x) (((x) == '\?') ? 0x7f : ((x) & ~0x60))
-#endif
+#define USE_KEYPAD 1     /* ncurses always has keypad support */
+#define USE_A_CHARTEXT 0 /* ncurses uses 0xff mask, not A_CHARTEXT */
+#define MYMANCTRL(x)                                                           \
+    (((x) == '\?') ? 0x7f : ((x) & ~0x60)) /* Emacs-style control keys */
 
 /* ncurses always defines KEY_LEFT/RIGHT/UP/DOWN (no fallback needed) */
 
@@ -212,9 +194,7 @@ static void sigwinch_handler(int signum) {
 /* ncurses always supports dim and bright attributes */
 #define USE_DIM_AND_BRIGHT 1
 
-#ifndef SWAPDOTS
-#define SWAPDOTS 0
-#endif
+#define SWAPDOTS 0 /* Don't swap dots and pellets by default */
 
 #ifdef NEED_LOCALE_IS_UTF8
 static int locale_is_utf8(void) {
@@ -323,9 +303,8 @@ static int locale_is_utf8(void) {
 #define DANGEROUS_ATTRS 0
 #endif
 
-#ifndef HAVE_CURS_SET
+/* ncurses always has curs_set() */
 #define HAVE_CURS_SET 1
-#endif
 
 #ifndef USE_BEEP
 #define USE_BEEP 1
@@ -552,22 +531,11 @@ static const char SPRITEFILE_str[] = SPRITEFILE;
 #define builtin_spritefile SPRITEFILE
 #endif
 
-#ifndef HAVE_CHTYPE
+/* ncurses always has chtype and attrset() */
 #define HAVE_CHTYPE 1
-#endif
-
-#ifndef HAVE_ATTRSET
 #define HAVE_ATTRSET 1
-#endif
 
-/* NOTE: while this is actually "char" inside the old BSD libcurses,
- * the old C calling conventions mean we can safely use int instead,
- * and it will eventually get coerced */
-#if !HAVE_CHTYPE
-#ifndef chtype
-#define chtype int
-#endif
-#endif
+/* ncurses always defines chtype (no fallback needed) */
 
 /* mapping from CP437 to VT-100 altcharset */
 static chtype altcharset_cp437[256];
