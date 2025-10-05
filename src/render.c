@@ -188,3 +188,809 @@ void mark_sprite_register(int s) {
                             ((gfx_h > sgfx_h) ? gfx_h : sgfx_h) / 2));
         }
 }
+void paint_walls(int verbose) {
+    int    n;
+    double tdt, tdt2 = 0.0L;
+    int    tdt_used = 0;
+
+    memset((void*)inside_wall, '\0', sizeof(inside_wall));
+    tdt      = doubletime();
+    tdt_used = 0;
+    for (n = 0; n < maze_n; n++) {
+        int phase;
+
+        total_dots[n] = 0;
+        pellets[n]    = 0;
+        for (phase = 0; phase <= 4; phase++) {
+            int phase_done;
+
+            do {
+                int i;
+
+                phase_done = 1;
+                for (i = 0; i < maze_h; i++) {
+                    int j;
+
+                    if ((!nogame) && verbose) {
+                        tdt2 = doubletime();
+                        if ((tdt2 - tdt) >= 1.0) {
+                            tdt      = tdt2;
+                            tdt_used = 1;
+                            fprintf(stderr, "%3d%%\r",
+                                    (int)(((((float)n) * 5.0 + (float)phase) *
+                                               maze_h +
+                                           (float)i) *
+                                              100.0 /
+                                              (((float)maze_n) * 5.0 *
+                                               ((float)maze_h)) +
+                                          0.5));
+                            fflush(stderr);
+                        }
+                    }
+                    for (j = 0; j <= maze_w; j++) {
+                        long c;
+
+                        c = maze_visual(n, i, j);
+                        switch (phase) {
+                        case 0:
+                            if (ISPELLET(c) || ISDOT(c)) {
+                                total_dots[n]++;
+                                if (ISPELLET(c)) {
+                                    pellets[n]++;
+                                }
+                            }
+                            if (ISNONINVERTABLE(c)) {
+                                inside_wall[(n * maze_h + i) * (maze_w + 1) +
+                                            j] =
+                                    ((unsigned)inside_wall[(n * maze_h + i) *
+                                                               (maze_w + 1) +
+                                                           j]) |
+                                    INSIDE_WALL_NON_INVERTABLE;
+                            }
+                            break;
+                        case 1:
+                            if ((!(((unsigned)inside_wall
+                                        [(n * maze_h + i) * (maze_w + 1) + j]) &
+                                   INSIDE_WALL_NON_INVERTABLE)) &&
+                                (!((unsigned)udlr[c])) &&
+                                ((((unsigned)
+                                       inside_wall[(n * maze_h + YWRAP(i - 1)) *
+                                                       (maze_w + 1) +
+                                                   j]) &
+                                  INSIDE_WALL_NON_INVERTABLE) ||
+                                 (((unsigned)
+                                       inside_wall[(n * maze_h + YWRAP(i + 1)) *
+                                                       (maze_w + 1) +
+                                                   j]) &
+                                  INSIDE_WALL_NON_INVERTABLE) ||
+                                 (((unsigned)inside_wall[(n * maze_h + i) *
+                                                             (maze_w + 1) +
+                                                         XWRAP2(j - 1)]) &
+                                  INSIDE_WALL_NON_INVERTABLE) ||
+                                 (((unsigned)inside_wall[(n * maze_h + i) *
+                                                             (maze_w + 1) +
+                                                         XWRAP2(j + 1)]) &
+                                  INSIDE_WALL_NON_INVERTABLE))) {
+                                inside_wall[(n * maze_h + i) * (maze_w + 1) +
+                                            j] =
+                                    ((unsigned)inside_wall[(n * maze_h + i) *
+                                                               (maze_w + 1) +
+                                                           j]) |
+                                    INSIDE_WALL_NON_INVERTABLE;
+                                phase_done = 0;
+                            }
+                            break;
+                        case 2:
+                        case 3:
+                            if ((!(((unsigned)inside_wall
+                                        [(n * maze_h + i) * (maze_w + 1) + j]) &
+                                   (INSIDE_WALL_NON_INVERTABLE |
+                                    INSIDE_WALL_PROVISIONAL | INSIDE_WALL_YES |
+                                    INSIDE_WALL_NO |
+                                    ((phase == 2) ? INSIDE_WALL_PHASE2
+                                                  : INSIDE_WALL_PHASE3)))) &&
+                                ((phase == 3) ||
+                                 ((((((unsigned)inside_wall[(n * maze_h +
+                                                             YWRAP(i - 1)) *
+                                                                (maze_w + 1) +
+                                                            j]) &
+                                     INSIDE_WALL_NON_INVERTABLE) ^
+                                    (((unsigned)inside_wall[(n * maze_h +
+                                                             YWRAP(i + 1)) *
+                                                                (maze_w + 1) +
+                                                            j]) &
+                                     INSIDE_WALL_NON_INVERTABLE)) &&
+                                   ((((unsigned)udlr[c]) & 0x05) == 0x05)) ||
+                                  (((((unsigned)inside_wall[(n * maze_h + i) *
+                                                                (maze_w + 1) +
+                                                            XWRAP2(j - 1)]) &
+                                     INSIDE_WALL_NON_INVERTABLE) ^
+                                    (((unsigned)inside_wall[(n * maze_h + i) *
+                                                                (maze_w + 1) +
+                                                            XWRAP2(j + 1)]) &
+                                     INSIDE_WALL_NON_INVERTABLE)) &&
+                                   ((((unsigned)udlr[c]) & 0x50) == 0x50))))) {
+                                int painting_done;
+
+                                inside_wall[(n * maze_h + i) * (maze_w + 1) +
+                                            j] =
+                                    ((unsigned)inside_wall[(n * maze_h + i) *
+                                                               (maze_w + 1) +
+                                                           j]) |
+                                    INSIDE_WALL_PROVISIONAL;
+                                if ((((unsigned)inside_wall[(n * maze_h +
+                                                             YWRAP(i - 1)) *
+                                                                (maze_w + 1) +
+                                                            j]) &
+                                     INSIDE_WALL_NON_INVERTABLE) &&
+                                    ((((unsigned)udlr[c]) & 0x05) == 0x05)) {
+                                    inside_wall[(n * maze_h + i) *
+                                                    (maze_w + 1) +
+                                                j] =
+                                        ((unsigned)
+                                             inside_wall[(n * maze_h + i) *
+                                                             (maze_w + 1) +
+                                                         j]) |
+                                        INSIDE_WALL_NO;
+                                    if (!(((unsigned)
+                                               inside_wall[(n * maze_h +
+                                                            YWRAP(i + 1)) *
+                                                               (maze_w + 1) +
+                                                           j]) &
+                                          (INSIDE_WALL_NON_INVERTABLE |
+                                           INSIDE_WALL_PROVISIONAL |
+                                           INSIDE_WALL_YES | INSIDE_WALL_NO))) {
+                                        inside_wall[(n * maze_h +
+                                                     YWRAP(i + 1)) *
+                                                        (maze_w + 1) +
+                                                    j] =
+                                            ((unsigned)
+                                                 inside_wall[(n * maze_h +
+                                                              YWRAP(i + 1)) *
+                                                                 (maze_w + 1) +
+                                                             j]) |
+                                            (INSIDE_WALL_YES |
+                                             INSIDE_WALL_PROVISIONAL);
+                                    }
+                                } else if ((((unsigned)
+                                                 inside_wall[(n * maze_h + i) *
+                                                                 (maze_w + 1) +
+                                                             XWRAP2(j - 1)]) &
+                                            INSIDE_WALL_NON_INVERTABLE) &&
+                                           ((((unsigned)udlr[c]) & 0x50) ==
+                                            0x50)) {
+                                    inside_wall[(n * maze_h + i) *
+                                                    (maze_w + 1) +
+                                                j] =
+                                        ((unsigned)
+                                             inside_wall[(n * maze_h + i) *
+                                                             (maze_w + 1) +
+                                                         j]) |
+                                        INSIDE_WALL_NO;
+                                    if (!(((unsigned)
+                                               inside_wall[(n * maze_h + i) *
+                                                               (maze_w + 1) +
+                                                           XWRAP2(j + 1)]) &
+                                          (INSIDE_WALL_NON_INVERTABLE |
+                                           INSIDE_WALL_PROVISIONAL |
+                                           INSIDE_WALL_YES | INSIDE_WALL_NO))) {
+                                        inside_wall[(n * maze_h + i) *
+                                                        (maze_w + 1) +
+                                                    XWRAP2(j + 1)] =
+                                            ((unsigned)
+                                                 inside_wall[(n * maze_h + i) *
+                                                                 (maze_w + 1) +
+                                                             XWRAP2(j + 1)]) |
+                                            (INSIDE_WALL_YES |
+                                             INSIDE_WALL_PROVISIONAL);
+                                    }
+                                } else {
+                                    inside_wall[(n * maze_h + i) *
+                                                    (maze_w + 1) +
+                                                j] =
+                                        ((unsigned)
+                                             inside_wall[(n * maze_h + i) *
+                                                             (maze_w + 1) +
+                                                         j]) |
+                                        INSIDE_WALL_YES;
+                                }
+                                do {
+                                    int i2, j2;
+                                    int undo = 0;
+
+                                    painting_done = 1;
+                                    for (i2 = 0; i2 < maze_h; i2++)
+                                        for (j2 = 0; j2 <= maze_w; j2++) {
+                                            long c2;
+
+                                            c2 = maze_visual(n, i2, j2);
+                                            if (!undo) {
+                                                if (((!(((unsigned)udlr[c2]) &
+                                                        0x04)) &&
+                                                     (((unsigned)inside_wall
+                                                           [(n * maze_h +
+                                                             YWRAP(i2 + 1)) *
+                                                                (maze_w + 1) +
+                                                            j2]) &
+                                                      INSIDE_WALL_YES)) ||
+                                                    ((!(((unsigned)udlr[c2]) &
+                                                        0x40)) &&
+                                                     (((unsigned)inside_wall
+                                                           [(n * maze_h + i2) *
+                                                                (maze_w + 1) +
+                                                            XWRAP2(j2 + 1)]) &
+                                                      INSIDE_WALL_YES))) {
+                                                    if (((unsigned)inside_wall
+                                                             [(n * maze_h +
+                                                               i2) *
+                                                                  (maze_w + 1) +
+                                                              j2]) &
+                                                        (INSIDE_WALL_NON_INVERTABLE |
+                                                         INSIDE_WALL_NO)) {
+                                                        undo          = 1;
+                                                        i2            = 0;
+                                                        j2            = 0;
+                                                        painting_done = 1;
+                                                    } else {
+                                                        if (!(((unsigned)inside_wall
+                                                                   [(n * maze_h +
+                                                                     i2) *
+                                                                        (maze_w +
+                                                                         1) +
+                                                                    j2]) &
+                                                              INSIDE_WALL_YES)) {
+                                                            inside_wall[(n * maze_h +
+                                                                         i2) *
+                                                                            (maze_w +
+                                                                             1) +
+                                                                        j2] =
+                                                                ((unsigned)inside_wall
+                                                                     [(n * maze_h +
+                                                                       i2) *
+                                                                          (maze_w +
+                                                                           1) +
+                                                                      j2]) |
+                                                                INSIDE_WALL_PROVISIONAL |
+                                                                INSIDE_WALL_YES;
+                                                            painting_done = 0;
+                                                        }
+                                                    }
+                                                } else if (
+                                                    ((((unsigned)udlr[c2]) &
+                                                      0x04) &&
+                                                     ((((unsigned)inside_wall
+                                                            [(n * maze_h +
+                                                              YWRAP(i2 + 1)) *
+                                                                 (maze_w + 1) +
+                                                             j2]) &
+                                                       (INSIDE_WALL_PROVISIONAL |
+                                                        INSIDE_WALL_YES)) ==
+                                                      ((INSIDE_WALL_PROVISIONAL |
+                                                        INSIDE_WALL_YES) ^
+                                                       (((unsigned)inside_wall
+                                                             [(n * maze_h +
+                                                               i2) *
+                                                                  (maze_w + 1) +
+                                                              j2]) &
+                                                        INSIDE_WALL_PROVISIONAL)))) ||
+                                                    ((((unsigned)udlr[c2]) &
+                                                      0x40) &&
+                                                     ((((unsigned)inside_wall
+                                                            [(n * maze_h + i2) *
+                                                                 (maze_w + 1) +
+                                                             XWRAP2(j2 + 1)]) &
+                                                       (INSIDE_WALL_PROVISIONAL |
+                                                        INSIDE_WALL_YES)) ==
+                                                      ((INSIDE_WALL_PROVISIONAL |
+                                                        INSIDE_WALL_YES) ^
+                                                       (((unsigned)inside_wall
+                                                             [(n * maze_h +
+                                                               i2) *
+                                                                  (maze_w + 1) +
+                                                              j2]) &
+                                                        INSIDE_WALL_PROVISIONAL))))) {
+                                                    if ((((unsigned)inside_wall
+                                                              [(n * maze_h +
+                                                                i2) *
+                                                                   (maze_w +
+                                                                    1) +
+                                                               j2]) &
+                                                         INSIDE_WALL_YES) ==
+                                                        INSIDE_WALL_YES) {
+                                                        undo          = 1;
+                                                        i2            = 0;
+                                                        j2            = 0;
+                                                        painting_done = 1;
+                                                    }
+                                                }
+                                            }
+                                            if (!undo) {
+                                                if ((((unsigned)inside_wall
+                                                          [(n * maze_h + i2) *
+                                                               (maze_w + 1) +
+                                                           j2]) &
+                                                     INSIDE_WALL_YES) &&
+                                                    (!(((unsigned)udlr[c2]) &
+                                                       0x04))) {
+                                                    if (((unsigned)inside_wall
+                                                             [(n * maze_h +
+                                                               YWRAP(i2 + 1)) *
+                                                                  (maze_w + 1) +
+                                                              j2]) &
+                                                        (INSIDE_WALL_NON_INVERTABLE |
+                                                         INSIDE_WALL_NO)) {
+                                                        undo          = 1;
+                                                        i2            = 0;
+                                                        j2            = 0;
+                                                        painting_done = 1;
+                                                    } else {
+                                                        if (!(((unsigned)inside_wall
+                                                                   [(n * maze_h +
+                                                                     YWRAP(i2 +
+                                                                           1)) *
+                                                                        (maze_w +
+                                                                         1) +
+                                                                    j2]) &
+                                                              INSIDE_WALL_YES)) {
+                                                            inside_wall[(n * maze_h +
+                                                                         YWRAP(
+                                                                             i2 +
+                                                                             1)) *
+                                                                            (maze_w +
+                                                                             1) +
+                                                                        j2] =
+                                                                ((unsigned)inside_wall
+                                                                     [(n * maze_h +
+                                                                       YWRAP(
+                                                                           i2 +
+                                                                           1)) *
+                                                                          (maze_w +
+                                                                           1) +
+                                                                      j2]) |
+                                                                INSIDE_WALL_PROVISIONAL |
+                                                                INSIDE_WALL_YES;
+                                                            painting_done = 0;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            if (!undo) {
+                                                if ((((unsigned)inside_wall
+                                                          [(n * maze_h + i2) *
+                                                               (maze_w + 1) +
+                                                           j2]) &
+                                                     INSIDE_WALL_YES) &&
+                                                    (!(((unsigned)udlr[c2]) &
+                                                       0x40))) {
+                                                    if (((unsigned)inside_wall
+                                                             [(n * maze_h +
+                                                               i2) *
+                                                                  (maze_w + 1) +
+                                                              XWRAP2(j2 + 1)]) &
+                                                        (INSIDE_WALL_NON_INVERTABLE |
+                                                         INSIDE_WALL_NO)) {
+                                                        undo          = 1;
+                                                        i2            = 0;
+                                                        j2            = 0;
+                                                        painting_done = 1;
+                                                    } else {
+                                                        if (!(((unsigned)inside_wall
+                                                                   [(n * maze_h +
+                                                                     i2) *
+                                                                        (maze_w +
+                                                                         1) +
+                                                                    XWRAP2(
+                                                                        j2 +
+                                                                        1)]) &
+                                                              INSIDE_WALL_YES)) {
+                                                            inside_wall[(n * maze_h +
+                                                                         i2) *
+                                                                            (maze_w +
+                                                                             1) +
+                                                                        XWRAP2(
+                                                                            j2 +
+                                                                            1)] =
+                                                                ((unsigned)inside_wall
+                                                                     [(n * maze_h +
+                                                                       i2) *
+                                                                          (maze_w +
+                                                                           1) +
+                                                                      XWRAP2(
+                                                                          j2 +
+                                                                          1)]) |
+                                                                INSIDE_WALL_PROVISIONAL |
+                                                                INSIDE_WALL_YES;
+                                                            painting_done = 0;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            if (undo) {
+                                                if (((unsigned)inside_wall
+                                                         [(n * maze_h + i2) *
+                                                              (maze_w + 1) +
+                                                          j2]) &
+                                                    INSIDE_WALL_PROVISIONAL) {
+                                                    inside_wall[(n * maze_h +
+                                                                 i2) *
+                                                                    (maze_w +
+                                                                     1) +
+                                                                j2] =
+                                                        ((unsigned)inside_wall
+                                                             [(n * maze_h +
+                                                               i2) *
+                                                                  (maze_w + 1) +
+                                                              j2]) &
+                                                        ~(INSIDE_WALL_PROVISIONAL |
+                                                          INSIDE_WALL_YES |
+                                                          INSIDE_WALL_NO);
+                                                }
+                                            }
+                                        }
+                                } while (!painting_done);
+                                {
+                                    int i2, j2;
+
+                                    for (i2 = 0; i2 < maze_h; i2++)
+                                        for (j2 = 0; j2 <= maze_w; j2++) {
+                                            if (((unsigned)inside_wall
+                                                     [(n * maze_h + i2) *
+                                                          (maze_w + 1) +
+                                                      j2]) &
+                                                INSIDE_WALL_PROVISIONAL) {
+                                                inside_wall[(n * maze_h + i2) *
+                                                                (maze_w + 1) +
+                                                            j2] =
+                                                    ((unsigned)inside_wall
+                                                         [(n * maze_h + i2) *
+                                                              (maze_w + 1) +
+                                                          j2]) &
+                                                    ~INSIDE_WALL_PROVISIONAL;
+                                            }
+                                        }
+                                }
+                                phase_done = 0;
+                                inside_wall[(n * maze_h + i) * (maze_w + 1) +
+                                            j] =
+                                    ((unsigned)inside_wall[(n * maze_h + i) *
+                                                               (maze_w + 1) +
+                                                           j]) |
+                                    ((phase == 2) ? INSIDE_WALL_PHASE2
+                                                  : INSIDE_WALL_PHASE3);
+                            }
+                            break;
+                        case 4:
+                            if (!(((unsigned)inside_wall
+                                       [(n * maze_h + i) * (maze_w + 1) + j]) &
+                                  INSIDE_WALL_NON_INVERTABLE)) {
+                                int ul, ll, ur, lr;
+
+                                ul =
+                                    !!(((unsigned)inside_wall[(n * maze_h + i) *
+                                                                  (maze_w + 1) +
+                                                              j]) &
+                                       INSIDE_WALL_YES);
+                                ll =
+                                    !!(((unsigned)inside_wall[(n * maze_h +
+                                                               YWRAP(i + 1)) *
+                                                                  (maze_w + 1) +
+                                                              j]) &
+                                       INSIDE_WALL_YES);
+                                ur =
+                                    !!(((unsigned)inside_wall[(n * maze_h + i) *
+                                                                  (maze_w + 1) +
+                                                              XWRAP2(j + 1)]) &
+                                       INSIDE_WALL_YES);
+                                lr =
+                                    !!(((unsigned)inside_wall[(n * maze_h +
+                                                               YWRAP(i + 1)) *
+                                                                  (maze_w + 1) +
+                                                              XWRAP2(j + 1)]) &
+                                       INSIDE_WALL_YES);
+                                if ((ul + ll + ur + lr) == 0) {
+                                    if ((((unsigned)udlr[c]) & 0x05) == 0x05) {
+                                        if (((unsigned)
+                                                 inside_wall[(n * maze_h +
+                                                              YWRAP(i - 1)) *
+                                                                 (maze_w + 1) +
+                                                             j]) &
+                                            INSIDE_WALL_NON_INVERTABLE) {
+                                            ll = 1;
+                                            lr = 1;
+                                        }
+                                        if (((unsigned)
+                                                 inside_wall[(n * maze_h +
+                                                              YWRAP(i + 1)) *
+                                                                 (maze_w + 1) +
+                                                             j]) &
+                                            INSIDE_WALL_NON_INVERTABLE) {
+                                            ul = 1;
+                                            ur = 1;
+                                        }
+                                    }
+                                    if ((((unsigned)udlr[c]) & 0x50) == 0x50) {
+                                        if (((unsigned)
+                                                 inside_wall[(n * maze_h + i) *
+                                                                 (maze_w + 1) +
+                                                             XWRAP2(j + 1)]) &
+                                            INSIDE_WALL_NON_INVERTABLE) {
+                                            ul = 1;
+                                            ll = 1;
+                                        }
+                                        if (((unsigned)
+                                                 inside_wall[(n * maze_h + i) *
+                                                                 (maze_w + 1) +
+                                                             XWRAP2(j - 1)]) &
+                                            INSIDE_WALL_NON_INVERTABLE) {
+                                            ur = 1;
+                                            lr = 1;
+                                        }
+                                    }
+                                    if ((((unsigned)udlr[c]) & 0x55) == 0x44) {
+                                        if (((unsigned)
+                                                 inside_wall[(n * maze_h +
+                                                              YWRAP(i - 1)) *
+                                                                 (maze_w + 1) +
+                                                             XWRAP2(j - 1)]) &
+                                            INSIDE_WALL_NON_INVERTABLE) {
+                                            ur = 1;
+                                            ll = 1;
+                                            lr = 1;
+                                        }
+                                        if (((unsigned)
+                                                 inside_wall[(n * maze_h +
+                                                              YWRAP(i + 1)) *
+                                                                 (maze_w + 1) +
+                                                             XWRAP2(j + 1)]) &
+                                            INSIDE_WALL_NON_INVERTABLE) {
+                                            ul = 1;
+                                        }
+                                    }
+                                    if ((((unsigned)udlr[c]) & 0x55) == 0x41) {
+                                        if (((unsigned)
+                                                 inside_wall[(n * maze_h +
+                                                              YWRAP(i - 1)) *
+                                                                 (maze_w + 1) +
+                                                             XWRAP2(j + 1)]) &
+                                            INSIDE_WALL_NON_INVERTABLE) {
+                                            ul = 1;
+                                            ll = 1;
+                                            lr = 1;
+                                        }
+                                        if (((unsigned)
+                                                 inside_wall[(n * maze_h +
+                                                              YWRAP(i + 1)) *
+                                                                 (maze_w + 1) +
+                                                             XWRAP2(j - 1)]) &
+                                            INSIDE_WALL_NON_INVERTABLE) {
+                                            ur = 1;
+                                        }
+                                    }
+                                    if ((((unsigned)udlr[c]) & 0x55) == 0x14) {
+                                        if (((unsigned)
+                                                 inside_wall[(n * maze_h +
+                                                              YWRAP(i + 1)) *
+                                                                 (maze_w + 1) +
+                                                             XWRAP2(j - 1)]) &
+                                            INSIDE_WALL_NON_INVERTABLE) {
+                                            ul = 1;
+                                            ur = 1;
+                                            lr = 1;
+                                        }
+                                        if (((unsigned)
+                                                 inside_wall[(n * maze_h +
+                                                              YWRAP(i - 1)) *
+                                                                 (maze_w + 1) +
+                                                             XWRAP2(j + 1)]) &
+                                            INSIDE_WALL_NON_INVERTABLE) {
+                                            ll = 1;
+                                        }
+                                    }
+                                    if ((((unsigned)udlr[c]) & 0x55) == 0x11) {
+                                        if (((unsigned)
+                                                 inside_wall[(n * maze_h +
+                                                              YWRAP(i + 1)) *
+                                                                 (maze_w + 1) +
+                                                             XWRAP2(j + 1)]) &
+                                            INSIDE_WALL_NON_INVERTABLE) {
+                                            ul = 1;
+                                            ur = 1;
+                                            ll = 1;
+                                        }
+                                        if (((unsigned)
+                                                 inside_wall[(n * maze_h +
+                                                              YWRAP(i - 1)) *
+                                                                 (maze_w + 1) +
+                                                             XWRAP2(j - 1)]) &
+                                            INSIDE_WALL_NON_INVERTABLE) {
+                                            lr = 1;
+                                        }
+                                    }
+                                    if ((((unsigned)udlr[c]) & 0x55) == 0x15) {
+                                        if ((((unsigned)
+                                                  inside_wall[(n * maze_h +
+                                                               YWRAP(i + 1)) *
+                                                                  (maze_w + 1) +
+                                                              XWRAP2(j - 1)]) &
+                                             INSIDE_WALL_NON_INVERTABLE) ||
+                                            (((unsigned)
+                                                  inside_wall[(n * maze_h +
+                                                               YWRAP(i + 1)) *
+                                                                  (maze_w + 1) +
+                                                              XWRAP2(j + 1)]) &
+                                             INSIDE_WALL_NON_INVERTABLE)) {
+                                            ul = 1;
+                                            ur = 1;
+                                        }
+                                        if (((unsigned)
+                                                 inside_wall[(n * maze_h +
+                                                              YWRAP(i - 1)) *
+                                                                 (maze_w + 1) +
+                                                             j]) &
+                                            INSIDE_WALL_NON_INVERTABLE) {
+                                            ll = 1;
+                                            lr = 1;
+                                        }
+                                    }
+                                    if ((((unsigned)udlr[c]) & 0x55) == 0x45) {
+                                        if ((((unsigned)
+                                                  inside_wall[(n * maze_h +
+                                                               YWRAP(i - 1)) *
+                                                                  (maze_w + 1) +
+                                                              XWRAP2(j - 1)]) &
+                                             INSIDE_WALL_NON_INVERTABLE) ||
+                                            (((unsigned)
+                                                  inside_wall[(n * maze_h +
+                                                               YWRAP(i - 1)) *
+                                                                  (maze_w + 1) +
+                                                              XWRAP2(j + 1)]) &
+                                             INSIDE_WALL_NON_INVERTABLE)) {
+                                            ll = 1;
+                                            lr = 1;
+                                        }
+                                        if (((unsigned)
+                                                 inside_wall[(n * maze_h +
+                                                              YWRAP(i + 1)) *
+                                                                 (maze_w + 1) +
+                                                             j]) &
+                                            INSIDE_WALL_NON_INVERTABLE) {
+                                            ul = 1;
+                                            ur = 1;
+                                        }
+                                    }
+                                    if ((((unsigned)udlr[c]) & 0x55) == 0x51) {
+                                        if ((((unsigned)
+                                                  inside_wall[(n * maze_h +
+                                                               YWRAP(i - 1)) *
+                                                                  (maze_w + 1) +
+                                                              XWRAP2(j + 1)]) &
+                                             INSIDE_WALL_NON_INVERTABLE) ||
+                                            (((unsigned)
+                                                  inside_wall[(n * maze_h +
+                                                               YWRAP(i + 1)) *
+                                                                  (maze_w + 1) +
+                                                              XWRAP2(j + 1)]) &
+                                             INSIDE_WALL_NON_INVERTABLE)) {
+                                            ul = 1;
+                                            ll = 1;
+                                        }
+                                        if (((unsigned)
+                                                 inside_wall[(n * maze_h + i) *
+                                                                 (maze_w + 1) +
+                                                             XWRAP2(j - 1)]) &
+                                            INSIDE_WALL_NON_INVERTABLE) {
+                                            ur = 1;
+                                            lr = 1;
+                                        }
+                                    }
+                                    if ((((unsigned)udlr[c]) & 0x55) == 0x54) {
+                                        if ((((unsigned)
+                                                  inside_wall[(n * maze_h +
+                                                               YWRAP(i - 1)) *
+                                                                  (maze_w + 1) +
+                                                              XWRAP2(j - 1)]) &
+                                             INSIDE_WALL_NON_INVERTABLE) ||
+                                            (((unsigned)
+                                                  inside_wall[(n * maze_h +
+                                                               YWRAP(i + 1)) *
+                                                                  (maze_w + 1) +
+                                                              XWRAP2(j - 1)]) &
+                                             INSIDE_WALL_NON_INVERTABLE)) {
+                                            ur = 1;
+                                            lr = 1;
+                                        }
+                                        if (((unsigned)
+                                                 inside_wall[(n * maze_h + i) *
+                                                                 (maze_w + 1) +
+                                                             XWRAP2(j + 1)]) &
+                                            INSIDE_WALL_NON_INVERTABLE) {
+                                            ul = 1;
+                                            ll = 1;
+                                        }
+                                    }
+                                    if ((((unsigned)udlr[c]) & 0x55) == 0x55) {
+                                        if ((((unsigned)
+                                                  inside_wall[(n * maze_h +
+                                                               YWRAP(i - 1)) *
+                                                                  (maze_w + 1) +
+                                                              XWRAP2(j - 1)]) &
+                                             INSIDE_WALL_NON_INVERTABLE) ||
+                                            (((unsigned)
+                                                  inside_wall[(n * maze_h +
+                                                               YWRAP(i + 1)) *
+                                                                  (maze_w + 1) +
+                                                              XWRAP2(j + 1)]) &
+                                             INSIDE_WALL_NON_INVERTABLE)) {
+                                            ur = 1;
+                                            ll = 1;
+                                        }
+                                        if ((((unsigned)
+                                                  inside_wall[(n * maze_h +
+                                                               YWRAP(i - 1)) *
+                                                                  (maze_w + 1) +
+                                                              XWRAP2(j + 1)]) &
+                                             INSIDE_WALL_NON_INVERTABLE) ||
+                                            (((unsigned)
+                                                  inside_wall[(n * maze_h +
+                                                               YWRAP(i + 1)) *
+                                                                  (maze_w + 1) +
+                                                              XWRAP2(j - 1)]) &
+                                             INSIDE_WALL_NON_INVERTABLE)) {
+                                            ul = 1;
+                                            lr = 1;
+                                        }
+                                    }
+                                    if ((ul + ur + ll + lr) == 4) {
+                                        ul = 0;
+                                        ur = 0;
+                                        ll = 0;
+                                        lr = 0;
+                                        inside_wall[(n * maze_h + i) *
+                                                        (maze_w + 1) +
+                                                    j] =
+                                            ((unsigned)
+                                                 inside_wall[(n * maze_h + i) *
+                                                                 (maze_w + 1) +
+                                                             j]) |
+                                            INSIDE_WALL_FULLY_NON_INVERTED;
+                                    }
+                                }
+                                if (((ul + ll + ur + lr) > 2) ||
+                                    (((ul + ll + ur + lr) == 2) && ul)) {
+                                    inside_wall[(n * maze_h + i) *
+                                                    (maze_w + 1) +
+                                                j] =
+                                        ((unsigned)
+                                             inside_wall[(n * maze_h + i) *
+                                                             (maze_w + 1) +
+                                                         j]) |
+                                        INSIDE_WALL_INVERTED;
+                                }
+                                if (((ul + ll + ur + lr) == 4) &&
+                                    (((!!(((unsigned)udlr[c]) & 0x40)) +
+                                      (!!(((unsigned)udlr[c]) & 0x10)) +
+                                      (!!(((unsigned)udlr[c]) & 0x04)) +
+                                      (!!(((unsigned)udlr[c]) & 0x01))) > 1)) {
+                                    inside_wall[(n * maze_h + i) *
+                                                    (maze_w + 1) +
+                                                j] =
+                                        ((unsigned)
+                                             inside_wall[(n * maze_h + i) *
+                                                             (maze_w + 1) +
+                                                         j]) |
+                                        INSIDE_WALL_FULLY_INVERTED;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            } while (!phase_done);
+        }
+    }
+    if (tdt_used) {
+        fprintf(stderr, "    \r");
+        fflush(stderr);
+        tdt_used = 0;
+    }
+}

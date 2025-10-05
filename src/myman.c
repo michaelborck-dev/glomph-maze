@@ -109,6 +109,12 @@
 
 #include <curses.h>
 
+/* SDL audio support */
+#if USE_SDL_MIXER
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
+#endif
+
 /* work-arounds for old BSD curses */
 
 /* work-arounds for slcurses */
@@ -1772,7 +1778,7 @@ static void snapshot_attrset(chtype attrs) {
     snapshot_attrs = attrs;
 }
 
-static int location_is_suspect = 0;
+int        location_is_suspect = 0;
 static int last_valid_line     = 0;
 static int last_valid_col      = -1;
 
@@ -1897,15 +1903,6 @@ static int my_erase(void) {
         ret = erase();
         return ret;
     }
-}
-
-int my_clear(void) {
-    location_is_suspect = 0;
-    return clear();
-}
-
-void my_clearok(int ok) {
-    clearok(curscr, (ok ? TRUE : FALSE));
 }
 
 static int my_refresh(void) {
@@ -2941,45 +2938,6 @@ static void pager_addstr(const char* s, chtype a) {
         pager_addch((unsigned long)(unsigned char)*pager_addstr__s, (a));
         pager_addstr__s++;
     }
-}
-
-/**
- * @brief Sleep for specified microseconds
- *
- * Wrapper around system usleep() function. Used for frame rate control
- * and timing delays in game loop.
- *
- * @param usecs Number of microseconds to sleep
- *
- * @note Actual sleep time may vary based on system scheduler
- * @see doubletime, usleep(3)
- */
-void my_usleep(long usecs) {
-    usleep(usecs);
-}
-
-/**
- * @brief Get current time as floating point seconds
- *
- * Returns high-resolution timestamp using gettimeofday(). Used for frame
- * timing, performance measurement, and frame rate control.
- *
- * @return Current time as seconds.microseconds (e.g., 1234567890.123456)
- * @return -1.0 on error
- *
- * @note Resolution typically 1 microsecond on modern systems
- * @note Used in gamecycle for frameskip calculation
- * @see my_usleep, gettimeofday(2)
- */
-double doubletime(void) {
-    struct timeval tval;
-
-    tval.tv_sec  = 0;
-    tval.tv_usec = 0;
-    if (gettimeofday(&tval, 0)) {
-        return -1.0L;
-    }
-    return 1.0L * tval.tv_sec + 1e-6L * tval.tv_usec;
 }
 
 static void pager(void) {
@@ -5493,23 +5451,12 @@ static void parse_myman_args(int argc, char** argv) {
                   tile_h, tile, tile_used, tile_flags, tile_color, tile_args);
 }
 
-int main(int argc, char* argv[]
-#ifndef MAIN_NO_ENVP
-         ,
-         char* envp[]
-#endif
-) {
+int main(int argc, char* argv[], char* envp[]) {
     int  i;
     long c = 0;
 
-#ifndef MAIN_NO_ENVP
-    if (envp) {
-        /* we should care */
-    }
-#endif
+    (void)envp;
     progname = (argc > 0) ? argv[0] : "";
-    // pager_notice = MYMANLEGALNOTICE;  // skipped for better UX, see help (?
-    // or Ctrl-H) for license
     progname = (progname && *progname) ? progname : MYMAN;
     td       = 0.0L;
     for (i = 0; i < SPRITE_REGISTERS; i++) {
@@ -5518,12 +5465,8 @@ int main(int argc, char* argv[]
         sprite_register_color[i] = 0x7;
     }
     for (i = 0; i < 256; i++) {
-#ifndef BUILTIN_TILE
-        tile_color[i] = 0x7;
-#endif
-#ifndef BUILTIN_SPRITE
+        tile_color[i]   = 0x7;
         sprite_color[i] = 0x7;
-#endif
     }
     parse_myman_args(argc, argv);
 
@@ -5543,12 +5486,10 @@ int main(int argc, char* argv[]
     if (nogame)
         fflush(stdout), fflush(stderr), exit(0);
 
-#ifdef LC_CTYPE
     if (!setlocale(LC_CTYPE, "")) {
         fprintf(stderr, "warning: setlocale(LC_CTYPE, \"\") failed\n");
         fflush(stderr);
     }
-#endif /* defined(LC_CTYPE) */
 
     if (use_fullwidth) {
         uni_cp437 = uni_cp437_fullwidth;
@@ -5556,6 +5497,3 @@ int main(int argc, char* argv[]
     myman();
     return 0;
 }
-#ifdef END_OF_MAIN
-END_OF_MAIN()
-#endif

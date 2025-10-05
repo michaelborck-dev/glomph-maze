@@ -239,3 +239,59 @@ cmake --build build
 git add CMakeLists.txt CMAKE_SETUP.md CMAKE_VS_MAKEFILE.md
 git commit -m "Add CMake build system for fast incremental builds"
 ```
+
+## Audio Support
+
+### Build with SDL Audio (Optional)
+
+For real game music instead of terminal beeps:
+
+```bash
+# Install SDL2 libraries
+brew install sdl2 sdl2_mixer              # macOS
+sudo apt install libsdl2-dev libsdl2-mixer-dev  # Ubuntu/Debian
+
+# Configure with audio enabled
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_AUDIO=ON
+
+# Build
+cmake --build build
+
+# Run with sound enabled
+./build/glomph -b  # -b flag enables audio
+# Press 'S' in-game to toggle sound on/off
+```
+
+### Audio Backend Details
+
+**Three audio modes:**
+
+1. **SDL2_mixer** (`-DENABLE_AUDIO=ON`):
+   - High-quality MIDI/tracker music playback
+   - Uses existing `.mid` and `.xm` files in `assets/sounds/`
+   - Requires SDL2 and SDL2_mixer libraries
+   - Recommended for best experience
+
+2. **Terminal beep** (default):
+   - Simple beep() function from ncurses
+   - No external dependencies
+   - Works everywhere but often disabled by default
+   - Minimal audio feedback
+
+3. **Silent** (fallback):
+   - No audio at all
+   - Automatic fallback if SDL not available
+
+**In-game controls:**
+- `-b` flag: Enable sound at startup
+- `-q` flag: Disable sound at startup  
+- `S` key: Toggle sound on/off while playing
+
+### Future: miniaudio Support
+
+We plan to add miniaudio as a third option for users who want audio without SDL dependencies:
+- Zero external libraries (single header)
+- Will use WAV/OGG files instead of MIDI
+- Ideal for embedded/minimal builds
+
+Not yet implemented - contributions welcome!

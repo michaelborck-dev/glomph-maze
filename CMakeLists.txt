@@ -23,14 +23,44 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
     )
 endif()
 
+# Optional audio support
+option(ENABLE_AUDIO "Enable SDL2 audio support (requires SDL2_mixer)" OFF)
+
 # Find curses library
 find_package(Curses REQUIRED)
+
+# Find SDL2 and SDL2_mixer if audio enabled
+if(ENABLE_AUDIO)
+    find_package(PkgConfig QUIET)
+    if(PKG_CONFIG_FOUND)
+        pkg_check_modules(SDL2 QUIET sdl2)
+        pkg_check_modules(SDL2_MIXER QUIET SDL2_mixer)
+        
+        if(SDL2_FOUND AND SDL2_MIXER_FOUND)
+            message(STATUS "SDL2 audio enabled (version ${SDL2_VERSION})")
+            set(AUDIO_LIBRARIES ${SDL2_LIBRARIES} ${SDL2_MIXER_LIBRARIES})
+            set(AUDIO_INCLUDE_DIRS ${SDL2_INCLUDE_DIRS} ${SDL2_MIXER_INCLUDE_DIRS})
+            set(USE_SDL_AUDIO ON)
+        else()
+            message(WARNING "SDL2 or SDL2_mixer not found, building without audio")
+            message(STATUS "Install with: brew install sdl2 sdl2_mixer")
+            set(USE_SDL_AUDIO OFF)
+        endif()
+    else()
+        message(WARNING "pkg-config not found, cannot detect SDL2")
+        set(USE_SDL_AUDIO OFF)
+    endif()
+endif()
 
 # Include directories
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CURSES_INCLUDE_DIR}
 )
+
+if(USE_SDL_AUDIO)
+    include_directories(${AUDIO_INCLUDE_DIRS})
+endif()
 
 # Common source files
 set(COMMON_SOURCES
@@ -41,6 +71,8 @@ set(COMMON_SOURCES
     src/maze_io.c
     src/sprite_io.c
     src/game_state.c
+    src/input_state.c
+    src/render_state.c
 )
 
 # Define size variants with their tile/sprite files
@@ -67,7 +99,15 @@ macro(add_size_variant name size tiles sprites)
         SPRITEFILE="sprites/${sprites}"
     )
     
-    target_link_libraries(${name} ${CURSES_LIBRARIES})
+    # Add SDL audio support if enabled
+    if(USE_SDL_AUDIO)
+        target_compile_definitions(${name} PRIVATE USE_SDL_MIXER=1)
+        target_include_directories(${name} PRIVATE ${AUDIO_INCLUDE_DIRS})
+        target_link_directories(${name} PRIVATE ${SDL2_LIBRARY_DIRS} ${SDL2_MIXER_LIBRARY_DIRS})
+        target_link_libraries(${name} ${CURSES_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2_MIXER_LIBRARIES})
+    else()
+        target_link_libraries(${name} ${CURSES_LIBRARIES})
+    endif()
     
     # Install target
     install(TARGETS ${name} DESTINATION bin)

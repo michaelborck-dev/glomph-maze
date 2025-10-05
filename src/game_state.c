@@ -1043,3 +1043,265 @@ int find_home_dir(int s, int r, int c) {
                             (c)])
             : ((unsigned)home_dir[((s)*maze_h + (r)) * (maze_w + 1) + (c)]));
 }
+int gamecycle(int lines, int cols) {
+    int s;
+    int ret;
+
+    showlives = ((myman_intro || myman_start || myman_demo) ? 0 : NET_LIVES) -
+                1 +
+                (((munched == HERO) && (!sprite_register_used[HERO])) ? 1 : 0);
+    if ((old_lines != lines) || (old_cols != cols) || (old_score > score) ||
+        (old_showlives != showlives) || (old_level != level)) {
+        DIRTY_ALL();
+        ignore_delay = 1;
+        frameskip    = 0;
+        old_lines    = lines;
+        old_cols     = cols;
+        /* TODO: make some video memory for the status areas
+         * in order to avoid unnecessary full refreshes */
+        old_score     = score;
+        old_showlives = showlives;
+        old_level     = level;
+    }
+    gamesfx();
+    if (!(winning || NET_LIVES || dead || dying || ghost_eaten_timer ||
+          myman_intro || myman_demo || myman_start || intermission_running ||
+          need_reset)) {
+        key_buffer         = key_buffer_ERR;
+        myman_intro        = 1;
+        myman_start        = 0;
+        myman_demo         = 0;
+        myman_demo_setup   = 0;
+        lives_used         = 0;
+        earned             = 0;
+        winning            = 1;
+        ghost_eaten_timer  = 0;
+        level              = 0;
+        maze_level         = 0;
+        intermission       = 0;
+        intermission_shown = 0;
+        for (s = 0; s < SPRITE_REGISTERS; s++) {
+            sprite_register_used[s]  = 0;
+            sprite_register_timer[s] = 0;
+            sprite_register_frame[s] = 0;
+        }
+        maze_erase();
+        oldplayer    = 0;
+        player       = 1;
+        pellet_timer = 0;
+        pellet_time  = PELLET_ADJUST(7 * ONESEC);
+        cycles       = 0;
+        dots         = 0;
+        dead         = 0;
+        deadpan      = 0;
+        dying        = 0;
+    }
+#if MYMANDELAY
+    if (mymandelay && (!myman_demo_setup) &&
+        !((frames + frameskip) % (frameskip ? frameskip : 1))) {
+        double        td2;
+        unsigned long actual_delay;
+
+        do {
+            actual_delay =
+                (myman_demo ? ((mymandelay + mindelay) / 2) : mymandelay) *
+                (frameskip ? frameskip : 1);
+            td2 = doubletime();
+            if (td == -1.0L) {
+                td        = 0.0L;
+                td2       = 0.0L;
+                frameskip = 0;
+            }
+            if (td == 0.0L) {
+                td = td2 - (actual_delay * 1e-6L);
+            }
+            if ((td2 != 0.0L) && (td != 0.0L)) {
+                if (td2 > td) {
+                    unsigned long delta;
+                    double        nframeskip;
+                    size_t        kfr;
+                    int           use_buffer;
+                    static double onframeskip[] = {0.0, 0.0, 0.0, 0.0, 0.0,
+                                                   0.0, 0.0, 0.0, 0.0, 0.0};
+
+                    nframeskip = onframeskip[0];
+                    for (kfr = 1;
+                         kfr < sizeof(onframeskip) / sizeof(*onframeskip);
+                         kfr++) {
+                        nframeskip += onframeskip[kfr];
+                        onframeskip[kfr - 1] = onframeskip[kfr];
+                    }
+                    nframeskip /= kfr;
+                    use_buffer = (frameskip == (nframeskip + 0.5));
+                    delta      = (unsigned long int)(1e6L * (td2 - td));
+                    nframeskip = ((frameskip ? frameskip : 1) * delta) /
+                                 (actual_delay ? actual_delay : 1);
+                    if (nframeskip > MAXFRAMESKIP) {
+                        nframeskip = MAXFRAMESKIP;
+                    }
+                    onframeskip[kfr - 1] = nframeskip;
+                    if (use_buffer)
+                        nframeskip = 0.0;
+                    for (kfr = 0;
+                         kfr < sizeof(onframeskip) / sizeof(*onframeskip);
+                         kfr++) {
+                        if (use_buffer)
+                            nframeskip += onframeskip[kfr];
+                        else
+                            onframeskip[kfr] = nframeskip;
+                    }
+                    if (use_buffer)
+                        nframeskip /= kfr;
+                    if (!ignore_delay) {
+                        frameskip = (unsigned long)(nframeskip + 0.5);
+                    }
+                    actual_delay = (myman_demo ? ((mymandelay + mindelay) / 2)
+                                               : mymandelay) *
+                                   (frameskip ? frameskip : 1);
+                    if (delta <= actual_delay) {
+                        actual_delay -= delta;
+                    } else {
+                        actual_delay = 0;
+                    }
+                }
+            }
+            if (actual_delay) {
+                unsigned long secs;
+
+                secs = actual_delay / 999999L;
+                while (secs--) {
+                    my_usleep(999999UL);
+                    actual_delay -= 999999UL;
+                }
+                if (actual_delay % 999999UL) {
+                    my_usleep(actual_delay % 999999UL);
+                }
+                if (actual_delay ==
+                    ((myman_demo ? ((mymandelay + mindelay) / 2) : mymandelay) *
+                     (frameskip ? frameskip : 1))) {
+                    break;
+                }
+            } else {
+                break;
+            }
+        } while (1);
+        ignore_delay = 0;
+        td           = doubletime();
+        if (td == -1.0L) {
+            ignore_delay = 1;
+            frameskip    = 0;
+        }
+    }
+#endif
+    ret = gameinput();
+    if (ret >= 0) {
+        return ret;
+    }
+    visible_frame = !((frames++) % (frameskip ? frameskip : 1));
+    if (myman_intro && !(paused || snapshot || snapshot_txt)) {
+        gameintro();
+        if (((!ghost_eaten_timer) &&
+             ((sprite_register_frame[GHOST_SCORE] == 3) ||
+              ((sprite_register_used[HERO]) &&
+               (((unsigned)sprite_register[HERO]) == (SPRITE_HERO + 12)) &&
+               (XTILE(sprite_register_x[HERO]) >= maze_w)))) ||
+            (ret != -1)) {
+            myman_intro = 0;
+            myman_demo  = 1;
+        }
+    }
+    if (myman_demo && !(paused || snapshot || snapshot_txt)) {
+        gamedemo();
+        if ((myman_demo >
+             (1 + (20UL * (maze_h * maze_w) * TWOSECS / (28 * 31)) / 2)) ||
+            (ret != -1)) {
+            ghost_eaten_timer = 0;
+            myman_demo        = 0;
+            myman_demo_setup  = 0;
+            myman_intro       = (ret == -1);
+            myman_start       = (ret != -1) ? (30 * ONESEC) : 0;
+            if (myman_start) {
+                myman_sfx |= myman_sfx_credit;
+            }
+            winning            = 1;
+            oldplayer          = 0;
+            player             = 1;
+            pellet_timer       = 0;
+            pellet_time        = PELLET_ADJUST(7 * ONESEC);
+            cycles             = 0;
+            dots               = 0;
+            dead               = 0;
+            deadpan            = 0;
+            dying              = 0;
+            level              = 0;
+            maze_level         = 0;
+            intermission       = 0;
+            intermission_shown = 0;
+            for (s = 0; s < SPRITE_REGISTERS; s++) {
+                sprite_register_used[s]  = 0;
+                sprite_register_timer[s] = 0;
+                sprite_register_frame[s] = 0;
+            }
+            maze_erase();
+            if (myman_start) {
+                creditscreen();
+                ret        = -1;
+                key_buffer = key_buffer_ERR;
+            }
+        }
+    }
+    if (myman_start && !(paused || snapshot || snapshot_txt)) {
+        myman_start--;
+        if ((!myman_start) || (ret != -1)) {
+            gamestart();
+        }
+    }
+    if (intermission_running && !(paused || snapshot || snapshot_txt)) {
+        gameintermission();
+        if ((!intermission_running) || myman_demo || (ret != -1)) {
+            if (!myman_demo)
+                ret = -1;
+            intermission_running = 0;
+            need_reset           = 1;
+            for (s = 0; s < SPRITE_REGISTERS; s++) {
+                sprite_register_used[s] = 0;
+            }
+        }
+    }
+    if (!(paused || snapshot || snapshot_txt || myman_intro || myman_start ||
+          intermission_running)) {
+        if (gamelogic()) {
+            return 1;
+        }
+    }
+    if (visible_frame && !(xoff_received || myman_demo_setup)) {
+        gamerender();
+    }
+    if (!(paused || snapshot || snapshot_txt)) {
+        if (pellet_timer && (!ghost_eaten_timer)) {
+            int s, eyes, blue, mean;
+
+            if (!--pellet_timer) {
+                for (s = 0; s < ghosts; s++)
+                    if (sprite_register_used[(blue = BLUEGHOST(s))]) {
+                        sprite_register_used[(mean = MEANGHOST(s))] = 1;
+                        sprite_register_used[blue]                  = 0;
+                        sprite_register_used[(eyes = GHOSTEYES(s))] =
+                            VISIBLE_EYES;
+                        sprite_register_x[eyes] =
+                            (sprite_register_x[mean] = sprite_register_x[blue]);
+                        sprite_register_y[eyes] =
+                            (sprite_register_y[mean] = sprite_register_y[blue]);
+                        sprite_register_frame[eyes] =
+                            (ghost_dir[s] = DIRWRAP(s + 1)) - 1;
+                    }
+            } else if (pellet_timer <= TWOSECS)
+                for (s = 0; s < ghosts; s++)
+                    sprite_register[BLUEGHOST(s)] =
+                        ((2 * pellet_timer / ONESEC) & 1) ? SPRITE_BLUE
+                                                          : SPRITE_WHITE;
+        }
+        cycles++;
+    }
+    return 1;
+}

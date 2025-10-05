@@ -22,39 +22,39 @@ Original project last updated in 2009; this fork adds modern maintenance while p
 - Text-mode rendering using ncurses or alternatives (PDCurses, SDL, etc.).
 - Modular data files for mazes, tiles, and sprites (customizable variants).
 - Color and attribute support (toggleable).
-- Legacy platform support (DOS via CONIO, VMS curses, EFI).
-- MIDI sound (optional; future updates may explore SDL_mixer or alternatives).
-- Command-line options for mazes, sizes, ghosts, etc. (e.g., `glomph-maze -m pac` for Pac-Man layout).
+- Optional audio support: SDL2_mixer (MIDI/tracker music) or terminal beep fallback.
+- Command-line options for mazes, sizes, ghosts, etc. (e.g., `glomph -m pac` for Pac-Man layout).
 
 ## Installation
 
 ### Prerequisites
 - ANSI C compiler (e.g., GCC or Clang)
-- CMake 3.10 or higher
+- CMake 3.15 or higher
 - Curses library (e.g., ncurses on Unix, PDCurses on Windows)
-- Optional: SDL2 for enhanced backends
+- Optional: SDL2 + SDL2_mixer for audio support (MIDI/tracker music)
 
 ### Build from Source
-1. Clone the repo:
-   ```bash
-   git clone git@github.com:michaelborck-dev/glomph-maze.git
-   cd glomph-maze
-   ```
 
-2. Configure with CMake:
-   ```bash
-   cmake -B build -DCMAKE_BUILD_TYPE=Release
-   ```
+**Basic build (terminal beep audio):**
+```bash
+git clone git@github.com:michaelborck-dev/glomph-maze.git
+cd glomph-maze
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+./build/glomph
+```
 
-3. Build:
-   ```bash
-   cmake --build build
-   ```
+**Build with SDL audio (recommended for music):**
+```bash
+# Install SDL2 libraries first
+brew install sdl2 sdl2_mixer              # macOS
+sudo apt install libsdl2-dev libsdl2-mixer-dev  # Ubuntu/Debian
 
-4. Run:
-   ```bash
-   ./build/glomph
-   ```
+# Build with audio enabled
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_AUDIO=ON
+cmake --build build
+./build/glomph -b  # -b enables sound
+```
 
 See [CMAKE_SETUP.md](CMAKE_SETUP.md) for detailed build instructions and options.
 
@@ -70,6 +70,7 @@ Controls (case-insensitive):
 - Q: Quit.
 - P/ESC: Pause.
 - C: Toggle color.
+- S: Toggle sound on/off.
 - ?: Help.
 
 Full options: `glomph-maze -h`.
