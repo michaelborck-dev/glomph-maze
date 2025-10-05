@@ -218,13 +218,15 @@ git commit -m "feat: add feature description"
 - [x] Asset loaders (MazeLoader, TileLoader, SpriteLoader)
 - [x] Basic tests for loaders
 - [x] Development tooling (ruff, mypy, pytest)
+- [x] Terminal abstraction layer (curses wrapper)
+- [x] Game state management
+- [x] Entity system (player, ghosts)
+- [x] Rendering engine
+- [x] Input handling
 
 ### 🚧 In Progress
-- [ ] Terminal abstraction layer (curses wrapper)
-- [ ] Game state management
-- [ ] Entity system (player, ghosts)
-- [ ] Rendering engine
-- [ ] Input handling
+- [ ] Color support and palette management
+- [ ] Text rendering and positioning
 - [ ] Audio support (pygame or similar)
 
 ### 📋 Planned

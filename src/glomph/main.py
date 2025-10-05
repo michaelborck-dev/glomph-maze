@@ -5,6 +5,7 @@ from pathlib import Path
 
 from glomph.game import Game
 from glomph.loaders import MazeLoader
+from glomph.renderer import get_renderer
 from glomph.terminal import get_terminal
 
 
@@ -26,32 +27,37 @@ def main() -> int:
         maze = loader.load(mazes[0])
         print(f"Loaded maze: {mazes[0]} ({maze.width}x{maze.height})")
 
-        # Initialize game
+        # Initialize game and renderer
         game = Game(maze.width, maze.height)
+        renderer = get_renderer()
 
         # Demo game loop
         with terminal.screen():
+            height, width = terminal.get_screen_size()
+            renderer.set_viewport(width, height)
+
             while True:
-                terminal.clear()
+                renderer.clear()
 
-                # Draw game state
-                terminal.draw_text(0, 0, f"Glomph Maze - Level {game.level}")
-                terminal.draw_text(1, 0, f"Score: {game.player.score}  Lives: {game.player.lives}")
-                terminal.draw_text(2, 0, f"Position: ({game.player.position.x}, {game.player.position.y})")
-                terminal.draw_text(3, 0, f"Direction: {game.player.direction}")
-                terminal.draw_text(5, 0, "Arrow keys: move  P: pause  ESC: quit")
+                # Render maze
+                renderer.render_maze(maze)
 
-                # Draw player
-                terminal.draw_char(7, 10, game.player.char, game.player.color)
+                # Render entities
+                renderer.render_entity(game.player)
+                renderer.render_entities(game.ghosts)
 
-                # Draw ghosts
-                ghost_positions = [(8, 8), (8, 12), (10, 8), (10, 12)]
-                for i, ghost in enumerate(game.ghosts):
-                    if i < len(ghost_positions):
-                        y, x = ghost_positions[i]
-                        terminal.draw_char(y, x, ghost.char, ghost.color)
+                # Render UI
+                game_state = {
+                    'level': game.level,
+                    'score': game.player.score,
+                    'lives': game.player.lives
+                }
+                renderer.render_ui(game_state)
 
-                terminal.refresh()
+                # Draw instructions
+                terminal.draw_text(height - 2, 0, "Arrow keys: move  P: pause  ESC: quit", 7)
+
+                renderer.present()
 
                 # Handle input
                 key = terminal.wait_for_keypress()
