@@ -23,52 +23,8 @@
  *  DEALINGS IN THE SOFTWARE.
  */
 
-/* configuration information */
-#ifdef HAVE_CONFIG_H
-#ifndef MYMAN_CONFIG_H_INCLUDED
-#include "config.h"
-#endif
-#endif
-
-#ifndef LIT64
-#define LIT64(lit) lit##LL
-#endif
-
-/* some Win32 bits use _UNICODE, others use UNICODE */
-#ifdef UNICODE
-#ifndef _UNICODE
-#define _UNICODE UNICODE
-#endif /* ! defined(_UNICODE) */
-#endif /* ! defined(UNICODE) */
-
-#ifdef _UNICODE
-#ifndef UNICODE
-#define UNICODE _UNICODE
-#endif /* ! defined(UNICODE) */
-#endif /* ! defined(_UNICODE) */
-
 #include <errno.h>
-
 #include <signal.h>
-
-#ifndef SIG_ERR
-#define SIG_ERR ((void (*)(int)) - 1)
-#endif
-
-#if defined(__PACIFIC__) || defined(HI_TECH_C) || defined(SMALL_C)
-#ifndef HAVE_RAISE
-#define HAVE_RAISE 0
-#endif
-#endif
-
-#ifndef HAVE_RAISE
-#define HAVE_RAISE 1
-#endif
-
-#if !HAVE_RAISE
-#undef raise
-#define raise(sig) kill(getpid(), (sig))
-#endif
 
 #include <ctype.h>
 #include <limits.h>
@@ -81,33 +37,10 @@
 #include <time.h>
 #include <unistd.h>
 
-#ifndef MYMAN_UTILS_H_INCLUDED
-#include "utils.h"
-#endif
-
 #include "globals.h"
-
-#include <langinfo.h>
-
-#ifndef F_OK
-#define F_OK 0
-#endif
-
-/* terminal-screen handling library */
-
-#ifdef NCURSES_XOPEN_HACK
-#ifndef _XOPEN_SOURCE_EXTENDED
-#define _XOPEN_SOURCE_EXTENDED
-#endif
-#ifndef _XOPEN_SOURCE
-#define _XOPEN_SOURCE 500
-#endif
-#endif
-
-#ifndef MY_CURSES_H
-#endif
-
+#include "utils.h"
 #include <curses.h>
+#include <langinfo.h>
 
 /* SDL audio support */
 #if USE_SDL_MIXER
@@ -115,45 +48,16 @@
 #include <SDL2/SDL_mixer.h>
 #endif
 
-/* work-arounds for old BSD curses */
-
-/* work-arounds for slcurses */
-
-/* HAVE_SETATTR: does our curses implementation include setattr()/clrattr()? */
-
-#ifndef HAVE_SETATTR
-#define HAVE_SETATTR 0
-#endif
-
-/* HAVE_NODELAY: does our curses implementation include nodelay()? */
-
-#ifndef HAVE_NODELAY
-#define HAVE_NODELAY 1
-#endif
-
-/* for resizing */
-
-#ifndef USE_IOCTL
-#define USE_IOCTL 1
-#endif
-
-#if USE_IOCTL
-#if HAVE_IOCTL_H
-#include <ioctl.h>
-#else
+/* Terminal resizing support (ncurses standard) */
 #include <sys/ioctl.h>
-#endif
 #ifdef TIOCGWINSZ
 #include <termios.h>
 #endif
-#endif
 
-#ifndef USE_SIGWINCH
 #ifdef SIGWINCH
 #define USE_SIGWINCH 1
 #else
 #define USE_SIGWINCH 0
-#endif
 #endif
 
 /* command-line argument parser */
@@ -290,21 +194,7 @@ static void sigwinch_handler(int signum) {
 #define MYMANCTRL(x) (((x) == '\?') ? 0x7f : ((x) & ~0x60))
 #endif
 
-#ifndef KEY_LEFT
-#define KEY_LEFT MYMANCTRL('B')
-#endif
-
-#ifndef KEY_RIGHT
-#define KEY_RIGHT MYMANCTRL('F')
-#endif
-
-#ifndef KEY_UP
-#define KEY_UP MYMANCTRL('P')
-#endif
-
-#ifndef KEY_DOWN
-#define KEY_DOWN MYMANCTRL('N')
-#endif
+/* ncurses always defines KEY_LEFT/RIGHT/UP/DOWN (no fallback needed) */
 
 #define IS_LEFT_ARROW(k)                                                       \
     ((k == 'h') || (k == 'H') || (k == '4') || (k == KEY_LEFT) ||              \
@@ -319,9 +209,8 @@ static void sigwinch_handler(int signum) {
     ((k == 'j') || (k == 'J') || (k == '2') || (k == KEY_DOWN) ||              \
      (k == MYMANCTRL('N')))
 
-#ifndef USE_DIM_AND_BRIGHT
+/* ncurses always supports dim and bright attributes */
 #define USE_DIM_AND_BRIGHT 1
-#endif
 
 #ifndef SWAPDOTS
 #define SWAPDOTS 0
