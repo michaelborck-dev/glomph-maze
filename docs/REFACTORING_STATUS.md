@@ -1,268 +1,288 @@
-# Refactoring Status - Quick Reference
+# Glomph Maze Refactoring Status
 
-**Branch:** refactor  
-**Last Updated:** 2025-10-04  
-**Current Phase:** 3 ✅ COMPLETE
-
----
-
-## Phase Completion
-
-- [x] **Phase 0: globals.h Foundation** ✅ COMPLETE (2025-10-04)
-- [x] **Phase 1: C17 Upgrade** ✅ COMPLETE (2025-10-04)
-- [x] **Phase 2: Type Modernization** ✅ COMPLETE (2025-10-04)
-- [x] **Phase 3: Header Reorganization** ✅ COMPLETE (2025-10-04)
-- [ ] **Phase 4: Function Documentation** (Next)
-- [ ] **Phase 5: Extract First Module** (Optional)
+**Last Updated:** October 5, 2025  
+**Branch:** phase-5-render-module  
+**Status:** Phase 1 Complete ✅
 
 ---
 
-## What Changed in Phase 3
+## Overall Progress
 
-### New Files
-- `include/game_state.h` - Game state (score, lives, level, player state)
-- `include/sprite_state.h` - Sprite and ghost AI state
-- `include/maze_state.h` - Maze data, dimensions, loading
-- `include/render_state.h` - Rendering and display state
-- `include/input_state.h` - Input handling and timing
+### Code Metrics
+- **Original myman.c:** ~6,000+ lines (monolithic)
+- **After modular extraction (Phases 0-5):** 5,499 lines
+- **After cleanup (Phase 1):** 5,224 lines
+- **Total reduction:** ~775+ lines (13% smaller)
+- **Preprocessor directives:** ~130 fewer #ifdef blocks
 
-### Modified Files
-- `include/globals.h` - Now acts as central aggregator, includes all module headers
-- `.clang-format` - Updated Standard to c++17 (from C11)
-
-### Header Modularization
+### Module Structure
 ```
-Before Phase 3:
-include/globals.h (682 lines - monolithic)
-
-After Phase 3:
-include/
-├── globals.h (110 lines - aggregator)
-├── game_state.h (114 lines)
-├── sprite_state.h (123 lines)
-├── maze_state.h (114 lines)
-├── render_state.h (139 lines)
-└── input_state.h (91 lines)
-```
-
-### Benefits
-- **Better organization:** Related declarations grouped by domain
-- **Easier navigation:** Find declarations by functional area
-- **Documentation:** Each module has clear purpose and scope
-- **Maintainability:** Smaller, focused headers
-- **No breaking changes:** globals.h still works for all existing code
-
-### Verification
-- ✅ All 4 variants build successfully
-- ✅ Help system tested and working
-- ✅ Code formatted with clang-format
-- ✅ No behavior changes
-
----
-
-## What Changed in Phase 2
-
-### Modified Files
-- `include/globals.h` - Added stdint.h, stdbool.h; updated type declarations
-- `include/utils.h` - Added headers; updated all type declarations  
-- `src/utils.c` - Updated variable definitions and function signatures
-
-### Type Modernization
-```c
-// Changed types:
-unsigned char  → uint8_t  (20+ occurrences)
-unsigned short → uint16_t (1 occurrence)
-int (boolean)  → bool     (3 occurrences)
-```
-
-### Specific Changes
-- **uint8_t:** sprite_register, dirty_cell, home_dir, reflect arrays, gfx functions
-- **uint16_t:** inside_wall
-- **bool:** all_dirty, nogame, paused
-
-### Verification
-- ✅ All 4 variants build successfully
-- ✅ All variants tested and working
-- ✅ No new warnings introduced
-
----
-
-## What Changed in Phase 1
-
-### Modified Files
-- `CMakeLists.txt` - Updated to C17 standard with extensions disabled
-- `include/globals.h` - Added 6 static assertions for compile-time validation
-- Fixed SPRITE_REGISTERS constant (was 46, should be 57)
-
-### Static Assertions Added
-```c
-_Static_assert(MAXGHOSTS == 16, ...);
-_Static_assert(SPRITE_REGISTERS == 57, ...);
-_Static_assert(LIVES >= 0 && LIVES <= 99, ...);
-_Static_assert(NPENS == 256, ...);
-_Static_assert(sizeof(int) >= 4, ...);
-_Static_assert(sizeof(void*) >= 4, ...);
-```
-
-### Verification
-- ✅ All 4 variants build with C17
-- ✅ All static assertions pass
-- ✅ Game runs identically
-- ✅ No new warnings introduced
-
----
-
-## What Changed in Phase 0
-
-### New Files
-- `include/globals.h` - All 210+ extern declarations consolidated
-- `docs/PHASE_0_SUMMARY.md` - Detailed Phase 0 analysis
-- `scripts/generate_docs_script.sh` - Documentation generation
-- `docs/Doxyfile` - Doxygen configuration
-
-### Modified Files
-- `src/myman.c` - Now includes globals.h
-- `src/utils.c` - Now includes globals.h
-- `src/logic.c` - Now includes globals.h
-- `src/main.c` - Now includes globals.h
-- `AGENTS.md` - Updated with current architecture
-- `docs/REFACTOR_PLAN.md` - Phase 0 marked complete
-
-### Commits
-```
-61abe1d - Update AGENTS.md with documentation generation commands
-3264502 - Add documentation generation script and Doxyfile
-90df08d - Add Phase 0 completion summary documentation
-3bd669d - Update AGENTS.md with Phase 0 refactoring status
-ffbdfe5 - Update REFACTOR_PLAN.md - mark Phase 0 complete
-c136511 - Phase 0: Consolidate globals - create globals.h
-```
-
----
-
-## Current Architecture
-
-```
-include/
-├── globals.h        ← Aggregator: includes all modules
-├── game_state.h     ← Game state (score, lives, level)
-├── sprite_state.h   ← Sprites and ghost AI
-├── maze_state.h     ← Maze data and loading
-├── render_state.h   ← Rendering and display
-├── input_state.h    ← Input and timing
-└── utils.h          ← Macros, constants, utilities
-
 src/
-├── myman.c    ← Includes globals.h
-├── utils.c    ← Includes globals.h (defines most globals)
-├── logic.c    ← Includes globals.h
-└── main.c     ← Includes globals.h
+├── input_state.c (44 lines) - Timing utilities
+├── render_state.c (39 lines) - Curses helpers
+├── sprite_io.c (528 lines) - Sprite loading
+├── maze_io.c (609 lines) - Maze loading
+├── logic.c (920 lines) - Game rules/AI ✓ FOCUSED
+├── render.c (996 lines) - Rendering helpers
+├── game_state.c (1,307 lines) - State + orchestration
+├── utils.c (1,899 lines) - Utilities ✓ FOCUSED
+└── myman.c (5,224 lines) - Core game loop
 ```
 
 ---
 
-## Quick Commands
+## Completed Phases
 
-### Build
-```bash
-cmake --build build                    # Incremental build
-rm -rf build && cmake -B build && cmake --build build  # Clean rebuild
-```
+### ✅ Phase 0: Header Consolidation (Complete)
+- Created `include/globals.h` - 210+ global declarations
+- All source files include `globals.h`
 
-### Test
-```bash
-./build/glomph --help                  # Test standard variant
-./build/glomph                         # Play game
-```
+### ✅ Phase 1: C17 Upgrade (Complete)
+- Upgraded from C89/C90 to C17 standard
+- Added 6 compile-time static assertions
+- Fixed SPRITE_REGISTERS constant (46 → 57)
 
-### Documentation
-```bash
-./scripts/generate_docs_script.sh      # Regenerate all docs
-open docs/generated/html/index.html    # View HTML docs
-```
+### ✅ Phase 2: Type Modernization (Complete)
+- Modernized types using stdint.h and stdbool.h
+- Changed unsigned char → uint8_t, unsigned short → uint16_t
+- Changed int boolean flags → bool
 
-### Git
-```bash
-git log --oneline -10                  # Recent commits
-git diff main..refactor                # Compare to main
-git status                             # Current status
-```
+### ✅ Phase 3: Header Modularization (Complete)
+- Split globals.h into 5 domain-specific modules:
+  - game_state.h - Score, lives, level, player state
+  - sprite_state.h - Sprite registers, ghost AI
+  - maze_state.h - Maze data, dimensions, loading
+  - render_state.h - Tiles, screen, colors, pager
+  - input_state.h - Keyboard, controls, timing
 
----
+### ✅ Phase 4: Function Documentation (Complete)
+- Documented 26 functions with Doxygen comments
+- Added parameter descriptions, return values, notes
+- Cross-referenced related functions
 
-## Next Phase Preview
+### ✅ Phase 5: Function Extraction (Complete)
+**Phase 5A:** Sprite I/O Module (528 lines)
+- load_sprites(), load_all_sprites(), read_sprite_file()
 
-### Phase 4: Function Documentation (Optional)
+**Phase 5B:** Maze I/O Module (609 lines)
+- load_maze(), load_all_mazes(), read_maze_file()
 
-**Goal:** Add Doxygen documentation to all functions
+**Phase 5C:** Game State Module (1,045 lines)
+- new_game(), start_level(), award_bonus_life(), etc.
 
-**Approach:**
-- Document public API functions
-- Add parameter descriptions
-- Add return value documentation
-- Document side effects
+**Phase 5D:** Render Module (198 lines)
+- set_tile_colors(), calculate_tile_dimensions(), etc.
 
-**Estimated Time:** 4-8 hours (or skip to Phase 5)
-
----
-
-## Key Metrics
-
-### Code Size
-- **Total lines:** ~12,341 (down from ~13,400 after modern-simplify)
-- **Largest file:** myman.c (6,263 lines)
-- **Global variables:** 210+
-
-### Build Variants
-- ✅ glomph (standard 4x4)
-- ✅ glomph-xlarge (5x3 ASCII art)
-- ✅ glomph-small (2x1 Unicode)
-- ✅ glomph-tiny (1x1 minimal)
-
-### Documentation
-- **Doxygen files:** 10 source files documented
-- **cflow outputs:** 3 call graph formats
-- **Manual docs:** REFACTOR_PLAN.md, PHASE_0_SUMMARY.md
+**Phase 5E:** Additional Extractions (Latest Session)
+- input_state.c: my_usleep(), doubletime() (44 lines)
+- render_state.c: my_clear(), my_clearok() (39 lines)
+- Moved gamecycle() → game_state.c (262 lines)
+- Moved paint_walls() → render.c (806 lines)
 
 ---
 
-## Important Notes
+## Phase 1 Cleanup (Latest Work)
 
-### Build System
-- Using **CMake** (C11 currently, upgrading to C17 next)
-- Build time: ~30s first build, 1-2s incremental
-- All variants build from same source with different defines
+### Session 1: Dead Platform Code Removal
+**Removed (143 lines):**
+- Windows UNICODE support
+- Ancient compiler support (Pacific C, Hi-Tech C, Small-C)
+- Autoconf support (HAVE_CONFIG_H)
+- Legacy curses compatibility (NCURSES_XOPEN_HACK, MY_CURSES_H, etc.)
+- Arrow key fallback definitions (KEY_LEFT, etc.)
+- Empty attribute checks
 
-### Code Style
-- **Standard:** Currently C11, migrating to C17
-- **Format:** LLVM style, 80-char lines, 4-space indent
-- **License:** BSD-style (original + 2025 additions)
+**Simplified to constants:**
+- HAVE_NODELAY → always 1
+- HAVE_SETATTR → always 0
+- HAVE_CURS_SET → always 1
+- HAVE_CHTYPE → always 1
+- HAVE_ATTRSET → always 1
+- USE_KEYPAD → always 1
+- USE_A_CHARTEXT → always 0
+- USE_DIM_AND_BRIGHT → always 1
+- SWAPDOTS → always 0
+- USE_ICONV → always 0
 
-### Testing Strategy
-- Manual play testing after each phase
-- All 4 variants tested
-- Help system verified
-- No automated test suite (yet)
+**Result:** 5,499 → 5,356 lines (-143 lines)
+
+### Session 2: BUILTIN and NEED Flags Removal
+**Removed (132 lines):**
+- BUILTIN_SIZE - Embedded size variant (never used)
+- BUILTIN_TILE - Embedded tile data (never used)
+- BUILTIN_SPRITE - Embedded sprite data (never used)
+- BUILTIN_VARIANT - Embedded variant name (never used)
+- BUILTIN_MAZE - Embedded maze data (never used)
+- NEED_LOCALE_IS_UTF8 - UTF-8 detection (71 lines, never called)
+- NEED_CP437_TO_ASCII - Character conversion (5 lines, never called)
+
+**Result:** 5,356 → 5,224 lines (-132 lines)
 
 ---
 
-## Help & Resources
+## New Features Added
 
-### Documentation
-- **Full plan:** `docs/REFACTOR_PLAN.md`
-- **Phase 0 details:** `docs/PHASE_0_SUMMARY.md`
-- **Build guide:** `docs/CMAKE_SETUP.md`
-- **Agent guide:** `AGENTS.md`
+### ✅ SDL Audio Support
+- Optional CMake flag: `-DENABLE_AUDIO=ON`
+- Plays MIDI/XM files from assets/sounds/
+- Falls back to terminal beep when disabled
+- Works with all 4 size variants
+- Fully documented in README and CMAKE_SETUP.md
 
-### Generated Docs
-- **HTML:** `docs/generated/html/index.html`
-- **XML:** `docs/generated/xml/`
-- **Call graphs:** `docs/cflow/*.txt`
-
-### Quick Reference
-Run `./scripts/generate_docs_script.sh` after any code changes to keep
-documentation up-to-date.
+### ✅ File Organization
+- Moved test_audio.sh to scripts/
+- Cleaned up backup files
+- Organized documentation in docs/
 
 ---
 
-**Status:** Phase 3 complete! Headers are now modularized. Ready for Phase 4 (documentation) or Phase 5 (module extraction).
+## Preserved Features (No Loss!)
+
+### ✅ User Input Methods (All Working)
+- Arrow keys (modern standard)
+- HJKL (Vi/Vim users)
+- 2468 (numeric keypad)
+- Ctrl-BFPN (Emacs users)
+
+### ✅ Platform Support
+- Terminal resize detection (USE_SIGWINCH)
+- Terminal size queries (USE_IOCTL)
+- SDL audio (USE_SDL_MIXER)
+- Terminal beep fallback (USE_BEEP)
+
+---
+
+## Testing Status
+
+**Build Variants:** ✅ All 4 pass
+- glomph (standard)
+- glomph-xlarge (huge)
+- glomph-small (compact)
+- glomph-tiny (minimal)
+
+**Smoke Tests:** ✅ 100% passing  
+**SDL Audio:** ✅ Tested working  
+**Behavior:** ✅ No regressions detected
+
+---
+
+## Next Steps
+
+### Phase 2: Extract Curses Wrappers (Medium Priority)
+**Impact:** ~800 lines from myman.c
+
+**Extract to:** `src/curses_wrapper.c`
+
+**Functions:**
+- my_erase(), my_refresh(), my_move()
+- my_attrset(), my_real_attrset()
+- my_addch(), my_addstr(), my_getch()
+- snapshot_*() functions (HTML screenshots)
+
+**Status:** Not started
+**Risk:** Medium (frequent calls in game loop)
+**Benefit:** Clear separation of terminal I/O vs game logic
+
+### Phase 3: Extract Pager System (Low Priority)
+**Impact:** ~400-600 lines from myman.c
+
+**Extract to:** `src/pager.c`
+
+**Functions:**
+- pager(), pager_move()
+- pager_addch(), pager_addstr()
+
+**Status:** Attempted, reverted (too many dependencies)
+**Risk:** Medium-High (depends on many myman.c internals)
+**Decision:** Defer until curses wrappers extracted first
+
+### Option: Continue #ifdef Cleanup (Low Risk)
+**Potential:** ~50-100 more lines
+
+**Targets:**
+- More attribute-related #ifdef blocks
+- Legacy compatibility code
+- Unused macro definitions
+
+**Risk:** Very Low
+**Benefit:** Incremental readability improvement
+
+---
+
+## Architectural Decisions
+
+### ✅ Confirmed Scope
+- **Platforms:** macOS, Linux (modern Unix only)
+- **Curses:** ncurses only (not PDCurses, XCurses, etc.)
+- **Standard:** C17 (no C89/C90 compatibility)
+- **Build:** CMake only (no autoconf/make)
+- **Audio:** SDL2_mixer (optional) or terminal beep
+
+### ✅ Abandoned Features
+- Windows support
+- DOS/VMS/ancient Unix support
+- Embedded data builds (BUILTIN_*)
+- Alternative curses libraries
+- Ancient compiler support
+
+---
+
+## Known Issues
+
+**None currently** - all builds passing, tests green
+
+**Minor Warnings:**
+- Logical-not operator precedence (line 1484) - cosmetic
+- Unused variables (player_tile_x, score_tile_x) - cleanup candidate
+
+---
+
+## Documentation Added
+
+### Session Documentation
+- `docs/MYMAN_CLEANUP_PHASE1.md` - Phase 1 summary
+- `docs/keyboard_platform_detection.md` - Input system analysis
+- `docs/MYMAN_ANALYSIS.md` - Overall refactoring strategy
+
+### Audio Documentation
+- SDL audio support added to README.md
+- CMAKE_SETUP.md updated with audio instructions
+- scripts/test_audio.sh for testing
+
+---
+
+## Recommendations for Next Session
+
+**Primary:** Extract curses wrappers (Phase 2)
+- Biggest remaining impact (~800 lines)
+- Clear architectural benefit
+- Manageable risk if done incrementally
+
+**Alternative:** Continue #ifdef cleanup
+- Safe, incremental progress
+- Low risk
+- ~50-100 line reduction
+
+**Optional:** Address minor warnings
+- Fix logical-not precedence warning
+- Remove unused variables
+- Quick wins for code quality
+
+---
+
+## Summary
+
+**Phases 0-5 + Cleanup = Major Success! ✅**
+
+We've transformed a monolithic 6,000+ line file into a clean modular architecture with:
+- ✅ 9 focused source files
+- ✅ 5 domain-specific headers
+- ✅ SDL audio support
+- ✅ 775+ lines removed
+- ✅ C17 modern standard
+- ✅ Clean CMake build
+- ✅ 100% tests passing
+
+The codebase is now **significantly more maintainable** while preserving all functionality and user features!
+
+**Next phase ready when you are!** 🚀
