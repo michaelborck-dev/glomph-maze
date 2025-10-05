@@ -231,9 +231,8 @@ git commit -m "feat: add feature description"
 
 ### 📋 Planned
 - [ ] Complete game loop implementation
-- [ ] AI for ghost behavior
-- [ ] Collision detection
-- [ ] Scoring system
+- [ ] AI for ghost behavior (basic implementation done)
+- [ ] Scoring system (basic implementation done)
 - [ ] PyInstaller packaging for standalone binary
 - [ ] Homebrew formula for distribution
 

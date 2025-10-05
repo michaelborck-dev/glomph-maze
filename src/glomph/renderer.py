@@ -1,9 +1,13 @@
 """Rendering engine for Glomph Maze."""
 
+from collections.abc import Sequence
+from typing import TYPE_CHECKING
+
 from glomph.entities import Entity
-from typing import Sequence
-from glomph.loaders import MazeData
 from glomph.terminal import get_terminal
+
+if TYPE_CHECKING:
+    from glomph.game import Game
 
 
 class Renderer:
@@ -39,32 +43,28 @@ class Renderer:
         return (0 <= screen_x < self.viewport_width and
                 0 <= screen_y < self.viewport_height)
 
-    def render_maze(self, maze: MazeData) -> None:
+    def render_maze(self, game: 'Game') -> None:
         """Render a maze to the screen."""
-        # For now, render the maze content as plain text
-        # TODO: Use tile system for proper graphics
-        lines = maze.content.split('\n')
+        # Render walls from collision map and dots from dot map
+        for y in range(min(len(game.collision_map), self.viewport_height)):
+            for x in range(min(len(game.collision_map[y]), self.viewport_width)):
+                char = ' '
+                color = 0
 
-        for y, line in enumerate(lines):
-            if y >= self.viewport_height:
-                break
+                # Check collision map for walls
+                if game.collision_map[y][x] == '#':
+                    char = '#'
+                    color = 4  # Blue walls
+                # Check dot map for collectibles
+                elif game.dot_map[y][x] == '.':
+                    char = '.'
+                    color = 3  # Yellow dots
+                elif game.dot_map[y][x] == 'o':
+                    char = 'o'
+                    color = 3  # Yellow power pellets
 
-            for x, char in enumerate(line):
-                if x >= self.viewport_width:
-                    break
-
-                # Skip empty characters
-                if char == ' ':
-                    continue
-
-                # Map maze characters to colors
-                color = 0  # Default
-                if char == '#':  # Wall
-                    color = 4  # Blue
-                elif char in ('.', 'o'):  # Dot or Power pellet
-                    color = 3  # Yellow
-
-                self.terminal.draw_char(y, x, char, color)
+                if char != ' ':
+                    self.terminal.draw_char(y, x, char, color)
 
     def render_entity(self, entity: Entity) -> None:
         """Render a game entity."""

@@ -29,6 +29,7 @@ def main() -> int:
 
         # Initialize game and renderer
         game = Game(maze.width, maze.height)
+        game.load_maze(maze)  # Load maze for collision detection
         renderer = get_renderer()
 
         # Demo game loop
@@ -39,8 +40,8 @@ def main() -> int:
             while True:
                 renderer.clear()
 
-                # Render maze
-                renderer.render_maze(maze)
+                # Render maze with current game state
+                renderer.render_maze(game)
 
                 # Render entities
                 renderer.render_entity(game.player)
