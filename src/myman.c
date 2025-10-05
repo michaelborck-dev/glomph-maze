@@ -2353,6 +2353,91 @@ static void pager_addstr(const char* s, chtype a) {
     }
 }
 
+/* Shared toggle helper functions - eliminate code duplication between pager()
+ * and gameinput() */
+
+static void toggle_color_mode(void) {
+    use_color   = !use_color;
+    use_color_p = 1;
+    if (use_color)
+        init_pen();
+    else
+        destroy_pen();
+    my_attrset(0);
+    my_clear();
+    clearok(curscr, TRUE);
+    DIRTY_ALL();
+    ignore_delay = 1;
+    frameskip    = 0;
+}
+
+static void toggle_dim_and_bright(void) {
+    use_dim_and_bright   = !use_dim_and_bright;
+    use_dim_and_bright_p = 1;
+    if (use_color) {
+        destroy_pen();
+        init_pen();
+    }
+    my_attrset(0);
+    my_clear();
+    clearok(curscr, TRUE);
+    DIRTY_ALL();
+    ignore_delay = 1;
+    frameskip    = 0;
+}
+
+static void toggle_acs_mode(void) {
+    use_acs   = !use_acs;
+    use_acs_p = 1;
+    my_clear();
+    clearok(curscr, TRUE);
+    DIRTY_ALL();
+    ignore_delay = 1;
+    frameskip    = 0;
+}
+
+static void toggle_raw_mode(void) {
+    use_raw = !use_raw;
+    my_clear();
+    clearok(curscr, TRUE);
+    DIRTY_ALL();
+    ignore_delay = 1;
+    frameskip    = 0;
+}
+
+static void toggle_raw_ucs_mode(void) {
+    use_raw_ucs = !use_raw_ucs;
+    my_clear();
+    clearok(curscr, TRUE);
+    DIRTY_ALL();
+    ignore_delay = 1;
+    frameskip    = 0;
+}
+
+static void toggle_underline_mode(void) {
+    use_underline = !use_underline;
+    my_clear();
+    clearok(curscr, TRUE);
+    DIRTY_ALL();
+    ignore_delay = 1;
+    frameskip    = 0;
+}
+
+static void toggle_bullet_mode(void) {
+    use_bullet_for_dots   = !use_bullet_for_dots;
+    use_bullet_for_dots_p = 1;
+    init_trans(use_bullet_for_dots);
+    my_clear();
+    clearok(curscr, TRUE);
+    DIRTY_ALL();
+    ignore_delay = 1;
+    frameskip    = 0;
+}
+
+static void toggle_sound_mode(void) {
+    use_sound = !use_sound;
+}
+
 static void pager(void) {
     int c = ERR;
     int k = ERR;
@@ -2609,46 +2694,23 @@ static void pager(void) {
                         pager          = pager_remaining;
                         break;
                     } else if ((k == 'a') || (k == 'A')) {
-                        use_acs   = !use_acs;
-                        use_acs_p = 1;
-                        my_clear();
-                        clearok(curscr, TRUE);
+                        toggle_acs_mode();
                         pager = pager_remaining;
                         break;
                     } else if ((k == 'c') || (k == 'C')) {
-                        use_color   = !use_color;
-                        use_color_p = 1;
-                        if (use_color)
-                            init_pen();
-                        else
-                            destroy_pen();
-                        my_attrset(0);
-                        my_clear();
-                        clearok(curscr, TRUE);
+                        toggle_color_mode();
                         pager = pager_remaining;
                         continue;
                     } else if ((k == 'b') || (k == 'B')) {
-                        use_dim_and_bright   = !use_dim_and_bright;
-                        use_dim_and_bright_p = 1;
-                        if (use_color) {
-                            destroy_pen();
-                            init_pen();
-                        }
-                        my_attrset(0);
-                        my_clear();
-                        clearok(curscr, TRUE);
+                        toggle_dim_and_bright();
                         pager = pager_remaining;
                         continue;
                     } else if ((k == 'x') || (k == 'X')) {
-                        use_raw = !use_raw;
-                        my_clear();
-                        clearok(curscr, TRUE);
+                        toggle_raw_mode();
                         pager = pager_remaining;
                         break;
                     } else if ((k == 'e') || (k == 'E')) {
-                        use_raw_ucs = !use_raw_ucs;
-                        my_clear();
-                        clearok(curscr, TRUE);
+                        toggle_raw_ucs_mode();
                         pager = pager_remaining;
                         break;
                     } else if (IS_UP_ARROW(k) &&
@@ -2692,8 +2754,8 @@ static void pager(void) {
                         pager_remaining = pager;
                         continue;
                     } else if ((k == 's') || (k == 'S')) {
-                        use_sound = !use_sound;
-                        pager     = pager_remaining;
+                        toggle_sound_mode();
+                        pager = pager_remaining;
                         break;
                     } else if (k != ERR) {
 #if USE_BEEP
@@ -2789,9 +2851,7 @@ static void pager(void) {
                 my_clear();
                 clearok(curscr, TRUE);
             } else if ((k == 'e') || (k == 'E')) {
-                use_raw_ucs = !use_raw_ucs;
-                my_clear();
-                clearok(curscr, TRUE);
+                toggle_raw_ucs_mode();
             } else if (IS_UP_ARROW(k) && (pager_remaining != pager_notice)) {
                 if (pager_remaining != pager_notice) {
                     pager_remaining--;
@@ -3986,70 +4046,25 @@ static int handle_settings_keys(int k) {
 #endif
         return 1;
     } else if ((k == 'c') || (k == 'C')) {
-        use_color   = !use_color;
-        use_color_p = 1;
-        if (use_color)
-            init_pen();
-        else
-            destroy_pen();
-        my_attrset(0);
-        my_clear();
-        clearok(curscr, TRUE);
-        DIRTY_ALL();
-        ignore_delay = 1;
-        frameskip    = 0;
+        toggle_color_mode();
         return 1;
     } else if ((k == 'b') || (k == 'B')) {
-        use_dim_and_bright   = !use_dim_and_bright;
-        use_dim_and_bright_p = 1;
-        if (use_color) {
-            destroy_pen();
-            init_pen();
-        }
-        my_attrset(0);
-        my_clear();
-        clearok(curscr, TRUE);
-        DIRTY_ALL();
-        ignore_delay = 1;
-        frameskip    = 0;
+        toggle_dim_and_bright();
         return 1;
     } else if ((k == 'u') || (k == 'U')) {
-        use_underline = !use_underline;
-        my_clear();
-        clearok(curscr, TRUE);
-        DIRTY_ALL();
-        ignore_delay = 1;
-        frameskip    = 0;
+        toggle_underline_mode();
         return 1;
     } else if ((k == 's') || (k == 'S')) {
-        use_sound = !use_sound;
+        toggle_sound_mode();
         return 1;
     } else if ((k == 'o') || (k == 'O') || (k == '0')) {
-        use_bullet_for_dots   = !use_bullet_for_dots;
-        use_bullet_for_dots_p = 1;
-        init_trans(use_bullet_for_dots);
-        my_clear();
-        clearok(curscr, TRUE);
-        DIRTY_ALL();
-        ignore_delay = 1;
-        frameskip    = 0;
+        toggle_bullet_mode();
         return 1;
     } else if ((k == 'a') || (k == 'A')) {
-        use_acs   = !use_acs;
-        use_acs_p = 1;
-        my_clear();
-        clearok(curscr, TRUE);
-        DIRTY_ALL();
-        ignore_delay = 1;
-        frameskip    = 0;
+        toggle_acs_mode();
         return 1;
     } else if ((k == 'x') || (k == 'X')) {
-        use_raw = !use_raw;
-        my_clear();
-        clearok(curscr, TRUE);
-        DIRTY_ALL();
-        ignore_delay = 1;
-        frameskip    = 0;
+        toggle_raw_mode();
         return 1;
     } else if ((k == '/') || (k == '\\')) {
         reflect = !reflect;
@@ -4135,16 +4150,18 @@ int gameinput(void) {
             k = '@';
         }
 #endif
-                /* Try helper functions for common key categories */
+        /* Try helper functions for common key categories */
         int result;
         result = handle_control_keys(k);
         if (result != -1) {
-            if (result == 0) return 0;
+            if (result == 0)
+                return 0;
             return 1;
         }
         result = handle_info_keys(k);
         if (result != -1) {
-            if (result == 0) return 0;
+            if (result == 0)
+                return 0;
             return 1;
         }
         result = handle_refresh_keys(k);
@@ -4155,7 +4172,7 @@ int gameinput(void) {
         if (result != -1) {
             return 1;
         }
-        
+
         /* Handle snapshot, pause, debug, and special keys inline */
         if ((k == 't') || (k == 'T')) {
             char         buf[128];
