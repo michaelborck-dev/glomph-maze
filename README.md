@@ -2,112 +2,204 @@
 
 ![Glomph Mascot](images/glomph-mascot.png)
 
-A revived and renamed fork of [MyMan](http://myman.sourceforge.net/), an unofficial text-based clone of the classic Pac-Man game. Designed for terminal and console environments, with no GUI support. Integrated into a collection of minimal text-based projects.
+A modern Python rewrite of MyMan, an unofficial text-based clone of the classic Pac-Man game. Terminal-only, no GUI.
 
-## Description
+## 🐍 Python Rewrite (v0.1.0 - In Progress)
 
-Glomph Maze is a fast-paced, curses-based game where you navigate mazes, collect dots, and avoid ghosts. It supports multiple platforms including modern Unix-like systems, DOS, and VMS, emphasizing portability and legacy compatibility.
+**This branch (`python-rewrite`) contains a complete rewrite in Python 3.11+** with clean, maintainable code.
 
-Original project last updated in 2009; this fork adds modern maintenance while preserving the text-based ethos.
+### Why Python?
+
+- **Maintainable**: ~1,500 lines vs 11,399 lines of C
+- **Modern tooling**: Type checking, testing, formatting built-in
+- **Clean architecture**: Natural separation of concerns
+- **Same assets**: All 655 mazes, tiles, sprites, and sounds work identically
+
+### Quick Start (Python Version)
+
+```bash
+# Install uv (modern Python package manager)
+brew install uv  # or: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install and run
+uv venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+uv pip install -e ".[dev]"
+glomph
+```
+
+### Development
+
+```bash
+# Run tests
+pytest
+
+# Format and lint
+ruff format .
+ruff check --fix .
+mypy src/glomph
+
+# Run game (when implemented)
+python -m glomph.main
+```
+
+See [AGENTS.md](AGENTS.md) for complete development documentation.
+
+---
+
+## 🎮 About Glomph Maze
+
+A revived and modernized version of [MyMan](http://myman.sourceforge.net/), preserving 655 public domain game assets (mazes, tiles, sprites, sounds) while providing clean, maintainable code.
 
 ### History
-- **1998**: Original MyMan by Benjamin Sittler—public domain, basic ncurses Pac-Man clone (742 lines, large tiles, maze/color support).
-- **1998-2003**: Expanded portability (cygwin/DOS/VMS), small tiles, variants (e.g., pacmanic). Data files public domain.
-- **Nov 2003 (v0.4/0.5)**: Switched to BSD 2-Clause license for attribution.
-- **2003-2009**: Added backends (PDCurses/SDL/GTK/Allegro/libcaca/EFI/Mac Carbon), sizes/variants (quackman/small/square), UX (pager/help/snapshots/MIDI). Last update: 2009 (DOS fixes). v0.7.0 final.
-- **2025 Fork (Glomph Maze)**: Renamed/revived; Makefile/UX tweaks (license in help, no startup prompt); focus on text portability. Data/original code under BSD; mazes/tiles public domain.
+
+- **1998**: Original MyMan by Benjamin Sittler—742 lines, public domain
+- **1998-2009**: Expanded to 11,000+ lines, 40+ backends, BSD license
+- **2025**: Glomph Maze fork—Python rewrite for maintainability
+
+### Dual Implementation Strategy
+
+This project maintains **two implementations**:
+
+| Feature | C Version (main branch) | Python Version (python-rewrite) |
+|---------|------------------------|----------------------------------|
+| **Status** | Preserved as historical artifact | Active development |
+| **Lines of Code** | 11,399 | ~1,500 (target) |
+| **License** | BSD 2-Clause | MIT |
+| **Purpose** | Legacy, C learning resource | Maintainable, modern, extensible |
+| **Assets** | ✅ Same 655 files | ✅ Same 655 files |
+
+**Assets are CC0 Public Domain** and shared between both implementations.
 
 ## Features
 
-- Text-mode rendering using ncurses or alternatives (PDCurses, SDL, etc.).
-- Modular data files for mazes, tiles, and sprites (customizable variants).
-- Color and attribute support (toggleable).
-- Optional audio support: SDL2_mixer (MIDI/tracker music) or terminal beep fallback.
-- Command-line options for mazes, sizes, ghosts, etc. (e.g., `glomph -m pac` for Pac-Man layout).
+- Text-mode rendering using curses
+- 655 game assets: 259 mazes, 44 tile sets, 44 sprite sheets, 19 sounds
+- Multiple variants (Pac-Man, Ms. Pac-Man, and many more)
+- Color support (toggleable)
+- Audio support (MIDI music via pygame/SDL)
+- Command-line options for customization
 
 ## Installation
 
-### Prerequisites
-- ANSI C compiler (e.g., GCC or Clang)
-- CMake 3.15 or higher
-- Curses library (e.g., ncurses on Unix, PDCurses on Windows)
-- Optional: SDL2 + SDL2_mixer for audio support (MIDI/tracker music)
+### Python Version (Recommended)
 
-### Build from Source
-
-**Basic build (terminal beep audio):**
 ```bash
-git clone git@github.com:michaelborck-dev/glomph-maze.git
+# Clone and install
+git clone https://github.com/michaelborck-dev/glomph-maze.git
 cd glomph-maze
+git checkout python-rewrite
+uv venv && source .venv/bin/activate
+uv pip install -e .
+glomph
+```
+
+### C Version (Legacy)
+
+```bash
+git checkout main
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ./build/glomph
 ```
 
-**Build with SDL audio (recommended for music):**
-```bash
-# Install SDL2 libraries first
-brew install sdl2 sdl2_mixer              # macOS
-sudo apt install libsdl2-dev libsdl2-mixer-dev  # Ubuntu/Debian
-
-# Build with audio enabled
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_AUDIO=ON
-cmake --build build
-./build/glomph -b  # -b enables sound
-```
-
-See [CMAKE_SETUP.md](CMAKE_SETUP.md) for detailed build instructions and options.
+See [CMAKE_SETUP.md](docs/CMAKE_SETUP.md) for detailed C build instructions.
 
 ## Usage
 
-Run the game:
+```bash
+# Run the game
+glomph
+
+# With options (when implemented)
+glomph --maze pac --size large
+
+# Help
+glomph --help
 ```
-glomph-maze  # Or 'myman' if not renamed in binary
+
+### Controls (in-game)
+
+- Arrow keys / HJKL: Move (left/down/up/right)
+- Q: Quit
+- P/ESC: Pause
+- C: Toggle color
+- S: Toggle sound
+- ?: Help
+
+## Project Structure
+
+```
+glomph-maze/
+├── src/glomph/          # Python source code
+│   ├── loaders.py       # Asset loaders (✅ complete)
+│   ├── terminal.py      # Terminal abstraction (TODO)
+│   ├── game.py          # Game logic (TODO)
+│   └── renderer.py      # Rendering (TODO)
+├── tests/               # Test suite
+├── assets/              # 655 game assets (CC0 Public Domain)
+│   ├── mazes/          # 259 maze files
+│   ├── tiles/          # 44 tile sets
+│   ├── sprites/        # 44 sprite sheets
+│   └── sounds/         # 19 MIDI files
+├── docs/                # Documentation
+└── pyproject.toml       # Python project config
 ```
 
-Controls (case-insensitive):
-- Arrow keys / HJKL: Move (left/down/up/right).
-- Q: Quit.
-- P/ESC: Pause.
-- C: Toggle color.
-- S: Toggle sound on/off.
-- ?: Help.
+## Development Status
 
-Full options: `glomph-maze -h`.
+### ✅ Completed
+- [x] Project structure (pyproject.toml, modern tooling)
+- [x] Asset loaders (verified working with all 655 assets)
+- [x] Test suite with 89% coverage
+- [x] CI/CD ready (ruff, mypy, pytest)
 
-Environment variables for fine-tuning rendering (see original README notes).
+### 🚧 In Progress
+- [ ] Terminal abstraction (curses wrapper)
+- [ ] Game state management
+- [ ] Entity system (player, ghosts)
+- [ ] Rendering engine
 
-## Building and Renaming Note
+### 📋 Planned
+- [ ] Complete game loop
+- [ ] Ghost AI
+- [ ] Audio support (pygame/SDL)
+- [ ] PyInstaller packaging (~15MB standalone binary)
+- [ ] Homebrew distribution
 
-This fork renames binaries/docs from \"MyMan\" to \"Glomph Maze\". The CMake build produces four size variants:
+## Contributing
 
-- **`glomph`** (default) - 4×4 filled bitmap characters, best balance of detail and compatibility
-- **`glomph-xlarge`** - 5×3 ASCII-art outlined characters, largest and most detailed
-- **`glomph-small`** - 2×1 Unicode symbols, compact display fits more on screen
-- **`glomph-tiny`** - 1×1 single characters, minimal display for small terminals
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-All variants play identically; only the visual rendering differs.
+## Documentation
 
-## Future Plans
-
-- Update curses support to modern ncurses.
-- Explore MIDI alternatives without breaking legacy.
-- Refactoring for clarity while maintaining portability.
-- No GUI development; focus on text environments.
+- **AGENTS.md** - Development commands and guidelines
+- **docs/language_analysis.md** - Why Python? (C vs Python comparison)
+- **docs/python_packaging.md** - Distribution strategy (PyInstaller)
+- **docs/ship_of_theseus.md** - Philosophy behind the rewrite
+- **README_ORIG.md** - Original MyMan documentation
 
 ## License
 
-Modified from original BSD license. See [LICENSE](LICENSE) for details.
+- **Python Code**: MIT License
+- **C Code** (main branch): BSD 2-Clause License
+- **Game Assets**: CC0 Public Domain (from original MyMan project)
 
-Original author: Benjamin C. Wiley Sittler <bsittler@gmail.com>. Fork maintainer: Michael Borck.
+See [LICENSE](LICENSE) for details.
+
+## Credits
+
+- **Original MyMan**: Benjamin C. Wiley Sittler (1998-2009)
+- **Python Rewrite**: Michael Borck (2025)
+- **Inspired by**: Pac-Man by Toru Iwatani (Namco)
+
+### Original Sources
+- Author's homepage: https://xent.com/~bsittler/geocities/#myman
+- SourceForge: https://sourceforge.net/projects/myman/
+- GitHub mirror: https://github.com/kragen/myman
 
 ## Acknowledgements
 
-This project is a fork of the original MyMan game, originally developed by Benjamin C. Wiley Sittler.
+This project preserves and modernizes the original MyMan game (1998-2009) by Benjamin C. Wiley Sittler. The Python rewrite maintains 100% asset compatibility while providing clean, maintainable code for modern development.
 
-Original Sources:
-- Original author's homepage: [https://xent.com/~bsittler/geocities/#myman](https://xent.com/~bsittler/geocities/#myman)
-- SourceForge project: [https://sourceforge.net/projects/myman/](https://sourceforge.net/projects/myman/)
-- GitHub mirror (CVS to Git conversion): [https://github.com/kragen/myman](https://github.com/kragen/myman)
-
-Based on MyMan (public domain/BSD). Inspired by Pac-Man (Namco). Thanks to contributors for ports and variants.
+Special thanks to the original MyMan contributors for creating 655 public domain game assets that make this project possible.

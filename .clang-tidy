@@ -1,5 +1,0 @@
-Checks: '-*,clang-analyzer-*,modernize-*,cppcoreguidelines-*,-modernize-use-trailing-return-type,-cppcoreguidelines-avoid-magic-numbers,-cppcoreguidelines-non-private-member-variables-in-classes'
-HeaderFilterRegex: ''
-AnalyzeTemporaryDtors: false
-User: .clang-tidy
-FormatStyle: file

@@ -1,162 +1,263 @@
-# Glomph Maze - Agent Guidelines
+# Glomph Maze - Agent Guidelines (Python Rewrite)
 
-## Build Commands
+## Project Overview
 
-### CMake
-First, install CMake: `brew install cmake`
+**Branch:** python-rewrite  
+**Language:** Python 3.11+  
+**Status:** Active development (v0.1.0)
 
-- **Configure**: `cmake -B build -DCMAKE_BUILD_TYPE=Debug`
-- **Configure with audio**: `cmake -B build -DCMAKE_BUILD_TYPE=Debug -DENABLE_AUDIO=ON`
-- **Build**: `cmake --build build` (first: ~30s, incremental: 1-2s)
-- **Test**: `./build/glomph --help`
-- **Test audio**: `./build/glomph -b` (with -DENABLE_AUDIO=ON)
-- **Clean**: `rm -rf build`
-- **Format**: `cmake --build build --target format`
-- **Lint**: `cmake --build build --target lint`
-- **Run tests**: `cd build && ctest`
+This is a modern Python rewrite of Glomph Maze, preserving all 655 game assets (mazes, tiles, sprites, sounds) from the original C version while providing clean, maintainable code.
 
-See `docs/CMAKE_SETUP.md` for details.
+## Environment Setup
 
-## Lint/Test Commands
-- **Format check**: `clang-format --dry-run --Werror src/*.c include/*.h`
-- **Format fix**: `clang-format -i src/*.c include/*.h`
-- **Lint**: `clang-tidy --fix --quiet src/*.c include/*.h`
-- **Static analysis**: `cppcheck --enable=all --inconclusive --suppress=missingInclude src/ include/`
-- **Test**: `./build/glomph --help` or `./build/glomph-xlarge --help` (basic smoke test)
+### Prerequisites
+```bash
+# Install uv (modern Python package manager)
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-## Audio Commands
-- **Build with audio**: `cmake -B build -DENABLE_AUDIO=ON && cmake --build build`
-- **Test audio**: `./build/glomph -b` (must build with -DENABLE_AUDIO=ON first)
-- **Test script**: `scripts/test_audio.sh`
-
-## Documentation Commands
-- **Generate docs**: `./scripts/generate_docs_script.sh` (Doxygen + cflow)
-- **View HTML docs**: `open docs/generated/html/index.html`
-- **cflow outputs**: `docs/cflow/callgraph-*.txt`
-
-## Changelog Commands
-- **Generate changelog**: `./scripts/generate_changelog.sh` (regenerates CHANGELOG.md from git history)
-
-## Current Refactoring Status
-
-**Branch:** phase-5-render-module  
-**Phase:** Phase 1 Cleanup Complete ✅
-
-### What Changed:
-- ✅ Phase 0-5: Modular extraction (9 source files created)
-- ✅ SDL audio support added (optional CMake flag)
-- ✅ Phase 1 Cleanup: Removed 275 lines of dead platform code
-  - Windows/DOS/VMS support removed
-  - Ancient compiler support removed
-  - BUILTIN_* embedded build flags removed
-  - NEED_* dead code removed
-  - Feature detection simplified to constants
-
-### Current File Sizes:
-```
-src/
-├── input_state.c (44 lines)
-├── render_state.c (39 lines)
-├── sprite_io.c (528 lines)
-├── maze_io.c (609 lines)
-├── logic.c (920 lines) ✓
-├── render.c (996 lines)
-├── game_state.c (1,307 lines)
-├── utils.c (1,899 lines) ✓
-└── myman.c (5,224 lines) - down from 5,499
+# Or via Homebrew
+brew install uv
 ```
 
-### Architecture:
-```
-include/
-├── globals.h        (aggregator - includes all modules)
-├── game_state.h     (score, lives, level, player state)
-├── sprite_state.h   (sprite registers, ghost AI)
-├── maze_state.h     (maze data, dimensions, loading)
-├── render_state.h   (tiles, screen, colors, pager)
-├── input_state.h    (keyboard, controls, timing)
-└── utils.h          (macros, constants, function prototypes)
-
-src/
-├── myman.c          (5,224 lines - core game loop)
-├── game_state.c     (game state management)
-├── sprite_io.c      (sprite loading)
-├── maze_io.c        (maze loading)
-├── render.c         (rendering helpers)
-├── render_state.c   (curses wrappers)
-├── input_state.c    (timing utilities)
-├── logic.c          (game rules/AI)
-└── utils.c          (utilities)
+### Initial Setup
+```bash
+# Create virtual environment and install dependencies
+uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+uv pip install -e ".[dev]"
 ```
 
-**Next Phase:** Extract curses wrappers (~800 lines) OR continue #ifdef cleanup (~50-100 lines)
+## Development Commands
 
-See `docs/REFACTORING_STATUS.md` for full details.
+### Running the Game
+```bash
+# Run from source
+python -m glomph.main
 
-## Known Issues
-None currently. All builds passing, tests green.
+# Or using the installed entry point
+glomph
+```
+
+### Code Quality
+
+#### Formatting (Ruff)
+```bash
+# Check formatting
+ruff format --check .
+
+# Apply formatting
+ruff format .
+```
+
+#### Linting (Ruff)
+```bash
+# Run linter
+ruff check .
+
+# Fix auto-fixable issues
+ruff check --fix .
+```
+
+#### Type Checking (mypy)
+```bash
+# Run type checker
+mypy src/glomph
+```
+
+#### All Quality Checks
+```bash
+# Run all checks at once
+ruff format --check . && ruff check . && mypy src/glomph
+```
+
+### Testing (pytest)
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov
+
+# Run specific test file
+pytest tests/test_loaders.py
+
+# Run with verbose output
+pytest -v
+
+# Run tests matching pattern
+pytest -k "loader"
+```
+
+### Package Building
+```bash
+# Build source distribution and wheel
+python -m build
+
+# Install in development mode
+uv pip install -e .
+```
+
+### Distribution
+```bash
+# Build for PyPI
+python -m build
+
+# Upload to PyPI (requires twine)
+twine upload dist/*
+
+# Upload to TestPyPI first
+twine upload --repository testpypi dist/*
+```
+
+## Project Structure
+
+```
+glomph-maze/
+├── src/
+│   └── glomph/
+│       ├── __init__.py      # Package initialization
+│       ├── main.py          # Entry point
+│       ├── loaders.py       # Asset loaders (mazes, tiles, sprites)
+│       ├── terminal.py      # Terminal/curses abstraction (TODO)
+│       ├── game.py          # Game logic (TODO)
+│       ├── entities.py      # Player, ghosts, etc. (TODO)
+│       └── renderer.py      # Rendering engine (TODO)
+├── tests/
+│   ├── __init__.py
+│   └── test_loaders.py      # Loader tests
+├── assets/                  # 655 game assets (shared with C version)
+│   ├── mazes/              # 259 maze files
+│   ├── tiles/              # 44 tile sets
+│   ├── sprites/            # 44 sprite sheets
+│   └── sounds/             # 19 MIDI files
+├── docs/                    # Documentation
+├── pyproject.toml           # Project configuration
+├── README.md                # User documentation
+└── AGENTS.md                # This file
+```
 
 ## Code Style Guidelines
 
-### Formatting (.clang-format)
-- **Base style**: LLVM with customizations
-- **Indentation**: 4 spaces
-- **Line length**: 80 columns maximum
-- **Pointer alignment**: Left (e.g., `int* ptr`)
-- **Include sorting**: Enabled
-- **Braces**: Attach style
-- **Standard**: C17
+### General Principles
+- **Type hints**: Use strict typing (enforced by mypy)
+- **Docstrings**: Google style for all public functions/classes
+- **Line length**: 88 characters (Black/Ruff default)
+- **Imports**: Sorted by ruff (isort compatible)
+- **Naming**: snake_case for functions/variables, PascalCase for classes
 
-### Linting (.clang-tidy)
-- **Enabled checks**: clang-analyzer-*, modernize-*, cppcoreguidelines-*
-- **Disabled checks**: modernize-use-trailing-return-type, cppcoreguidelines-avoid-magic-numbers
+### Example Code Style
+```python
+from pathlib import Path
+from typing import NamedTuple
 
-### General Conventions
-- **Language**: C17 (modern standard)
-- **Platforms**: macOS, Linux (modern Unix only)
-- **Curses**: ncurses only
-- **Audio**: SDL2_mixer (optional) or terminal beep
-- **Headers**: BSD license blocks at top of each file
-- **Includes**: System headers first, then local headers
-- **Error handling**: Standard C errno-based
-- **Naming**: Standard C conventions (snake_case)
-- **No emojis or decorative elements**
 
-## Audio Support
+class GameState(NamedTuple):
+    """Represents the current game state."""
 
-### Build with Audio
+    score: int
+    lives: int
+    level: int
+
+
+def load_maze(path: Path) -> str:
+    """Load maze content from file.
+    
+    Args:
+        path: Path to maze file
+        
+    Returns:
+        Maze content as string
+        
+    Raises:
+        FileNotFoundError: If maze file doesn't exist
+    """
+    with open(path, encoding="utf-8") as f:
+        return f.read()
+```
+
+## Asset Information
+
+All 655 assets are **CC0 Public Domain** (confirmed in README_ORIG.md):
+- **259 mazes** - UTF-8 text files (.txt, .asc)
+- **44 tile sets** - UTF-8 text files
+- **44 sprite sheets** - UTF-8 text files  
+- **19 sound files** - Standard MIDI (.mid)
+
+Assets are plain text/standard formats and work identically with Python.
+
+## Development Workflow
+
+### 1. Make Changes
 ```bash
-brew install sdl2 sdl2_mixer              # macOS
-sudo apt install libsdl2-dev libsdl2-mixer-dev  # Ubuntu
-
-cmake -B build -DENABLE_AUDIO=ON
-cmake --build build
-./build/glomph -b  # -b enables audio
+# Edit code in src/glomph/
+# Add tests in tests/
 ```
 
-### Audio Backends
-1. **SDL2_mixer** (-DENABLE_AUDIO=ON): MIDI/XM music playback
-2. **Terminal beep** (default): Simple beep() from ncurses
-3. **miniaudio** (future): Zero-dependency WAV/OGG playback
-
-Press 'S' in-game to toggle sound on/off.
-
-## Next Session Prompt
-
+### 2. Run Quality Checks
+```bash
+ruff format .
+ruff check --fix .
+mypy src/glomph
 ```
-Resume Glomph Maze refactoring from Phase 1 cleanup completion.
 
-Current state:
-- myman.c reduced from 5,499 to 5,224 lines (-275 lines, -5%)
-- Dead platform code removed (Windows, DOS, VMS, ancient compilers)
-- BUILTIN_* and NEED_* flags removed
-- SDL audio support added and working
-- All tests passing (100%)
-
-Next options:
-1. Extract curses wrappers to src/curses_wrapper.c (~800 line reduction)
-2. Continue #ifdef cleanup (~50-100 line reduction, safer)
-3. Address minor warnings (unused variables, operator precedence)
-
-What would you like to do next?
+### 3. Run Tests
+```bash
+pytest --cov
 ```
+
+### 4. Commit
+```bash
+git add .
+git commit -m "feat: add feature description"
+```
+
+## Current Status
+
+### ✅ Completed
+- [x] Project structure (pyproject.toml, src layout)
+- [x] Asset loaders (MazeLoader, TileLoader, SpriteLoader)
+- [x] Basic tests for loaders
+- [x] Development tooling (ruff, mypy, pytest)
+
+### 🚧 In Progress
+- [ ] Terminal abstraction layer (curses wrapper)
+- [ ] Game state management
+- [ ] Entity system (player, ghosts)
+- [ ] Rendering engine
+- [ ] Input handling
+- [ ] Audio support (pygame or similar)
+
+### 📋 Planned
+- [ ] Complete game loop implementation
+- [ ] AI for ghost behavior
+- [ ] Collision detection
+- [ ] Scoring system
+- [ ] PyInstaller packaging for standalone binary
+- [ ] Homebrew formula for distribution
+
+## Comparison: C vs Python
+
+| Feature | C Version | Python Version |
+|---------|-----------|----------------|
+| Lines of Code | 11,399 | ~1,500 (target) |
+| Build Time | ~30s | Instant |
+| Binary Size | 200KB | ~15MB (PyInstaller) |
+| Startup Time | Instant | ~1s |
+| Maintainability | Challenging | High |
+| Type Safety | Manual | mypy enforced |
+| Testing | Manual | pytest + coverage |
+| Distribution | Binary | PyInstaller / PyPI |
+
+## Resources
+
+- **Python Docs**: https://docs.python.org/3/
+- **uv Docs**: https://github.com/astral-sh/uv
+- **Ruff Docs**: https://docs.astral.sh/ruff/
+- **mypy Docs**: https://mypy.readthedocs.io/
+- **pytest Docs**: https://docs.pytest.org/
+
+## License
+
+- **Python Code**: MIT License
+- **Assets**: CC0 Public Domain (from original MyMan project)
+- **C Version**: BSD 2-Clause (preserved on main branch)
