@@ -65,6 +65,7 @@ endif()
 # Common source files
 set(COMMON_SOURCES
     src/myman.c
+    src/args.c
     src/utils.c
     src/logic.c
     src/render.c

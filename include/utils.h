@@ -261,6 +261,11 @@ extern void writemaze(const char* mazefile);
 
 extern int parse_maze_args(const char* mazefile, const char* maze_args);
 
+extern void parse_myman_args(int argc, char** argv);
+
+extern void usage(const char* mazefile, const char* spritefile,
+                  const char* tilefile);
+
 extern char* mystrdup(const char* s);
 
 #undef strdup
@@ -1103,6 +1108,18 @@ extern void my_clearok(int ok);
 
 extern int use_underline;
 extern int use_color;
+extern int use_raw;
+extern int use_raw_ucs;
+extern int use_idlok;
+extern int use_acs;
+extern int use_acs_p;
+extern int use_dim_and_bright;
+extern int use_dim_and_bright_p;
+extern int use_color_p;
+extern int use_bullet_for_dots;
+extern int use_bullet_for_dots_p;
+extern int use_fullwidth;
+extern int use_sound;
 extern int bonus_score[8];
 
 #define COLLISION_TYPE_HERO 1

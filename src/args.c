@@ -23,16 +23,17 @@
  *  DEALINGS IN THE SOFTWARE.
  */
 
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <getopt.h>
 
 #include "globals.h"
 #include "utils.h"
 
-/* Build configuration - MYMANSIZE and file paths are set by CMake per variant */
+/* Build configuration - MYMANSIZE and file paths are set by CMake per variant
+ */
 
 #ifndef MYMANSIZE
 #define MYMANSIZE "big"
@@ -77,9 +78,8 @@ char MAZEFILE_str[] = MAZEFILE;
 #define XCURSES_USAGE
 #endif
 
-#define SUMMARY(progname) \
+#define SUMMARY(progname)                                                      \
     "Usage: %s [-h] [options]" XCURSES_USAGE "\n", progname
-
 
 static void handle_display_options(int opt) {
     switch (opt) {
@@ -234,7 +234,7 @@ static void handle_info_options(int opt, const char* mazefile,
     }
 }
 
-static void parse_myman_args(int argc, char** argv) {
+void parse_myman_args(int argc, char** argv) {
     int           i;
     int           dump_maze = 0, dump_sprite = 0, dump_tile = 0;
     const char*   tilefile   = TILEFILE;

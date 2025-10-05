@@ -131,7 +131,6 @@ static void sigwinch_handler(int signum) {
 #define USE_PALETTE 1
 #endif
 
-
 #ifndef TILEFILE
 #define TILEFILE TILEDIR "/chr5x2.txt"
 #endif
@@ -653,22 +652,21 @@ static myman_settings_t settings = {.use_raw               = 0,
                                     .use_color_p           = 0,
                                     .use_bullet_for_dots_p = 0};
 
-/* Legacy individual variables - kept for now for external linkage compatibility
- * These will be gradually replaced with settings struct access */
-static int use_raw               = 0;
-static int use_raw_ucs           = 0;
-int        use_underline         = 0; /* Exported to other modules */
-static int use_idlok             = 1;
-static int use_acs               = 1;
-static int use_acs_p             = 0;
-static int use_dim_and_bright    = 0;
-static int use_dim_and_bright_p  = 0;
-int        use_color             = 0; /* Exported to other modules */
-static int use_color_p           = 0;
-static int use_bullet_for_dots   = 0;
-static int use_bullet_for_dots_p = 0;
-static int use_fullwidth         = 0;
-static int use_sound             = 0;
+/* Legacy individual variables - now exported for args.c and other modules */
+int use_raw               = 0;
+int use_raw_ucs           = 0;
+int use_underline         = 0;
+int use_idlok             = 1;
+int use_acs               = 1;
+int use_acs_p             = 0;
+int use_dim_and_bright    = 0;
+int use_dim_and_bright_p  = 0;
+int use_color             = 0;
+int use_color_p           = 0;
+int use_bullet_for_dots   = 0;
+int use_bullet_for_dots_p = 0;
+int use_fullwidth         = 0;
+int use_sound             = 0;
 
 /* Control flow variables (not settings) */
 static int quit_requested   = 0;
@@ -676,7 +674,6 @@ int        reinit_requested = 0; /* Exported to other modules */
 int        xoff_received    = 0;
 
 #define MY_COLS (COLS / (use_fullwidth ? 2 : 1))
-
 
 #ifndef MAZEFILE
 #define MAZEFILE MAZEDIR "/maze.txt"
@@ -2211,7 +2208,6 @@ static int my_addstr(const char* s, chtype attrs) {
 }
 
 #define XCURSES_USAGE
-
 
 const char* pager_notice    = 0;
 const char* pager_remaining = 0;
@@ -4513,7 +4509,6 @@ void usage(const char* mazefile, const char* spritefile, const char* tilefile) {
 /* Helper functions for parse_myman_args() - organized by functional category */
 
 /* Handle display/rendering options (-r, -a, -c, -u, etc.) */
-
 
 int main(int argc, char* argv[], char* envp[]) {
     int  i;
